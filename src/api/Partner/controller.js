@@ -2,7 +2,7 @@ const service = require("../saloonService/model");
 const mongoose = require("mongoose");
 const saloonRequst = require("./model");
 const saloon = require("../saloonstore/model")
-const users = require("../user/model")
+const users = require("../../models/userModel")
 const Service = require("./services")
 
 exports.otpSent = async ({ body }) => {

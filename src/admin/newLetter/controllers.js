@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const newsletters = require("../../api/Newsletter/model");
-const user = require("../../api/user/model");
+const user = require("../../models/userModel");
 const saloon = require("../../api/saloonstore/model");
 const ContecUs = require("../../api/Contact-Us/model");
 

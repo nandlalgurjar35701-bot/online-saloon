@@ -6,9 +6,6 @@ const mongoose = require('mongoose');
 exports.Category = async (req, res) => {
     try {
         res.locals.message = req.flash();
-        if (req.user.type == "admin") {
-            return res.redirect("/")
-        }
         if (req.query.id != undefined && req.query.id != "") {
             res.render("category/index", { user: req.user, id: req.query.id })
         } else if (req.query.EditId != undefined && req.query.EditId !== "") {
@@ -33,9 +30,7 @@ exports.AddCategory = async (req, res) => {
 exports.ViwesCategory = async (req, res) => {
     try {
         res.locals.message = req.flash();
-        if (req.user.type == "admin") {
-            return res.redirect("/")
-        }
+      
         let condition = {}
         if (req.query.CategoryName != undefined && req.query.CategoryName != "") {
             condition = { Name: { $regex: req.query.CategoryName, $options: 'i' } };

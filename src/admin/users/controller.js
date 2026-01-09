@@ -1,10 +1,10 @@
-const user = require("../../api/user/model");
+const user = require("../../models/userModel");
 const mongoose = require("mongoose");
 const { getAllSaloonCity } = require("../../api/saloonstore/controller");
 const moment = require("moment")
 const { allUser } = require("./services")
 const { sendmailwarning } = require("../../middleware/mail");
-const { findOne } = require("../../api/user/model");
+const { findOne } = require("../../models/userModel");
 
 exports.allUser = async (req, res) => {
     try {

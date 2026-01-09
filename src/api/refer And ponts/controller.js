@@ -1,5 +1,5 @@
 const refer = require("../../admin/Refer-And-point/model");
-const user = require("../user/model");
+const user = require("../../models/userModel");
 const mongoose = require("mongoose");
 const { referConvert } = require("./services")
 

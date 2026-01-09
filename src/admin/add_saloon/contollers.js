@@ -4,16 +4,14 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const saloonRequst = require("../../api/Partner/model")
 const { getAllSaloonRequistCity, getAllSaloonCity } = require("../../api/saloonstore/controller")
-const userm = require("../../api/user/model")
+const userm = require("../../models/userModel")
 
 
 
 
 exports.saloonRegister = async (req, res) => {
     try {
-        if (req.user.type == "admin") {
-            return res.redirect("/")
-        }
+       
         res.locals.message = req.flash()
         let saloon_data;
         const find_saloon_data = await saloon.findOne({ _id: mongoose.Types.ObjectId(req.query.id) })

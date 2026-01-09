@@ -29,7 +29,7 @@ const port = process.env.adminPORT || 7171;
 // const adminroutes = require("./src/admin");
 app.use(cors());
 app.use(express.json());
-require("./src/admin")(app)
+require("./src/admin/routes")(app)
 
 app.listen(port, () => {
     console.log(`server is running http://localhost:${port}`);

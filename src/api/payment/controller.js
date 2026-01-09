@@ -1,4 +1,4 @@
-const users = require("../user/model");
+const users = require("../../models/userModel");
 const servish = require("../saloonService/model");
 const razorpay = require("razorpay");
 const payments = require("./model");

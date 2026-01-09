@@ -1,5 +1,5 @@
 const { default: mongoose } = require("mongoose");
-const user = require("../../api/user/model");
+const user = require("../../models/userModel");
 
 exports.allUser = async (req, res) => {
     try {
