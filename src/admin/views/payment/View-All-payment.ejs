@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment </title>
+  <%- include('../../partials/headlink.ejs') %>
+</head>
+
+<body>
+  <%- include('../../partials/Header.ejs') %>
+    <%- include("../../partials/sidebar.ejs") %>
+      <main id="main" class="main">
+        <div class="pagetitle">
+          <h1><%-user.type %></h1>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+          </nav>
+        </div>
+        <!-- End Page Title -->
+        <section class="section dashboard">
+          <div class="row">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Filter</h5>
+                    <!-- No Labels Form -->
+                    <form class="row g-3" action="/view-all-payment">
+                      <div class="col-md-3">
+                        <label>Customer Name</label> <br>
+                        <% if(query?.customername!="" ){%>
+                          <input type="text" value="<%=query.customername%>" class="form-control"
+                            placeholder="Customer Name" name="customername">
+                          <%}else{%>
+                            <input type="text" value="" class="form-control" placeholder="Customer Name"
+                              name="customername">
+                            <%}%>
+                      </div>
+                      <div class="col-md-3">
+                        <label>Payment status</label> <br>
+                        <select name="paymentstatus" id="" class="form-control">
+                          <option value="" selected>select status</option>
+                          <option value="pending" <%=query.paymentstatus=="pending" ? 'selected' :'' %>>pending</option>
+                          <option value="Payment successfull" <%=query.paymentstatus=="Payment successfull" ? 'selected'
+                            :'' %>>Payment successfull</option>
+                          <!-- <option value="super-admin" <%=query.paymentstatus=="super-admin" ? 'selected' :'' %>>super Admin
+                          </option> -->
+                          <option value="Payment Refund" <%=query.paymentstatus=="Payment Refund" ? 'selected' :'' %>
+                            >Payment Refund
+                          </option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label>Amount</label> <br>
+                        <% if(query?.amount!="" ){%>
+                          <input type="number" class="form-control" value="<%=query.amount%>" placeholder="Amount"
+                            name="amount">
+                          <%}else{%>
+                            <input type="number" class="form-control" value="" placeholder="Amount" name="amount">
+                            <%}%>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="text-center">
+                          <label for=""></label><br>
+                          <button type="submit" class="btn btn-primary">Submit</button>&nbsp;&nbsp;
+                          <a href="/view-all-payment"> <button type="button"
+                              class="btn btn-secondary">Reset</button></a>
+                        </div>
+                      </div>
+                    </form>
+                    <!-- End No Labels Form -->
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Payment List</h5>
+                    <!-- Table with stripped rows -->
+                    <table class="table datatable text-nowrap">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Customer Name</th>
+                          <th scope="col"> Pay Date</th>
+                          <th scope="col"> Pay Time</th>
+                          <th scope="col">Amount</th>
+                          <th scope="col">Payment Status</th>
+                          <th scope="col">Order</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% let i=0 %>
+                          <% for( data of data) { %>
+                            <tr>
+                              <th scope="row">
+                                <%= ++i %>
+                              </th>
+                              <td>
+                                <%= data.user?.name %>
+                              </td>
+                              <td>
+                                <%= data.Date %>
+                              </td>
+                              <td>
+                                <%= data.Time %>
+                              </td>
+                              <td>
+                                <%= data.orderData.amount /100%>
+                              </td>
+                              <td>
+                                <%= data.payment %>
+                              </td>
+                              <td>
+                                <a href="/get-All-order?userId=<%= data.userId %>&orderId=<%= data.orderId %>">
+                                  <button type="button" class="btn btn-info">
+                                    <i class="bi bi-eye" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    data-bs-title="View Order"> </i>
+                                  </button>
+                                </a>
+                              </td>
+                            </tr>
+                            <%}%>
+                      </tbody>
+                    </table>
+                    <!-- End Table with stripped rows -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+      <%- include("../../partials/script.ejs") %>
+</body>
+
+</html>

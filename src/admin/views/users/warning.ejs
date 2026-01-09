@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>warning</title>
+    <%- include('../../partials/headlink.ejs') %>
+</head>
+
+<body>
+    <%- include('../../partials/Header.ejs') %>
+        <%- include("../../partials/sidebar.ejs") %>
+            <main id="main" class="main">
+                <div class="pagetitle">
+                    <h1><%-user?.type %></h1>
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/">Home</a></li>
+                            <li class="breadcrumb-item active">Dashboard</li>
+                        </ol>
+                    </nav>
+                </div>
+                <!-- End Page Title -->
+                <section class="section dashboard">
+                    <div class="row">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <form class="needs-validation row g-3" action="/warning?id=<%=id%>" method="post" novalidate>
+                                            <div class="col-md-6">
+                                                <label>Subject</label> <br>
+                                                <input type="text" class="form-control" placeholder="Email"
+                                                    name="subject" value=<%=data?.email%> required readonly>
+                                                    <div class="invalid-feedback">Please enter Subject.</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label>Message</label> <br>
+                                                <textarea required name="text" id="" cols="30" rows="10"
+                                                    class="form-control"></textarea>
+                                                    <div class="invalid-feedback">Please enter Message.</div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="text-center">
+                                                    <label></label> <br>
+                                                    <button type="submit" class="btn btn-primary">Send</button>
+                                                    <a href="/get-All-order"> <button type="button"
+                                                            class="btn btn-secondary">Reset</button></a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <%- include("../../partials/script.ejs") %>
+</body>
+
+</html>

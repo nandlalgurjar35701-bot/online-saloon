@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>view-Order</title>
+  <%- include('../../partials/headlink.ejs') %>
+</head>
+
+<body>
+  <%- include('../../partials/Header.ejs') %>
+    <%- include("../../partials/sidebar.ejs") %>
+
+      <main id="main" class="main">
+        <div class="pagetitle">
+
+          <h1><%-user.type %></h1>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+          </nav>
+        </div>
+        <!-- End Page Title -->
+        <section class="section dashboard">
+          <div class="row">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Filter</h5>
+
+                    <!-- No Labels Form -->
+                    <% if(typeof query.userId !=="undefined" && query.userId){%>
+                      <form class="row g-3" action="/get-All-order?userId=<%=query.userId%>">
+                        <input type="hidden" name="userId" value="<%=query.userId%>">
+                        <%}else{%>
+                          <form class="row g-3" action="/get-All-order">
+                            <%}%>
+
+                              <!-- <form class="row g-3" action="/get-All-order"> -->
+                              <div class="col-md-3">
+                                <label>Choose City</label> <br>
+                                <select id="inputState" name="city" class="form-select">
+                                  <% if( query.city!=undefined&&query.city!="" ){%>
+                                    <option selected="" value="<%=query?.city%>">
+                                      <%=query?.city%>
+                                    </option>
+                                    <option value="">Choose City</option>
+                                    <%}else{%>
+                                      <option selected="" value="">Choose City</option>
+                                      <%}%>
+                                        <% city.forEach(function(citys) { %>
+                                          <option value="<%=citys%>">
+                                            <%=citys%>
+                                          </option>
+                                          <% }); %>
+                                </select>
+                              </div>
+                              <div class="col-md-3">
+                                <label>Status Type</label> <br>
+                                <select id="inputState" name="status" class="form-select">
+                                  <% if( query?.status=="pending" ){%>
+                                    <option value="">Choose Status</option>
+                                    <option selected="" value="pending">pending</option>
+                                    <option value="cancel">cancel</option>
+                                    <option value="succes">succes</option>
+                                    <%}else if( query?.status=="cancel" ){%>
+                                      <option value="">Choose Status</option>
+                                      <option value="pending">pending</option>
+                                      <option selected="" value="cancel">cancel</option>
+                                      <option value="succes">succes</option>
+                                      <%}else if( query?.status=="succes" ){%>
+                                        <option value="">Choose Status</option>
+                                        <option value="pending">pending</option>
+                                        <option value="cancel">cancel</option>
+                                        <option selected="" value="succes">succes</option>
+                                        <%}else{%>
+                                          <option selected="" value="">Choose Status</option>
+                                          <option value="pending">pending</option>
+                                          <option value="cancel">cancel</option>
+                                          <option value="succes">succes</option>
+                                          <%}%>
+
+                                </select>
+                              </div>
+                              <div class="col-md-3">
+                                <label>Amount</label> <br>
+
+                                <% if(query?.totalamount!="" ){ %>
+                                  <input type="number" name="totalamount" class="form-control"
+                                    value="<%=query?.totalamount%>" placeholder="Enter Amount">
+                                  <%}else{%>
+                                    <input type="number" name="totalamount" class="form-control" placeholder="Amount">
+                                    <%}%>
+                              </div>
+                              <div class="col-md-3">
+                                <label></label> <br>
+
+                                <div class="text-center">
+                                  <button type="submit" class="btn btn-primary">Submit</button>
+                                  <% if(typeof query.userId !=="undefined" && query.userId){%>
+                                    <a href="/get-All-order?userId=<%=query.userId%>""> <button type=" button"
+                                      class="btn btn-secondary">Reset</button></a>
+                                    <%}else{%>
+                                      <a href="/get-All-order"> <button type="button"
+                                          class="btn btn-secondary">Reset</button></a>
+                                      <%}%>
+                                </div>
+                              </div>
+                          </form>
+                          <!-- End No Labels Form -->
+
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Order List</h5>
+
+                    <!-- Table with stripped rows -->
+                    <table class="table datatable text-nowrap">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Store Name</th>
+                          <th scope="col">User Name</th>
+                          <th scope="col" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Cart Data">
+                            C.D.</th>
+                          <th scope="col">Date And Time</th>
+                          <th scope="col" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Total Amount">
+                            T.A.</th>
+                          <th scope="col">Payment Status</th>
+                          <th scope="col">Status</th>
+
+                          <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% let i=0 %>
+                          <% for( data of data) { %>
+                            <tr>
+                              <th scope="row">
+                                <%= ++i %>
+                              </th>
+                              <td>
+                                <%= data.saloon?.storeName %>
+                              </td>
+                              <td>
+                                <%= data.users?.name %>
+                              </td>
+                              <td>
+                                <button type="button" value="<%=data._id%>" onclick="cartData(this)"
+                                  class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  data-bs-title="View Cart Data"><i class="bi bi-eye"></i></button>
+
+                              </td>
+                              <td>
+                                <% if(typeof data.Schedule !=="undefined" && data.Schedule){%>
+                                  <%= data.Schedule.date %>
+                                    <%= data.Schedule.timeslot %>
+                                      <%}else{%>
+                                        date :<br>
+                                        timeslot :
+                                        <%}%>
+                              </td>
+                              <td>
+                                <%= data.totalamount %>
+                              </td>
+                              <td>
+                                <%= data.pay?.payment %>
+                              </td>
+                              <td>
+                                <%= data.status %>
+                              </td>
+                              <td>
+                                <% if( data.status=="succes" ){%>
+                                  <a href="#" class="btn btn-dark">Succes</a>
+
+                                  <%}else if( data.status=="cancel" ){%>
+                                    <a href="#" class="btn btn-danger">Cancel</a>
+                                    <%}else{%>
+                                      <a href="/Admin-Order-Approve?id=<%= data._id%>" class="btn btn-success"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-title="Approve Order"><i class="bi bi-check2-circle"></i></a>
+                                      <a href="/Admin-Order-Cancel?id=<%= data._id%>" class="btn btn-danger"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Decline Order">
+                                        <span aria-hidden="true">&times;</span></a>
+                                      <%}%>
+                              </td>
+                            </tr>
+
+                            <%}%>
+                      </tbody>
+                    </table>
+                    <!-- End Table with stripped rows -->
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+
+      </main>
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">User Service Data</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="moduleDataAppend">
+              ...
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <script>
+        function cartData(data) {
+          let num = data.value
+
+          $.ajax({
+            type: 'get',
+            data: { "id": num },
+            url: '/Find-date-for-admin-module',
+            success: function (data) {
+              if (data.length > 0) {
+                $('#moduleDataAppend').empty()
+
+                let abc = ` <table class="table datatable">
+                          <thead>
+                            <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">serviceId</th>
+                              <th scope="col">quantity</th>
+                              <th scope="col">Amount</th>
+                              <th scope="col">timePeriod </th>
+                            </tr>
+                          </thead>
+                          <tbody>`
+                let i = 1;
+                data.forEach((item) => {
+                  abc += `<tr>
+                            <th scope="col">${i}.</th>
+                            <td scope="row">${item.service.ServiceName}</td>
+                            <td>${item.cartdata.quantity}</td>
+                            <td>${item.cartdata.Amount}</td>
+                            <td>${item.cartdata.timePeriod_in_minits}</td>
+                          </tr>`
+                  i++
+                })
+                abc += `</tbody> </table >`
+
+                $('#moduleDataAppend').append(abc)
+                $("#exampleModal").modal("toggle");
+              } else {
+                alert("data not Found")
+              }
+            }
+          })
+        }
+      </script>
+      <%- include("../../partials/script.ejs") %>
+</body>
+
+</html>

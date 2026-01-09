@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>view-saloon</title>
+  <%- include('../../partials/headlink.ejs') %>
+</head>
+
+<body>
+  <%- include('../../partials/Header.ejs') %>
+    <%- include("../../partials/sidebar.ejs") %>
+
+      <main id="main" class="main">
+        <div class="pagetitle">
+          <h1><%-user.type %></h1>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+          </nav>
+        </div>
+        <!-- End Page Title -->
+        <section class="section dashboard">
+          <div class="row">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Filter</h5>
+
+                    <!-- No Labels Form -->
+                    <form class="row g-3" action="/view_saloon">
+                      <div class="col-md-4">
+                        <label>Choose City</label> <br>
+                        <select id="inputState" name="city" class="form-select">
+                          <option value="">Choose City</option>
+                          <% city.forEach(function(citys) { %>
+                            <option value="<%=citys%>" <%=citys==query?.city?'selected':'' %>>
+                              <%=citys%>
+                            </option>
+                            <% }); %>
+                        </select>
+                      </div>
+                      <div class="col-md-4">
+                        <label>Enter Store Name</label> <br>
+                        <input type="text" name="storeName" class="form-control" value="<%=query?.storeName%>"
+                          placeholder="storeName">
+                      </div>
+                      <div class="col-md-4">
+                        <label>Enter gender</label> <br>
+                        <!-- <input type="text" name="gender" class="form-control" value="<%=query?.gender%>"
+                          placeholder="gender"> -->
+                        <select id="inputState" name="gender" class="form-select">
+                          <option value="">Choose Gender</option>
+                          <option value="male" <%=query?.gender=='male' ?'selected':'' %>>
+                            Male
+                          </option>
+                          <option value="female" <%=query?.gender=='female' ?'selected':'' %>>
+                            Female
+                          </option>
+                          <option value="unisex" <%=query?.gender=='unisex' ?'selected':'' %>>
+                            Unisex
+                          </option>
+                        </select>
+                      </div>
+                      <div class="col-md-4">
+                        <label>Enter email</label> <br>
+                        <input type="text" name="email" class="form-control" value="<%=query?.email%>"
+                          placeholder="email">
+                      </div>
+
+                      <div class="col-md-4">
+                        <label>Enter Phone</label> <br>
+                        <input type="number" name="Phone" class="form-control" value="<%=query?.Phone%>"
+                          placeholder="Phone">
+                      </div>
+                      <div class="col-md-4">
+                        <label></label> <br>
+                        <div class="text-center">
+                          <button type="submit" class="btn btn-primary">Submit</button>
+                          <a href="/view_saloon"> <button type="button" class="btn btn-secondary">Reset</button></a>
+                        </div>
+                      </div>
+                    </form>
+                    <!-- End No Labels Form -->
+
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-body ">
+                    <h5 class="card-title">Saloon List</h5>
+
+                    <!-- Table with stripped rows -->
+                    <table class="table datatable text-nowrap">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Store Name</th>
+                          <th scope="col">Owner Name</th>
+                          <th scope="col">Email</th>
+                          <th scope="col">Phone</th>
+                          <th scope="col">Gender</th>
+                          <th scope="col">Loc.</th>
+                          <th scope="col">Pro.</th>
+                          <th scope="col">Doc.</th>
+                          <th scope="col">Bank.</th>
+                          <th scope="col">dis.</th>
+                          <th scope="col">Service</th>
+                          <th scope="col">Package</th>
+                          <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% let i=0 %>
+                          <% for( data of data) { %>
+                            <tr>
+                              <th scope="row">
+                                <%= ++i %>
+                              </th>
+                              <td>
+                                <%= data.storeName %>
+                              </td>
+                              <td>
+                                <%= data.name %>
+                              </td>
+                              <td>
+                                <%= data.email %>
+                              </td>
+                              <td>
+                                <%= data.Phone %>
+                              </td>
+                              <td>
+                                <%= data.type %>
+                              </td>
+                              <td>
+                                <button type="button" value="<%= data._id %>" id="location" onclick="saloonAdd(this)"
+                                  class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  data-bs-title="location">
+                                  <i class="bi bi-eye"></i>
+                                </button>
+                              </td>
+                              <td>
+                                <button type="button" value="<%= data._id %>" id="profile" onclick="saloonAdd(this)"
+                                  class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  data-bs-title="profile">
+                                  <i class="bi bi-eye"></i>
+                                </button>
+                              </td>
+                              <td>
+                                <button type="button" value="<%= data._id %>" id="Document" onclick="saloonAdd(this)"
+                                  class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  data-bs-title="Document">
+                                  <i class="bi bi-eye"></i>
+                                </button>
+                              </td>
+                              <td>
+                                <button type="button" value="<%= data._id %>" id="BankInfo" onclick="saloonAdd(this)"
+                                  class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  data-bs-title="BankInfo">
+                                  <i class="bi bi-eye"></i>
+                                </button>
+                              </td>
+                              <td>
+                                <button type="button" value="<%= data._id %>" id="description" onclick="saloonAdd(this)"
+                                  class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  data-bs-title="Description">
+                                  <i class="bi bi-eye"></i>
+                                </button>
+                              </td>
+                              <% let NumberOfservice;%>
+                                <td>
+                                  <a href="/add_service?saloonId=<%= data._id%>" class="btn btn-success text-warning"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Add New Service"><i
+                                      class="ri-file-add-line"></i></a>
+                                  <%data.ccc.forEach(element=> {%>
+
+                                    <%if( element._id==0){%>
+                                      <% NumberOfservice=element.count %>
+                                        <a href="/view_service?id=<%= data._id%>" class="btn btn-success"
+                                          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="view Service">
+                                          <%= element.count %>
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <%}%>
+                                          <%})%>
+
+                                </td>
+                                <td>
+                                  <%if(NumberOfservice>1){%>
+                                    <a href="/add-new-package?saloonId=<%= data._id%>"
+                                      class="btn btn-success text-warning" data-bs-toggle="tooltip"
+                                      data-bs-placement="top" data-bs-title="Add New Package">
+                                      <i class="ri-file-add-line"></i></a>
+                                    <% }%>
+
+                                      <%if(data.ccc.length>1){%>
+                                        <%data.ccc.forEach(element=> {%>
+                                          <%if( element._id==1){%>
+                                            <a href="/view-package?id=<%= data._id%>" class="btn btn-success"
+                                              data-bs-toggle="tooltip" data-bs-placement="top"
+                                              data-bs-title="view Package">
+                                              <%= element.count %>
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <%}%>
+                                              <%})%>
+                                                <% }%>
+                                                  <!-- sahil view end -->
+                                </td>
+                                <td>
+                                  <!-- <a href="/add_saloon?id=<%= data._id%>" class="btn btn-dark">Edit</a>
+                                <a href="/delete_saloon?id=<%= data._id%>" class="btn btn-danger">Delete</a> -->
+                                  <a href="/add_saloon?id=<%= data._id%>" class="btn btn-info" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" data-bs-title="Edit"><i class="ri-edit-box-line"></i></a>
+                                  <a href="/delete_saloon?id=<%= data._id%>" class="btn btn-danger"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Saloon">
+                                    <i class="ri-delete-bin-5-line"></i>
+                                  </a>
+                                </td>
+                            </tr>
+                            <%}%>
+                      </tbody>
+                    </table>
+                    <!-- End Table with stripped rows -->
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Saloon Data</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body table-responsive" id="moduleDataAppend">
+              ...
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imgModel" tabindex="-1" aria-labelledby="imgModel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <!-- <div class="modal-header"> -->
+            <!-- <h5 class="modal-title" id="imgModel">User image</h5> -->
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+              style="width: 50px;"></button>
+            <!-- </div> -->
+            <div class="modal-body" id="imgDataAppend">
+              ...
+            </div>
+            <!-- <div class="modal-footer"> -->
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            <!-- </div> -->
+          </div>
+        </div>
+      </div>
+
+
+      <script>
+        function img(a) {
+          $('#imgDataAppend').empty()
+          let abc = `<img src="${a.src}" alt="image" style="width: 100%;  max-height: 400px;">`
+          $('#imgDataAppend').append(abc)
+          $("#imgModel").modal("toggle");
+        }
+
+
+
+
+        function saloonAdd(element) {
+          let num = element.value
+          $.ajax({
+            type: 'get',
+            data: { "id": num },
+            url: '/get-saloon-address',
+            success: function (data) {
+              if (data.length > 0) {
+                $('#moduleDataAppend').empty()
+                if (element.id == "location") {
+                  abc = ` <table class="table datatable">
+                            <thead>
+                              <tr>
+                                <th scope="col">Shop Number</th>
+                                <th scope="col">Pin Code</th>
+                                <th scope="col">City</th>
+                                <th scope="col">State</th>
+                              </tr>
+                            </thead>
+                            <tbody>`
+                  data.forEach((item) => {
+                    abc += `<tr>
+                                <td>
+                                  ${item.location?.shopNumber ? item.location?.shopNumber : "-"}
+                                </td>
+                                <td>
+                                  ${item.location.pincode}
+                                </td>
+                                <td>
+                                  ${item.location.city}
+                                </td>
+                                <td>
+                                  ${item.location.state}
+                                </td>
+                            </tr>`
+                  })
+                  abc += `</tbody> </table >`
+                } else if (element.id == "profile") {
+                  abc = ` <table class="table datatable">
+                            <thead>
+                              <tr>
+                                <th scope="col">Service</th>
+                                <th scope="col">Phone</th>
+                                <th scope="col">workingday</th>
+                                <th scope="col">SocialLink </th>
+                                <th scope="col">amenities</th>
+                              </tr>
+                            </thead>
+                            <tbody>`
+                  data.forEach((item) => {
+                    abc += `<tr>
+                                <td>
+                                  ${item.ProfileInfo.yourService}
+                                </td>
+                                <td>
+                                  ${item.ProfileInfo.alternatePhone}
+                                </td>
+                                <td>`
+                    item.ProfileInfo.workingday.forEach((days) => {
+                      abc += ` ${days}<br>`
+                    })
+
+                    abc += `  </td>
+                                <td>
+                                  <a href="${item.ProfileInfo.FaceBookProfile}"><i class="bi bi-facebook"></i></a>
+                                  <a href="${item.ProfileInfo.instaProfile}"><i class="bi bi-instagram"></i></a>
+                                  <a href="${item.ProfileInfo.webProfile}"><i class="bi bi-link-45deg"></i></a>
+                                </td>
+                                <td>`
+                    item.ProfileInfo.amenities.forEach((amenities) => {
+                      abc += ` ${amenities}<br>`
+                    })
+                    abc += `</td></tr>`
+                  })
+                  abc += `</tbody> </table >`
+                } else if (element.id == "Document") {
+                  abc = ` <table class="table datatable">
+                            <thead>
+                              <tr>
+                                <th scope="col">Banner Logo</th>
+                                <th scope="col">logo Image</th>
+                                <th scope="col">pan Image</th>
+                                <th scope="col">business Certificate</th>
+                              </tr>
+                            </thead>
+                            <tbody>`
+                  data.forEach((item) => {
+                    abc += `<tr>
+                                <td>
+                                 <img src="/uploads/${item.uplodeDocuments.BannerLogo ? item.uplodeDocuments.BannerLogo : 'default.png'}" style="height: 50px; width: 80px alt="" onclick='img(this)'>
+
+                                </td>
+                                <td>
+                                 <img src="/uploads/${item.uplodeDocuments.logoImage ? item.uplodeDocuments.logoImage : 'default.png'}" style="height: 50px; width: 80px alt="" onclick='img(this)'>
+
+                                </td>
+                                <td>
+                                <img src="/uploads/${item.uplodeDocuments.panImage ? item.uplodeDocuments.panImage : 'default.png'}" style="height: 50px; width: 80px alt="" onclick='img(this)'>
+
+                                </td>
+                                <td>
+                                 <img src="/uploads/${item.uplodeDocuments.businessCertificate ? item.uplodeDocuments.businessCertificate : 'default.png'}" style="height: 50px; width: 80px alt="" onclick='img(this)'>
+
+                                </td>
+                               </tr>`
+                  })
+                  abc += `</tbody> </table >`
+                } else if (element.id == "BankInfo") {
+                  abc = ` <table class="table datatable">`
+                  data.forEach((item) => {
+                    abc += `<tr>
+                                <th scope="col">pan No</th>  <td scope="col">${item.BankInfo.panNo}</td>
+                             </tr>
+                             <tr>
+                                <th scope="col">gstNo</th>  <td scope="col">${item.BankInfo.gstNo}</td>
+                             </tr>
+                             <tr>
+                                <th scope="col">bankName</th>  <td scope="col">${item.BankInfo.bankName}</td>
+                             </tr>
+                             <tr>
+                                <th scope="col">branchName</th>  <td scope="col">${item.BankInfo.branchName}</td>
+                             </tr>
+                             <tr>
+                                <th scope="col">accountNo</th>  <td scope="col">${item.BankInfo.accountNo}</td>
+                             </tr>
+                             <tr>
+                                <th scope="col">accoutHolder</th>  <td scope="col">${item.BankInfo.accoutHolder}</td>
+                             </tr>
+                             <tr>
+                                <th scope="col">ifscCode</th>  <td scope="col">${item.BankInfo.ifscCode}</td>
+                             </tr>
+                             <tr>
+                                <th scope="col">kyc</th>  <td scope="col">${item.BankInfo.kyc}</td>
+                             </tr>`
+                  })
+                  abc += ` </table >`
+                } else if (element.id == "description") {
+                  abc = ` <table class="table datatable">`
+                  data.forEach((item) => {
+                    abc += item.description
+                  })
+                  abc += ` </table >`
+                }
+
+                $('#moduleDataAppend').append(abc)
+                $("#exampleModal").modal("toggle");
+              } else {
+                alert("data not Found")
+              }
+            }
+          })
+        }
+      </script>
+
+
+      <%- include("../../partials/script.ejs") %>
+</body>
+
+</html>
