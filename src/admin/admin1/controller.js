@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
-const userModel = require("../../api/user/model");
+const userModel = require("../../models/userModel");
 const { findByIdAndUpdate } = require('./model');
 const path = require("path")
 const saloon = require("../../api/saloonstore/model")

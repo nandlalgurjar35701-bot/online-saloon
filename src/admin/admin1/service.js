@@ -1,5 +1,5 @@
 const order = require("../../api/order/model")
-const user = require("../../api/user/model");
+const user = require("../../models/userModel");
 const saloon = require("../../api/saloonstore/model");
 const service = require("../../api/saloonService/model");
 const payment = require("../../api/payment/model");

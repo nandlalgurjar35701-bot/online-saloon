@@ -13,26 +13,25 @@
 
         <li class="nav-item">
             <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-shop-window"></i><span>Store Management</span><i
-                    class="bi bi-chevron-down ms-auto"></i>
+                <i class="bi bi-shop-window"></i><span>Store Management</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
             <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-                <%if(user.type=="super-admin"){%>
-                    <li>
-                        <a href="/views-saloon-request">
-                            <i class="bi bi-circle"></i><span>views saloon request </span></a>
-                    </li>
-                    <%}%>
-                        <li>
-                            <a href="/add_saloon">
-                                <i class="bi bi-circle"></i><span>Add store</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/view_saloon">
-                                <i class="bi bi-circle"></i><span>view store</span>
-                            </a>
-                        </li>
+
+                <li>
+                    <a href="/views-saloon-request">
+                        <i class="bi bi-circle"></i><span>views saloon request </span></a>
+                </li>
+
+                <li>
+                    <a href="/add_saloon">
+                        <i class="bi bi-circle"></i><span>Add store</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/view_saloon">
+                        <i class="bi bi-circle"></i><span>view store</span>
+                    </a>
+                </li>
             </ul>
         </li>
         <!-- End Components Nav -->
@@ -78,222 +77,217 @@
                 </li>
             </ul>
         </li>
-        <%if(user.type=="super-admin"){%>
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#components-nav3" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-file-post"></i><span>Blogs Manager</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="components-nav3" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="/add_blog">
-                            <i class="bi bi-circle"></i><span>Add Blog</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/view_blog">
-                            <i class="bi bi-circle"></i><span>View Blog</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#components-nav2" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-menu-button-wide"></i><span>FAQ Manager</span><i
-                        class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="components-nav2" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="/add_frequent">
-                            <i class="bi bi-circle"></i><span>Add Frequent</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/view_frequent">
-                            <i class="bi bi-circle"></i><span>View Frequent</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
 
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-gem"></i><span>Category Manager </span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="/category">
-                            <i class="bi bi-circle"></i>ADD Category<span></span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/view-category">
-                            <i class="bi bi-circle"></i><span>View Category</span>
-                        </a>
-                    </li>
-
-                </ul>
-            </li><!-- End Icons Nav -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-layout-text-window-reverse"></i><span>Coupon Manager</span><i
-                        class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="Coupon">
-                            <i class="bi bi-circle"></i><span>Create New Coupon</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="View-All-Coupon">
-                            <i class="bi bi-circle"></i><span>View All Coupon</span>
-                        </a>
-                    </li>
-                </ul>
-            </li><!-- End Tables Nav -->
-
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#icon-User" data-bs-toggle="collapse" href="#"
-                    aria-expanded="false">
-                    <i class="bi bi-person-fill"></i><span>User Manager</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="icon-User" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
-                    <li>
-                        <a href="/all-user">
-                            <i class="bi bi-circle"></i><span>All User</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#icon-Artists" data-bs-toggle="collapse" href="#"
-                    aria-expanded="false">
-                    <i class="bi bi-person-fill"></i><span>Artists Manager</span><i
-                        class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="icon-Artists" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
-                    <li>
-                        <a href="/Artists">
-                            <i class="bi bi-circle"></i><span> Artists </span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <%}%>
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#components-nav3" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-file-post"></i><span>Blogs Manager</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="components-nav3" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li>
-                    <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-cart-check-fill"></i><span>Order Manager</span><i
-                            class="bi bi-chevron-down ms-auto"></i>
+                    <a href="/add_blog">
+                        <i class="bi bi-circle"></i><span>Add Blog</span>
                     </a>
-                    <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                        <li>
-                            <a href="/get-All-order">
-                                <i class="bi bi-circle"></i><span>View All Order</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li><!-- End Forms Nav -->
+                </li>
+                <li>
+                    <a href="/view_blog">
+                        <i class="bi bi-circle"></i><span>View Blog</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#components-nav2" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-menu-button-wide"></i><span>FAQ Manager</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="components-nav2" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="/add_frequent">
+                        <i class="bi bi-circle"></i><span>Add Frequent</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/view_frequent">
+                        <i class="bi bi-circle"></i><span>View Frequent</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
 
-                <li class="nav-item">
-                    <a class="nav-link collapsed" data-bs-target="#icon-nav" data-bs-toggle="collapse" href="#"
-                        aria-expanded="false">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                            <!-- <i class="bi bi-currency-dollar"></i> -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-currency-rupee" viewBox="0 0 16 16">
-                                <path
-                                    d="M4 3.06h2.726c1.22 0 2.12.575 2.325 1.724H4v1.051h5.051C8.855 7.001 8 7.558 6.788 7.558H4v1.317L8.437 14h2.11L6.095 8.884h.855c2.316-.018 3.465-1.476 3.688-3.049H12V4.784h-1.345c-.08-.778-.357-1.335-.793-1.732H12V2H4v1.06Z">
-                                </path>
-                            </svg>
-                        </div> <span>Payment Manager</span><i class="bi bi-chevron-down ms-auto"></i>
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-gem"></i><span>Category Manager </span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="/category">
+                        <i class="bi bi-circle"></i>ADD Category<span></span>
                     </a>
-                    <ul id="icon-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
-                        <li>
-                            <a href="/view-all-payment">
-                                <i class="bi bi-circle"></i><span>All Payment</span>
-                            </a>
-                        </li>
-                    </ul>
+                </li>
+                <li>
+                    <a href="/view-category">
+                        <i class="bi bi-circle"></i><span>View Category</span>
+                    </a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link collapsed" data-bs-target="#icon-Vacancy" data-bs-toggle="collapse" href="#"
-                        aria-expanded="false">
-                        <i class="bi bi-people-fill"></i><span>Vacancy Manager </span><i
-                            class="bi bi-chevron-down ms-auto"></i>
+            </ul>
+        </li><!-- End Icons Nav -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-layout-text-window-reverse"></i><span>Coupon Manager</span><i
+                    class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="Coupon">
+                        <i class="bi bi-circle"></i><span>Create New Coupon</span>
                     </a>
-                    <ul id="icon-Vacancy" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
-                        <li>
-                            <a href="/Vacancy">
-                                <i class="bi bi-circle"></i><span>Add Vacancy Post</span>
-                            </a>
-                        </li>
-                        <%if(user.type=="super-admin"){%>
-                            <li>
-                                <a href="/View-Vacancy">
-                                    <i class="bi bi-circle"></i><span>View Vacancy</span>
-                                </a>
-                            </li>
-                            <%}%>
-                    </ul>
                 </li>
-                <%if(user.type=="super-admin"){%>
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#icon-Refer" data-bs-toggle="collapse" href="#"
-                            aria-expanded="false">
-                            <i class="bi bi-people-fill"></i><span>Refer & Point Manager </span><i
-                                class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="icon-Refer" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
-                            <li>
-                                <a href="/Set-point-to-rupee">
-                                    <i class="bi bi-circle"></i><span>Set point to rupee</span>
-                                </a>
-                            </li>
-                            <!-- <li>
+                <li>
+                    <a href="View-All-Coupon">
+                        <i class="bi bi-circle"></i><span>View All Coupon</span>
+                    </a>
+                </li>
+            </ul>
+        </li><!-- End Tables Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#icon-User" data-bs-toggle="collapse" href="#"
+                aria-expanded="false">
+                <i class="bi bi-person-fill"></i><span>User Manager</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="icon-User" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
+                <li>
+                    <a href="/all-user">
+                        <i class="bi bi-circle"></i><span>All User</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#icon-Artists" data-bs-toggle="collapse" href="#"
+                aria-expanded="false">
+                <i class="bi bi-person-fill"></i><span>Artists Manager</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="icon-Artists" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
+                <li>
+                    <a href="/Artists">
+                        <i class="bi bi-circle"></i><span> Artists </span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li>
+            <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-cart-check-fill"></i><span>Order Manager</span><i
+                    class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="/get-All-order">
+                        <i class="bi bi-circle"></i><span>View All Order</span>
+                    </a>
+                </li>
+            </ul>
+        </li><!-- End Forms Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#icon-nav" data-bs-toggle="collapse" href="#"
+                aria-expanded="false">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <!-- <i class="bi bi-currency-dollar"></i> -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-currency-rupee" viewBox="0 0 16 16">
+                        <path
+                            d="M4 3.06h2.726c1.22 0 2.12.575 2.325 1.724H4v1.051h5.051C8.855 7.001 8 7.558 6.788 7.558H4v1.317L8.437 14h2.11L6.095 8.884h.855c2.316-.018 3.465-1.476 3.688-3.049H12V4.784h-1.345c-.08-.778-.357-1.335-.793-1.732H12V2H4v1.06Z">
+                        </path>
+                    </svg>
+                </div> <span>Payment Manager</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="icon-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
+                <li>
+                    <a href="/view-all-payment">
+                        <i class="bi bi-circle"></i><span>All Payment</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#icon-Vacancy" data-bs-toggle="collapse" href="#"
+                aria-expanded="false">
+                <i class="bi bi-people-fill"></i><span>Vacancy Manager </span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="icon-Vacancy" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
+                <li>
+                    <a href="/Vacancy">
+                        <i class="bi bi-circle"></i><span>Add Vacancy Post</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/View-Vacancy">
+                        <i class="bi bi-circle"></i><span>View Vacancy</span>
+                    </a>
+                </li>
+
+            </ul>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#icon-Refer" data-bs-toggle="collapse" href="#"
+                aria-expanded="false">
+                <i class="bi bi-people-fill"></i><span>Refer & Point Manager </span><i
+                    class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="icon-Refer" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
+                <li>
+                    <a href="/Set-point-to-rupee">
+                        <i class="bi bi-circle"></i><span>Set point to rupee</span>
+                    </a>
+                </li>
+                <!-- <li>
                             <a href="/Refer-Earn">
                                 <i class="bi bi-circle"></i><span>Refer-Earn</span>
                             </a>
                         </li> -->
-                            <li>
-                                <a href="/View-Refer-Earn">
-                                    <i class="bi bi-circle"></i><span>View-Refer-Earn</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#icon-Contact" data-bs-toggle="collapse" href="#"
-                            aria-expanded="false">
-                            <i class="bi bi-gem"></i><span>Contact-Us-Manager </span><i
-                                class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="icon-Contact" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
-                            <li>
-                                <a href="/Contact-Us-Requist">
-                                    <i class="bi bi-circle"></i><span>View-Contact-Us-Requist</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#icon-Letter" data-bs-toggle="collapse" href="#"
-                            aria-expanded="false">
-                            <i class="bi bi-newspaper"></i><span>News-Letter-Manager</span><i
-                                class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="icon-Letter" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
-                            <li>
-                                <!-- <a href="/Send-All-User-Email">
+                <li>
+                    <a href="/View-Refer-Earn">
+                        <i class="bi bi-circle"></i><span>View-Refer-Earn</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#icon-Contact" data-bs-toggle="collapse" href="#"
+                aria-expanded="false">
+                <i class="bi bi-gem"></i><span>Contact-Us-Manager </span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="icon-Contact" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
+                <li>
+                    <a href="/Contact-Us-Requist">
+                        <i class="bi bi-circle"></i><span>View-Contact-Us-Requist</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#icon-Letter" data-bs-toggle="collapse" href="#"
+                aria-expanded="false">
+                <i class="bi bi-newspaper"></i><span>News-Letter-Manager</span><i
+                    class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="icon-Letter" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
+                <li>
+                    <!-- <a href="/Send-All-User-Email">
                                 <i class="bi bi-circle"></i><span>Send All User Email</span>
                             </a> -->
-                                <a href="/Send-notification">
-                                    <i class="bi bi-circle"></i><span>Send All User Email</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <%}%>
+                    <a href="/Send-notification">
+                        <i class="bi bi-circle"></i><span>Send All User Email</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
     </ul>
 
 </aside><!-- End Sidebar-->
