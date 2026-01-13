@@ -4,10 +4,12 @@ const bcrypt = require('bcrypt');
 const { query } = require("express");
 const jwt = require("jsonwebtoken");
 const referralCodeGenerator = require("referral-code-generator");
+const appServices = require("../services/appServices");
 
-exports.index = async (req,res) => {
+exports.index = async (req, res) => {
     try {
-       res.render('index')
+        const data = await appServices.index()
+        res.render('index', { data })
     } catch (error) {
         console.log(error);
     };

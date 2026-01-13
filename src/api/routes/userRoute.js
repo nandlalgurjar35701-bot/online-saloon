@@ -5,7 +5,7 @@ const Upload = require("../../middleware/img");
 const controller = require('../controller/controller');
 const { register, otpSent, otpVerify, login, loginOtpVerify, userEditProfile, user_Profile, logOut, EditUserProfile } = require('../controller/controller');
 const app = Router();
-app.get("/",controller. index);
+app.get("/", controller.index);
 
 app.post("/otp-sent", responseHandler(otpSent));
 app.post("/otp-verify", responseHandler(otpVerify));
