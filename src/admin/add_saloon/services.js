@@ -20,13 +20,13 @@ exports.VIEW_SALOON = async (req) => {
     if (req.query.gender != undefined && req.query.gender != "") {
       match.type = req.query.gender
     }
-    if (req.query.userId != undefined && req.query.userId != "") {
-      match.userId = mongoose.Types.ObjectId(req.query.userId)
-    }
-    if (req.user.type == "admin") {
-      match.userId = req.user._id
-    }
-
+    // if (req.query.userId != undefined && req.query.userId != "") {
+    //   match.userId = mongoose.Types.ObjectId(req.query.userId)
+    // }
+    // if (req.user.type == "admin") {
+    //   match.userId = req.user._id
+    // }
+console.log(match,'---match')
     let pipeline = [];
     pipeline.push({
       '$match': match

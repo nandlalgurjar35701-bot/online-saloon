@@ -45,7 +45,7 @@ exports.add_Service = async ({ body, file, query }) => {
             let _id = mongoose.Types.ObjectId(query.id);
 
             if (file != undefined) {
-                imgs.push(`http://159.89.164.11:7070/uploads/${file.filename}`);
+                imgs.push(`${process.env.url}/uploads/${file.filename}`);
             };
 
             if (imgs.length > 0) {
@@ -120,7 +120,7 @@ exports.add_Service = async ({ body, file, query }) => {
                 };
             };
             if (file != undefined) {
-                imgs.push(`http://159.89.164.11:7070/uploads/${file.filename}`);
+                imgs.push(`${process.env.url}/uploads/${file.filename}`);
             };
             if (imgs.length > 0) {
                 obj.image = imgs;

@@ -31,7 +31,7 @@ exports.registerSaloonStore = async ({ body, user, files, query }) => {
                 if (files != undefined && files.length > 0) {
                     img = [];
                     files.forEach(element => {
-                        img.push(`http://159.89.164.11:7070/uploads/${element.filename}`);
+                        img.push(`${process.env.url}/uploads/${element.filename}`);
                     });
                     obj.image = img;
                 }
@@ -105,7 +105,7 @@ exports.registerSaloonStore = async ({ body, user, files, query }) => {
             if (files != undefined && files.length > 0) {
                 img = [];
                 files.forEach(element => {
-                    img.push(`http://159.89.164.11:7070/uploads/${element.filename}`);
+                    img.push(`${process.env.url}/uploads/${element.filename}`);
                 });
                 body.image = img;
             }

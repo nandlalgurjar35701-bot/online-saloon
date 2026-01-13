@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
-const userModel = require("../../models/userModel");
+const userModel = require("../../models/adminModel.js");
 const { findByIdAndUpdate } = require('./model');
 const path = require("path")
 const saloon = require("../../api/saloonstore/model")
@@ -188,7 +188,7 @@ exports.add_profile_data = async (req, res) => {
                     console.log(error)
                 }
             }
-            obj.image = `http://159.89.164.11:7070/uploads/${req.file.filename}`
+            obj.image = `${process.env.url}/uploads/${req.file.filename}`
         }
         const updatedata = await userModel.findByIdAndUpdate({ _id: id }, obj, { new: true });
         req.flash("success", "profile updated successfully")

@@ -7,7 +7,7 @@ exports.creatBlog = async ({ body, file }) => {
     try {
         let obj = {};
         if (file) {
-            obj.image = `http://159.89.164.11:7070/uploads/${file.filename}`;
+            obj.image = `${process.env.url}/uploads/${file.filename}`;
 
         }
         if (body.category != "" && body.category != undefined) {
@@ -146,12 +146,12 @@ exports.getAllBlog = async ({ query }) => {
         const result = await blog.aggregate(condition);
         for (const item of result) {
             if (item?.image[0] != undefined) {
-                item.image = `http://159.89.164.11:7070/uploads/${item.image[0]}`
+                item.image = `${process.env.url}/uploads/${item.image[0]}`
             };
             if (item?.RelatedPosts?.length > 0) {
                 for (const index of item.RelatedPosts) {
                     if (index?.image[0] != undefined) {
-                        index.image = `http://159.89.164.11:7070/uploads/${index.image[0]}`
+                        index.image = `${process.env.url}/uploads/${index.image[0]}`
                     };
                 }
             }
