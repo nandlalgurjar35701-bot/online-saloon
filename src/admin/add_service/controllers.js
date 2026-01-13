@@ -1,5 +1,5 @@
 const saloon = require("../../api/saloonstore/model");
-const Category = require("../../api/category/model")
+const Category = require("../../models/model")
 const saloonService = require("../../api/saloonService/model")
 const mongoose = require("mongoose");
 const service = require("./service")

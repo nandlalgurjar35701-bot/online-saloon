@@ -1,4 +1,4 @@
-const category = require("../../api/category/model");
+const category = require("../../models/model");
 const vacancy = require("./model");
 const mongoose = require("mongoose")
 const service = require("./services")

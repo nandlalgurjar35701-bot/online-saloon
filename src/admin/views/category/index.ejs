@@ -81,13 +81,17 @@
                               <div class="col-4">
                                 <% if (data.image){ %>
                                   <img src="/uploads/<%= data.image %>" alt=""
-                                    style="margin: -93px 10px 10px 10px; height: 250px; width: 250px;">
+                                    style="margin: -93px 10px 10px 10px; height: 150px; width: 200px;">
                                   <% }else { %>
                                     <img src="assets/img/profile-img.jpg" alt=""
-                                      style="margin: -93px 10px 10px 10px; height: 250px; width: 250px;">
+                                      style="margin: -93px 10px 10px 10px; height: 150px; width: 200px;">
                                     <% } %>
                               </div>
-
+                              <div class="col-8">
+                                <label for="description" class="form-label">description</label>
+                                <input type="text" name="file" class="form-control" id="description" value="<%= data.description%>" required>
+                                <div class="invalid-feedback">Please add description.</div>
+                              </div>
                               <div class="text-center">
                                 <button type="submit" class="btn btn-primary">Submit</button>
                               </div>
@@ -99,7 +103,7 @@
                               <form class="needs-validation row g-3" action="/Add-New-Category" method="post"
                                 enctype="multipart/form-data" novalidate>
 
-                                <div class="col-10">
+                                <div class="col-6">
                                   <label for="" class="form-label">Category Name</label>
                                   <input type="text" class="form-control" name="Name" placeholder="Enter Category Name"
                                     id="" required>
@@ -110,13 +114,10 @@
                                   <input type="file" name="file" class="form-control" id="inputPassword4" required>
                                   <div class="invalid-feedback">Please Select Image.</div>
                                 </div>
-                                <div class="col-6">
-                                  <label for="inputPassword4" class="form-label">type</label>
-                                  <select class="form-select" name="type" aria-label="Default select example"
-                                    required="">
-                                    <option value="0">For Service</option>
-                                    <option value="1">For Service packages</option>
-                                  </select>
+                                <div class="col-12">
+                                  <label for="description" class="form-label">description</label>
+                                  <input type="text" name="description" class="form-control" id="description" required>
+                                  <div class="invalid-feedback">Please add description.</div>
                                 </div>
 
                                 <div class="text-center">

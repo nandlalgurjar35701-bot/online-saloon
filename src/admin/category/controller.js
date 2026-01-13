@@ -1,14 +1,14 @@
 
 const { AddCategory } = require("./service");
-const CategoryModule = require("../../api/category/model");
+const CategoryModule = require("../../models/model");
 const mongoose = require('mongoose');
 
 exports.Category = async (req, res) => {
     try {
         res.locals.message = req.flash();
-        if (req.query.id != undefined && req.query.id != "") {
+        if (req.query.id) {
             res.render("category/index", { user: req.user, id: req.query.id })
-        } else if (req.query.EditId != undefined && req.query.EditId !== "") {
+        } else if (req.query.EditId) {
             const findData = await CategoryModule.findOne({ _id: mongoose.Types.ObjectId(req.query.EditId) })
             res.render("category/index", { user: req.user, data: findData })
         } else {
@@ -21,6 +21,7 @@ exports.Category = async (req, res) => {
 
 exports.AddCategory = async (req, res) => {
     try {
+        console.log(req.body)
         await AddCategory(req, res)
     } catch (error) {
         console.log(error)
@@ -30,7 +31,7 @@ exports.AddCategory = async (req, res) => {
 exports.ViwesCategory = async (req, res) => {
     try {
         res.locals.message = req.flash();
-      
+
         let condition = {}
         if (req.query.CategoryName != undefined && req.query.CategoryName != "") {
             condition = { Name: { $regex: req.query.CategoryName, $options: 'i' } };
@@ -70,9 +71,6 @@ exports.ViwesCategory = async (req, res) => {
 exports.DeleteCategory = async (req, res) => {
     try {
         res.locals.message = req.flash();
-        if (req.user.type == "admin") {
-            return res.redirect("/")
-        }
         const result = await CategoryModule.findByIdAndRemove({ _id: mongoose.Types.ObjectId(req.query.id) })
         if (result) {
             req.flash("success", "Category Delete Succesfully !")

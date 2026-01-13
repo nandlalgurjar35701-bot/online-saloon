@@ -7,14 +7,17 @@ const add_Category = new mongoose.Schema({
     },
     Name: {
         type: String,
+        default: ""
     },
     image: {
         type: String,
+        default: ""
     },
-    type: {
-        type: Number,
+    description: {
+        type: String,
+        default: ""
     }
-}, { timestamps: true });
+}, { versionKey: false, timestamps: true });
 
 
 const category = new mongoose.model("category", add_Category);

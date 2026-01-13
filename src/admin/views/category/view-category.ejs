@@ -95,6 +95,7 @@
                                 <tr>
                                   <th>sr no</th>
                                   <th scope="col">Category Name</th>
+                                  <th scope="col">description</th>
                                   <th scope="col">images</th>
 
                                   <th scope="col">action</th>
@@ -109,6 +110,9 @@
                                       </td>
                                       <td>
                                         <%= data.Name %>
+                                      </td>
+                                      <td>
+                                        <%= data.description %>
                                       </td>
                                       <td>
                                         <% if(typeof data.image !="undefined" && data.image!="" ){%>
