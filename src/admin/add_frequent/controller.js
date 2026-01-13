@@ -4,9 +4,7 @@ const blog = require("../../api/blogs/model")
 
 exports.ADD_FREQUENT = async (req, res) => {
     try {
-        if (req.user.type == "admin") {
-            return res.redirect("/")
-        }
+       
         let condition = {};
         if (req.query.id != undefined && req.query.id != "") {
             condition._id = req.query.id

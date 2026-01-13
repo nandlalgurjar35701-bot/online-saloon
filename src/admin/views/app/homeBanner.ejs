@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>view-faq</title>
+  <%- include('../../partials/headlink.ejs') %>
+</head>
+
+<body>
+  <%- include('../../partials/Header.ejs') %>
+    <%- include("../../partials/sidebar.ejs") %>
+
+      <main id="main" class="main">
+        <div class="pagetitle">
+          <h1><%-user.type %></h1>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+          </nav>
+        </div>
+        <section class="section dashboard">
+          <div class="row">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">F A Q List</h5>
+                    <table class="table datatable">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">heading</th>
+                          <th scope="col">title </th>
+                          <th scope="col">disrepation</th>
+                          <th scope="col">img</th>
+                          <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% let i=0 %>
+                          <% for( singleData of data) { %>
+                            <tr>
+                              <th scope="row">
+                                <%= ++i %>
+                              </th>
+                              <td>
+                                <%= singleData.heading %>
+                              </td>
+                              <td>
+                                <%= singleData.title %>
+                              </td>
+                              <td>
+                                <button type="button" class="btn btn-info view-btn" data-bs-toggle="modal"
+                                  data-bs-target="#exampleModal" data-description="<%- singleData.description %>">
+                                  <i class="bi bi-eye"></i>
+                                </button>
+                              </td>
+                              <td>
+                                <% if(singleData.image){%>
+                                  <img class="rounded-circle" src="uploads/<%= singleData?.image %>" height="50px"
+                                    width="50px" alt="">
+                                  <!-- <img src="<%= user?.image%>" alt="image" class="rounded-circle" style="width: 40px; height: 50px;border-radius: 50%;"> -->
+                                  <%}else{%>
+                                    <img src="assets/img/profile-img.jpg" alt="Profile" height="50px" width="50px"
+                                      class="rounded-circle">
+                                    <%}%>
+                              </td>
+                              <td>
+                                <a href="/add-banner?id=<%= singleData._id%>" class="btn btn-info"
+                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit">
+                                  <i class="ri-edit-box-line"></i>
+                                </a>
+                                <a href="/delete_banner?id=<%= singleData._id%>" class="btn btn-danger"
+                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete">
+                                  <i class="ri-delete-bin-5-line"></i>
+                                </a>
+                            </tr>
+                            <%}%>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">description</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="moduleDataAppend">
+              ...
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <%- include("../../partials/script.ejs") %>
+
+        <script>
+          $('#exampleModal').on('show.bs.modal', function (event) {
+            let button = event.relatedTarget;
+            let description = button.getAttribute('data-description');
+
+            document.getElementById('moduleDataAppend').innerHTML = description;
+          });
+        </script>
+</body>
+
+</html>
