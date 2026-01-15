@@ -4,9 +4,7 @@ const mongoose = require("mongoose")
 const service = require("./services")
 
 exports.ADD_BLOG = async (req, res) => {
-    if (req.user.type == "admin") {
-        res.redirect("/")
-    }
+   
     const category_data = await category.find({ parent_Name: null })
     const _id = req.query.id
     const user = req.user
@@ -71,7 +69,7 @@ exports.ADD_BLOG_STORE = async (req, res) => {
 
 exports.VIEW_BLOG = async (req, res) => {
     try {
-        if (req.user.type == "admin") { res.redirect("/") };
+       
         const user = req.user;
         let query = req.query;
         const Category = await category.find({ parent_Name: null });

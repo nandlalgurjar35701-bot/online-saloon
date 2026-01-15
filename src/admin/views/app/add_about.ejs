@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Write-Blog</title>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <%- include('../../partials/headlink.ejs') %>
+</head>
+
+<body>
+
+  <%- include('../../partials/Header.ejs') %>
+    <%- include("../../partials/sidebar.ejs") %>
+
+      <main id="main" class="main">
+
+        <div class="pagetitle">
+          <h1><%- user.type %></h1>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+          </nav>
+        </div>
+
+        <section class="section dashboard">
+          <div class="row">
+            <div class="col-lg-12">
+
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Add Blog</h5>
+
+                  <form id="form" method="post" enctype="multipart/form-data">
+
+                    <!-- TITLE -->
+                    <div class="row g-3">
+                      <div class="col">
+                        <label>Blog Title</label>
+                        <input type="text" name="Title" class="form-control" placeholder="Enter Your Blog Title"
+                          required value="<%= data ? data.title : '' %>">
+                      </div>
+                    </div>
+
+                    <br>
+
+                    <!-- DESCRIPTION -->
+                    <div class="card">
+                      <div class="card-body">
+                        <h5 class="card-title">Blog Description</h5>
+
+                        <!-- TUMHARA EXISTING EDITOR -->
+                        <div class="quill-editor-full">
+                          <% if (data) { %>
+                            <%- data.description %>
+                              <% } else { %>
+                                <p>Enter Description</p>
+                                <% } %>
+                        </div>
+
+                        <!-- HIDDEN INPUT (IMPORTANT) -->
+                        <input type="hidden" name="Description" id="hidden">
+                        <input type="hidden" name="id" id="id" value="<%- query.id ||'' %>">
+                      </div>
+                    </div>
+
+                    <br>
+
+                    <button type="submit" class="btn btn-primary">
+                      Submit
+                    </button>
+
+                  </form>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <%- include("../../partials/script.ejs") %>
+
+        <script>
+          $("#form").submit(function (e) {
+            e.preventDefault();
+
+            // TUMHARE EDITOR SE DATA
+            const descriptionHTML =
+              document.querySelector(".ql-editor").innerHTML;
+
+            $("#hidden").val(descriptionHTML);
+
+            const formData = new FormData(this);
+            $.ajax({
+              url: "/add_about_store",
+              type: "POST",
+              data: {
+                id: $("input[name='id']").val() || null,
+                title: $("input[name='Title']").val(),
+                description: descriptionHTML
+              },
+              success: function () {
+                window.location.replace("/view-about");
+              }
+            });
+          });
+        </script>
+
+</body>
+
+</html>

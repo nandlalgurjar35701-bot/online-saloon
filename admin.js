@@ -13,7 +13,9 @@ app.use(cookiparser('keyboard cat'));
 app.use(session({ cookie: { maxAge: 60000000 }, resave: true, saveUninitialized: true, secret: "secretsession" }));
 app.use(flash());
 app.use(cookiparser());
+
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Middleware to log each API hit
 app.use((req, res, next) => {
@@ -28,7 +30,6 @@ const port = process.env.adminPORT || 7171;
 // const routes = require("./src/api");
 // const adminroutes = require("./src/admin");
 app.use(cors());
-app.use(express.json());
 require("./src/admin/routes")(app)
 
 app.listen(port, () => {
