@@ -6,6 +6,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>view-blog</title>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
+
   <%- include('../../partials/headlink.ejs') %>
 </head>
 
@@ -91,11 +93,16 @@
                                 <%= singleData.title %>
                               </td>
                               <td>
-                                <button type="button" value="<%= singleData._id %>" onclick="ViwesFindBlog(this)"
-                                  class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top"
-                                  data-bs-title="Description">
+                                <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                  data-bs-target="#exampleModal" data-title="<%= singleData.title %>"
+                                  onclick="showDescription(this)">
                                   <i class="bi bi-eye"></i>
                                 </button>
+
+                                <!-- ✅ Hidden CKEditor HTML (SAFE) -->
+                                <div class="d-none blog-description">
+                                  <%- singleData.description %>
+                                </div>
                               </td>
                               <td>
                                 <a href="/about?id=<%= singleData._id%>" class="btn btn-info"><i
@@ -149,39 +156,36 @@
       </div>
 
       <script>
+        function showDescription(btn) {
+          const title = btn.dataset.title;
 
-        function img(a) {
-          $('#imgDataAppend').empty()
-          let abc = `<img src="${a.src}" alt="image" style="width: 100%; max-height: 400px;">`
-          $('#imgDataAppend').append(abc)
-          $("#imgModel").modal("toggle");
-        }
+          // ✅ Hidden div se CKEditor HTML uthao
+          const dirtyHtml = btn
+            .closest("td")
+            .querySelector(".blog-description")
+            .innerHTML;
 
+          // 🔐 Client-side sanitize
+          const cleanHtml = DOMPurify.sanitize(dirtyHtml, {
+            ALLOWED_TAGS: [
+              "p", "br", "b", "i", "strong", "em",
+              "ul", "ol", "li",
+              "h1", "h2", "h3", "h4",
+              "img", "a", "blockquote"
+            ],
+            ALLOWED_ATTR: [
+              "href", "src", "alt", "style", "target"
+            ]
+          });
 
-        function ViwesFindBlog(data) {
-          let num = data.value
-
-          $.ajax({
-            type: 'get',
-            data: { "id": num },
-            url: '/Viwes-Find-Blog',
-            success: function (data) {
-              if (data.length > 0) {
-                $('#moduleDataAppend').empty()
-                let abc = "";
-                data.forEach((item) => {
-                  abc += ` <h2 style="text-align: center;"> ${item.Title}</h2>`
-                  abc += item.Description
-                })
-                $('#moduleDataAppend').append(abc)
-                $("#exampleModal").modal("toggle");
-              } else {
-                alert("data not Found")
-              }
-            }
-          })
+          document.getElementById("exampleModalLabel").innerText = title;
+          document.getElementById("moduleDataAppend").innerHTML = cleanHtml;
         }
       </script>
+
+
+
+
       <%- include("../../partials/script.ejs") %>
 </body>
 
