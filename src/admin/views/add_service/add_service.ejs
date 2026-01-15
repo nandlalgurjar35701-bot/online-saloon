@@ -62,26 +62,6 @@
                               <div class="invalid-feedback">Please Enter Service Time.</div>
                             </div>
                             <div class="col">
-                              <label for="">Choose Gender</label>
-                              <select class="form-select" name="type" aria-label="Default select example" required>
-                                <option value="male" <%=service_data?.type==="male" ? "selected" : "" %> >Male</option>
-                                <option value="female" <%=service_data?.type==="female" ? "selected" : "" %>>Female
-                                </option>
-                                <option value="unisex" <%=service_data?.type==="unisex" ? "selected" : "" %>>Unisex
-                                </option>
-                              </select>
-                              <div class="invalid-feedback">Please Select Gender.</div>
-                            </div>
-                          </div><br>
-
-                          <div class="row g-3">
-                            <div class="col">
-                              <label for="">Discription</label>
-                              <textarea class="form-control" name="description" placeholder="Enter Description"
-                                style="height: 100px" required><%= service_data?.description%></textarea>
-                              <div class="invalid-feedback">Please Enter Discription.</div>
-                            </div>
-                            <div class="col">
                               <label for="">Service Image</label>
 
                               <input class="form-control" type="file" name="image" id="formFile" multiple>
@@ -92,38 +72,35 @@
                           </div><br>
 
                           <div class="row g-3">
-                            <div class="col">
-                              <label for="">Select Category</label>
-                              <select class="form-select" name="saloonStore" aria-label="Default select example"
-                                required>
 
-                                <% for(saloon of saloon_data){%>
-                                  <option value="<%= saloon?._id%>"
-                                    <%=service_data?.saloonStore.toString()===saloon?._id.toString() ? "selected" : ""
-                                    %>>
-                                    <%= saloon?.storeName%>
+                            <div class="col">
+                              <label>Select Category</label>
+                              <select class="form-select" name="category" required>
+                                <option value="">Select Category</option>
+
+                                <% for (let data of category) { %>
+                                  <option value="<%= data._id %>" <%=service_data?.category==data._id.toString()
+                                    ? 'selected' : '' %>>
+                                    <%= data.Name %>
                                   </option>
-                                  <%}%>
+                                  <% } %>
+
                               </select>
                               <div class="invalid-feedback">Please Select Category.</div>
                             </div>
+
                             <div class="col">
-                              <label for="">Select Saloon</label>
-                              <select class="form-select" multiple="" name="category[]"
-                                aria-label="multiple select example" required>
-                                <% for(data of category){%>
-                                  <option value="<%= data?._id%>"
-                                    <%=service_data?.category.includes(data._id.toString()) ? "selected" : "" %> ><%=
-                                      data?.Name%>
-                                  </option>
-                                  <%}%>
-
-                              </select>
-                              <div class="invalid-feedback">Please Select Saloon.</div>
+                              <label>Description</label>
+                              <textarea class="form-control" name="description" id="description" required
+                                style="height: 120px"><%= service_data?.description %></textarea>
+                              <div class="invalid-feedback">Please Enter Description.</div>
                             </div>
-                          </div><br>
-                          <div class="row mb-3">
 
+                          </div>
+                          <br>
+
+
+                          <div class="row mb-3">
                             <div class="col-sm-10">
                               <button type="submit" class="btn btn-primary">Update</button>
                             </div>
@@ -133,6 +110,7 @@
                           <h5 class="card-title">Add Service</h5>
                           <form class="needs-validation" action="/add_service_store" method="post"
                             enctype="multipart/form-data" novalidate>
+
                             <div class="row g-3">
                               <div class="col">
                                 <label for=""> Service Name</label>
@@ -149,6 +127,7 @@
                                 <div class="invalid-feedback">Please Enter Service Price.</div>
                               </div>
                             </div><br>
+
                             <div class="row g-3">
                               <div class="col">
                                 <label for="">Time</label>
@@ -158,54 +137,18 @@
                                 <div class="invalid-feedback">Please Enter Service Time.</div>
                               </div>
                               <div class="col">
-                                <label for="">Select Saloon</label>
-                                <select class="form-select" name="saloonStore" onchange="FindSaloon(this)"
-                                  aria-label="Default select example" required>
-
-                                  <%if(saloon_data.length==1){%>
-                                    <% for(saloon of saloon_data){%>
-                                      <option selected value="<%= saloon?._id%>">
-                                        <%= saloon?.storeName%>
-                                      </option>
-                                      <%}%>
-                                        <%}else{%>
-                                          <option value="">Select Saloon</option>
-                                          <% for(saloon of saloon_data){%>
-                                            <option value="<%= saloon?._id%>">
-                                              <%= saloon?.storeName%>
-                                            </option>
-                                            <%}%>
-
-                                              <%}%>
-                                </select>
-                                <div class="valid-feedback">Looks good!</div>
-                                <div class="invalid-feedback">Please Select Saloon.</div>
-                              </div>
-
-                            </div><br>
-                            <div class="row g-3">
-                              <div class="col">
                                 <label for="">Service Images</label>
                                 <input class="form-control" type="file" name="image" id="formFile" multiple required>
                                 <div class="valid-feedback">Looks good!</div>
                                 <div class="invalid-feedback">Please select Image.</div>
                               </div>
-                              <div class="col">
-                                <label for="">Choose Gender </label>
-                                <div id="gendeAll">
-                                </div>
-                                <div class="valid-feedback">Looks good!</div>
-                                <div class="invalid-feedback">Please Select Gender.</div>
-                              </div>
-
                             </div><br>
 
                             <div class="row g-3">
-
                               <div class="col">
                                 <label for="">Select Category</label>
-                                <select class="form-select" name="category[]" aria-label="multiple select example"
-                                  required onchange="clickMe(this)">
+                                <select class="form-select" name="category" aria-label="multiple select example"
+                                  required>
                                   <option value="">Select Category</option>
                                   <% for(data of category){%>
                                     <option value="<%= data?._id%>">
@@ -224,20 +167,14 @@
                                 <div class="invalid-feedback">Please Enter Discription.</div>
                               </div>
 
-                              <div id="myselect" class="col-md-12">
-
-                              </div>
-
                             </div><br>
                             <div class="row mb-3">
-
                               <div class="col-sm-10">
                                 <button type="submit" id='mySubmit' class="btn btn-primary">Submit</button>
                               </div>
                             </div>
                           </form>
                           <%}%>
-
                     </div>
                   </div>
                 </div>
@@ -247,93 +184,7 @@
         </main>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
         <script src="/public/assets/js/form-validation.js"></script>
-
-        <script>
-
-          function FindSaloon(a) {
-            $.ajax({
-              type: 'get',
-              data: { id: a.value },
-              url: '/find-Sallon',
-              success: function (data) {
-                console.log("data", data);
-                const element = document.getElementById("Gender")
-
-                if (data.type == "male") {
-                  $('#Gender').remove()
-                  let abc;
-                  abc = ` <select class="form-select" name="type" id="Gender" aria-label="Default select example"
-                                  required>
-                                <option value="male">Male</option>
-                          </select>`
-                  $('#gendeAll').append(abc)
-                } else if (data.type == "female") {
-                  $('#Gender').remove()
-                  let abc;
-                  abc = `<select class="form-select" name="type" id="Gender" aria-label="Default select example"
-                                  required>
-                                 <option value="female">Female</option>
-                          </select>`
-
-                  $('#gendeAll').append(abc)
-                } else {
-                  $('#Gender').remove()
-                  let abc;
-                  abc = `<select class="form-select" name="type" id="Gender" aria-label="Default select example"
-                                  required>
-                                  <option value="">Select Type</option>
-                                  <option value="male">Male</option>
-                                  <option value="female">Female</option>
-                                  <option value="unisex">Unisex</option>
-                                </select>`
-                  $('#gendeAll').append(abc)
-                };
-              }
-            });
-          };
-
-
-
-
-          function clickMe(select) {
-            let num = Number(select.id)
-            let category = select.value
-            $.ajax({
-              type: 'get',
-              data: { "select": category },
-              url: '/optiongeturl',// nandlal
-              success: function (data) {
-                if (data.length > 0) {
-                  let abc = `<div id="subcategory-${num + 1}"><label for="inputAddress" class="form-label">Sub Category</label>`
-                  abc += `<select style="width:50%;margin-bottom:20px"   class="form-select" onchange="clickMe(this )" name="category" id="${num + 1}">`
-                  abc += `<option value="" disabled>select Sub Category</option>`
-
-                  data.forEach((item) => {
-                    abc += `<option value=${item._id}>${item.Name}</option>`
-                  })
-
-                  abc += `</select> 
-                              <div class="invalid-feedback">Please Select Sub Category.</div> </div>`
-                  let num2 = num + 1
-                  while (true) {
-                    let cat = $(`#subcategory-${num2}`)
-                    if (cat.html()) {
-                      cat.remove();
-                    } else {
-                      break;
-                    }
-                    ++num2
-                  }
-                  $('#myselect').append(abc)
-                }
-              }
-            })
-          }
-        </script>
-
-
         <%- include("../../partials/script.ejs") %>
 </body>
-
 
 </html>

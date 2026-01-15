@@ -9,35 +9,10 @@ exports.ADD_SERVICE = async (req, res) => {
     try {
         res.locals.message = req.flash();
         const user = req.user
-        const category = await Category.find({ parent_Name: null, type: 0 })
-        let saloon_data;
-        if (req.query.saloonId != undefined && req.query.saloonId != "") {
-            saloon_data = await saloon.find({ _id: mongoose.Types.ObjectId(req.query.saloonId) })
-        } else {
-            saloon_data = await saloon.find()
-        }
-        const _id = req.query.id
-        let pipeline = []
-        pipeline.push({
-            $match: {
-                _id: mongoose.Types.ObjectId(_id)
-            }
-        }, {
-            '$addFields': {
-                'category': {
-                    '$map': {
-                        'input': '$category',
-                        'as': 'elem',
-                        'in': {
-                            '$toString': '$$elem'
-                        }
-                    }
-                }
-            }
-        }
-        )
-        const service_data = (await saloonService.aggregate(pipeline))[0]
-        res.render("add_service/add_service", { user, category, saloon_data, service_data })
+        const category = await Category.find()
+        let service_data = null;
+        if (req.query.id) service_data = await saloonService.findById(req.query.id);
+        res.render("add_service/add_service", { user, category, service_data, query: req.query })
     } catch (err) {
         console.log(err)
     }
@@ -70,88 +45,21 @@ exports.optiongeturl = async (req, res) => {
 
 exports.ADD_SERVICE_STORE = async (req, res) => {
     try {
-        let { body, files, query } = req;
         res.locals.message = req.flash();
-        if (query.id) {
-            let _id = mongoose.Types.ObjectId(query.id);
-            const result = await saloonService.findOne({ _id });
-            if (result) {
-                let obj = {};
-                if (body.ServiceName) { obj.ServiceName = body.ServiceName };
-                if (body.ServicePrice) { obj.ServicePrice = body.ServicePrice };
-                if (body.timePeriod_in_minits) { obj.timePeriod_in_minits = body.timePeriod_in_minits };
-                if (body.type) { obj.type = body.type };
-                if (body.description) { obj.description = body.description };
-                if (body.category) { obj.category = body.category };
-                if (body.saloonStore) { obj.saloonStore = mongoose.Types.ObjectId(body.saloonStore) };
-                if (body.last_category) { obj.last_category = mongoose.Types.ObjectId(body.last_category) };
-                if (files.length > 0) {
-                    img = []
-                    files.forEach(element => {
-                        img.push(element.filename)
-                    });
-                    obj.image = img
-                };
-                const result = await saloonService.findByIdAndUpdate({ _id }, { $set: obj }, { new: true });
-                if (result) {
-                    req.flash("success", "Saloon Service  is  Update Successfully !");
-                    return res.redirect("/view_service");
-                };
-
-            } else {
-                req.flash("error", "Saloon Service is Not Found !");
-                return res.redirect("/");
-            };
-        } else {
-            const { ServiceName } = body;
-            if (ServiceName) {
-                const result = await saloonService.find({ ServiceName, saloonStore: mongoose.Types.ObjectId(body.saloonStore) });
-                for (const item of result) {
-                    if (item.ServicePrice == Number(body.ServicePrice)) {
-                        if (item.timePeriod_in_minits == Number(body.timePeriod_in_minits)) {
-                            if (item.type != body.type || body.type == "unisex") {
-                                body.type = "unisex";
-                            } else {
-                                req.flash("error", "Service gender type allready  Exists");
-                                return res.redirect("/add_service");
-                            };
-                            const result2 = await saloonService.findByIdAndUpdate({ _id: item._id }, { type: body.type }, { new: true });
-                            if (result2) {
-                                req.flash("success", "Service update Succesfuuly ! 1");
-                                return res.redirect("/view_service");
-                            };
-                        };
-                    };
-                };
-            };
-
-            if (files) {
-                img = []
-                files.forEach(element => {
-                    img.push(element.filename)
-                });
-                body.image = img
-            } else {
-                body.image = ""
-            };
-            let last_category = body.category[body.category.length - 1];
-            let service_details = new saloonService({
-                ServiceName: body.ServiceName,
-                ServicePrice: body.ServicePrice,
-                timePeriod_in_minits: body.timePeriod_in_minits,
-                type: body.type,
-                description: body.description,
-                image: body.image,
-                category: body.category,
-                saloonStore: mongoose.Types.ObjectId(body.saloonStore),
-                last_category: mongoose.Types.ObjectId(last_category)
-            });
-            const result = await service_details.save();
-            if (result) {
-                req.flash("success", "Service Add Succesfuuly !")
-                return res.redirect("/view_service")
-            };
+        let { body, files, query } = req;
+        if (files.length > 0) {
+            body.image = files.map((element) => element.filename);
         };
+
+        if (query.id) {
+            await saloonService.findByIdAndUpdate(query.id, req.body);
+            req.flash("success", "Saloon Service  is  Update Successfully !");
+            return res.redirect("/view_service");
+        }
+
+        await saloonService.create(req.body);
+        req.flash("success", "Service Add Succesfuuly !")
+        return res.redirect("/view_service")
     } catch (error) {
         req.flash("error", error.message);
         return res.redirect("/");

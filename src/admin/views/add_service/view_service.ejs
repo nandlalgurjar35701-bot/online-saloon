@@ -36,15 +36,6 @@
                       <!-- No Labels Form -->
                       <form class="row g-3" action="/view_service">
                         <div class="col-md-4">
-                          <label>Enter Store Name</label> <br>
-                          <% if(query?.StoreName!="" ){%>
-                            <input type="text" name="StoreName" class="form-control" value="<%=query?.StoreName%>"
-                              placeholder="StoreName">
-                            <%}else{%>
-                              <input type="text" name="StoreName" class="form-control" placeholder="StoreName">
-                              <%}%>
-                        </div>
-                        <div class="col-md-4">
                           <label>Enter Service Name</label> <br>
                           <% if(query?.ServiceName!="" ){%>
                             <input type="text" name="ServiceName" class="form-control" value="<%=query?.ServiceName%>"
@@ -91,10 +82,9 @@
                         <thead>
                           <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Store Name</th>
                             <th scope="col">Service Name</th>
                             <th scope="col"> Price</th>
-                            <th scope="col">Time </th>
+                            <th scope="col">Time(min) </th>
                             <th scope="col">Service Type</th>
                             <th scope="col"> Category </th>
                             <th scope="col">Action</th>
@@ -108,9 +98,6 @@
                                   <%= ++i %>
                                 </th>
                                 <td>
-                                  <%= data?.saloon_name %>
-                                </td>
-                                <td>
                                   <%= data?.ServiceName %>
                                 </td>
                                 <td>
@@ -120,10 +107,10 @@
                                   <%= data?.timePeriod_in_minits %>
                                 </td>
                                 <td>
-                                  <%= data?.type %>
+                                  <%= data?.ServicesType %>
                                 </td>
                                 <td>
-                                  <%= data?.last_category_data?.Name ?data?.last_category_data?.Name:"?" %>
+                                  <%= data?.category?.Name || "?" %>
                                 </td>
                                 <td>
                                   <a href="/add_service?id=<%= data._id%>" class="btn btn-info" data-bs-toggle="tooltip"

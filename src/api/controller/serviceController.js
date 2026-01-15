@@ -15,3 +15,12 @@ exports.servicePage = async (req, res) => {
         console.log(error);
     };
 };
+
+exports.pricePage = async (req, res) => {
+    try {
+        const data = await appServices.index()
+        res.render('price', { data })
+    } catch (error) {
+        console.log(error);
+    };
+};

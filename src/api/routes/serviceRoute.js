@@ -7,6 +7,8 @@ const { register, otpSent, otpVerify, login, loginOtpVerify, userEditProfile, us
 const app = Router();
 app.get("/service", controller.servicePage);
 
+app.get("/price", controller.pricePage);
+
 // app.get("/about", controller.servicePage)
 
 module.exports = app;
