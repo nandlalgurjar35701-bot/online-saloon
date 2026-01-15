@@ -29,5 +29,6 @@
 
 module.exports = (app) => {
     app.use(require("./userRoute"));
+    app.use(require("./serviceRoute"));
     //   app.use(`${apiV1Prefix}/user`, require('./userRoutes'));
 };

@@ -1,4 +1,5 @@
 const userModel = require("../../models/userModel");
+const aboutModel = require("../../models/aboutModel");
 // const services = require("../user/services");
 const bcrypt = require('bcrypt');
 const { query } = require("express");
@@ -14,6 +15,7 @@ exports.index = async (req, res) => {
         console.log(error);
     };
 };
+
 exports.otpSent = async ({ body }) => {
     try {
         let user;
@@ -429,6 +431,15 @@ exports.EditUserProfile = async ({ user, file }) => {
                 data: []
             };
         };
+    } catch (error) {
+        console.log(error);
+    };
+};
+
+exports.about = async (req, res) => {
+    try {
+        const data = await aboutModel.findOne()
+        res.render('about', { data })
     } catch (error) {
         console.log(error);
     };
