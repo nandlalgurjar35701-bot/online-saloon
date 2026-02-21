@@ -8,13 +8,13 @@ const { ADD_SALOON_STORE, VIEW_SALOON, DELETE_SALOON,
     businessUplodeDocumentAdmin, findSaloonByUser, FindAdminAllSaloon,
     addImagesInSaloon } = require("../controller/storeController");
 
-app.get("/view_saloon", auth, VIEW_SALOON)
-app.get("/delete_saloon", auth, DELETE_SALOON)
+app.get("/view-saloon", auth, VIEW_SALOON)
+app.get("/delete-saloon", auth, DELETE_SALOON)
 app.get("/get-saloon-address", auth, GetSaloonAddress)
 
-app.get("/add_saloon", auth, saloonRegister)
-app.post("/add_saloon_store", auth, ADD_SALOON_STORE)
-app.post("/business-profile-info-by-Admin", auth, businessProfile)
+app.get("/add-saloon", auth, saloonRegister)
+app.post("/add-saloon-store", auth, ADD_SALOON_STORE)
+app.post("/business-profile-info-by-admin", auth, businessProfile)
 app.post("/business-bank-information-admin", auth, businessBankInfoAdmin)
 
 app.post("/business-uplode-document-admin", auth, Upload.fields([{
@@ -28,10 +28,12 @@ app.post("/business-uplode-document-admin", auth, Upload.fields([{
 }]), businessUplodeDocumentAdmin)
 
 
-app.post("/Add-images-in-saloon", auth, Upload.array("image"), addImagesInSaloon)
+app.post("/add-images-in-saloon", auth, Upload.array("image"), addImagesInSaloon)
 
 
-app.get("/Find-Admin-All-saloon", auth, FindAdminAllSaloon)
+app.get("/find-admin-all-saloon", auth, FindAdminAllSaloon)
 
 app.get("/find-saloon-by-user", auth, findSaloonByUser)
 module.exports = app
+
+

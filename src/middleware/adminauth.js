@@ -1,5 +1,20 @@
 const jwt = require("jsonwebtoken")
 const userModel = require('../models/adminModel');
+const saloonModel = require("../api/saloonstore/model");
+
+const attachSidebarStores = async (req, res) => {
+    try {
+        const stores = await saloonModel
+            .find({})
+            .select({ _id: 1, storeName: 1 })
+            .sort({ createdAt: -1 })
+            .lean();
+        res.locals.sidebarStores = stores;
+    } catch (error) {
+        console.log(error);
+        res.locals.sidebarStores = [];
+    }
+};
 
 module.exports = async (req, res, next) => {
     try {
@@ -9,6 +24,7 @@ module.exports = async (req, res, next) => {
 
             req.user = await userModel.findOneAndUpdate({ _id }, { auth: token, isDeleted: false }, { new: true })
             if (req.user) {
+                await attachSidebarStores(req, res);
                 next()
             } else {
                 res.render("users/login")
@@ -32,6 +48,7 @@ module.exports = async (req, res, next) => {
                 });
                 req.user = await userModel.findOne({ _id: varifyRefreshToken._id })
                 if (req.user) {
+                    await attachSidebarStores(req, res);
                     next()
                 }
             }

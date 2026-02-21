@@ -8,14 +8,6 @@ const findStoreRecord = async (id) => {
     return saloon.findOne({ _id: objectId });
 };
 
-const findPrimaryStore = async (req) => {
-    if (req.user?.type === "admin") {
-        return saloon.findOne({ userId: req.user._id }).sort({ createdAt: -1 });
-    }
-    return saloon.findOne({}).sort({ createdAt: -1 });
-};
-
-
 exports.saloonRegister = async (req, res) => {
     try {
        
@@ -24,21 +16,19 @@ exports.saloonRegister = async (req, res) => {
         if (req.query.id) {
             if (!isValidObjectId(req.query.id)) {
                 req.flash("error", "Invalid store id.");
-                return res.redirect("/add_saloon");
+                return res.redirect("/add-saloon");
             }
             saloon_data = await findStoreRecord(req.query.id);
             if (!saloon_data) {
                 req.flash("error", "Store not found.");
-                return res.redirect("/add_saloon");
+                return res.redirect("/add-saloon");
             }
-        } else {
-            saloon_data = await findPrimaryStore(req);
         }
         return res.render("add_saloon/saloon-Register", { user: req.user, data: saloon_data })
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to load store form.");
-        return res.redirect("/add_saloon");
+        return res.redirect("/add-saloon");
     }
 }
 
@@ -55,31 +45,31 @@ exports.ADD_SALOON_STORE = async (req, res) => {
         if (query.id) {
             if (!isValidObjectId(query.id)) {
                 req.flash("error", "Invalid store id.");
-                return res.redirect("/add_saloon");
+                return res.redirect("/add-saloon");
             }
 
             const existingStore = await saloon.findById(query.id);
             if (!existingStore) {
                 req.flash("error", "Store not found.");
-                return res.redirect("/add_saloon");
+                return res.redirect("/add-saloon");
             }
 
             const duplicateName = await saloon.findOne({ storeName, _id: { $ne: existingStore._id } });
             if (duplicateName) {
                 req.flash("error", "storeName Already Exists");
-                return res.redirect(`/add_saloon?id=${existingStore._id}`);
+                return res.redirect(`/add-saloon?id=${existingStore._id}`);
             }
 
             const duplicateEmail = await saloon.findOne({ email, _id: { $ne: existingStore._id } });
             if (duplicateEmail) {
                 req.flash("error", "email Already Exists");
-                return res.redirect(`/add_saloon?id=${existingStore._id}`);
+                return res.redirect(`/add-saloon?id=${existingStore._id}`);
             }
 
             const duplicatePhone = await saloon.findOne({ Phone, _id: { $ne: existingStore._id } });
             if (duplicatePhone) {
                 req.flash("error", "Phone Already Exists");
-                return res.redirect(`/add_saloon?id=${existingStore._id}`);
+                return res.redirect(`/add-saloon?id=${existingStore._id}`);
             }
 
             const updatePayload = {
@@ -100,31 +90,31 @@ exports.ADD_SALOON_STORE = async (req, res) => {
 
             const updated = await saloon.findByIdAndUpdate(existingStore._id, updatePayload, { new: true });
             req.flash("success", "saloon update successfully step-1");
-            return res.redirect(`/add_saloon?id=${updated._id}`);
+            return res.redirect(`/add-saloon?id=${updated._id}`);
         } else {
             if (!storeName || !email || !Phone || !ownerName) {
                 req.flash("error", "Please fill all required fields.");
-                return res.redirect("/add_saloon");
+                return res.redirect("/add-saloon");
             }
             if (password !== confromPassword) {
                 req.flash("error", "password not match");
-                return res.redirect("/add_saloon");
+                return res.redirect("/add-saloon");
             }
 
             const duplicateName = await saloon.findOne({ storeName });
             if (duplicateName) {
                 req.flash("error", "storeName Already Exists");
-                return res.redirect("/add_saloon");
+                return res.redirect("/add-saloon");
             }
             const duplicateEmail = await saloon.findOne({ email });
             if (duplicateEmail) {
                 req.flash("error", "email Already Exists");
-                return res.redirect("/add_saloon");
+                return res.redirect("/add-saloon");
             }
             const duplicatePhone = await saloon.findOne({ Phone });
             if (duplicatePhone) {
                 req.flash("error", "Phone Already Exists");
-                return res.redirect("/add_saloon");
+                return res.redirect("/add-saloon");
             }
 
             const created = await saloon.create({
@@ -141,12 +131,12 @@ exports.ADD_SALOON_STORE = async (req, res) => {
                 description
             });
             req.flash("success", "Store added successfully.");
-            return res.redirect(`/add_saloon?id=${created._id}`);
+            return res.redirect(`/add-saloon?id=${created._id}`);
         }
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to save store details.");
-        return res.redirect("/add_saloon");
+        return res.redirect("/add-saloon");
     }
 }
 
@@ -157,12 +147,12 @@ exports.businessProfile = async (req, res) => {
         res.locals.message = req.flash();
         if (!req.query.id || !isValidObjectId(req.query.id)) {
             req.flash("error", "Invalid store id.");
-            return res.redirect("/add_saloon");
+            return res.redirect("/add-saloon");
         }
         const find = await findStoreRecord(req.query.id);
         if (!find) {
             req.flash("error", "Store not found.");
-            return res.redirect("/add_saloon");
+            return res.redirect("/add-saloon");
         }
 
         const updated = await saloon.findByIdAndUpdate(
@@ -172,11 +162,11 @@ exports.businessProfile = async (req, res) => {
         );
 
         req.flash("success", "update is Succesfuuly step 2");
-        return res.redirect(`/add_saloon?id=${updated._id}`);
+        return res.redirect(`/add-saloon?id=${updated._id}`);
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to save business profile info.");
-        return res.redirect("/add_saloon");
+        return res.redirect("/add-saloon");
     }
 }
 
@@ -186,12 +176,12 @@ exports.businessBankInfoAdmin = async (req, res) => {
         res.locals.message = req.flash()
         if (!req.query.id || !isValidObjectId(req.query.id)) {
             req.flash("error", "Invalid store id.");
-            return res.redirect("/add_saloon");
+            return res.redirect("/add-saloon");
         }
         const find = await findStoreRecord(req.query.id);
         if (!find) {
             req.flash("error", "Store not found.");
-            return res.redirect("/add_saloon");
+            return res.redirect("/add-saloon");
         }
 
         const updated = await saloon.findByIdAndUpdate(
@@ -201,11 +191,11 @@ exports.businessBankInfoAdmin = async (req, res) => {
         );
 
         req.flash("success", "update is Succesfuuly step 3");
-        return res.redirect(`/add_saloon?id=${updated._id}`);
+        return res.redirect(`/add-saloon?id=${updated._id}`);
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to save bank info.");
-        return res.redirect("/add_saloon");
+        return res.redirect("/add-saloon");
     }
 }
 
@@ -215,12 +205,12 @@ exports.businessUplodeDocumentAdmin = async (req, res) => {
         res.locals.message = req.flash()
         if (!req.query.id || !isValidObjectId(req.query.id)) {
             req.flash("error", "Invalid store id.");
-            return res.redirect("/add_saloon");
+            return res.redirect("/add-saloon");
         }
         const find = await findStoreRecord(req.query.id);
         if (!find) {
             req.flash("error", "Store not found.");
-            return res.redirect("/add_saloon");
+            return res.redirect("/add-saloon");
         }
         const files = req.files || {};
         const documents = {
@@ -232,7 +222,7 @@ exports.businessUplodeDocumentAdmin = async (req, res) => {
 
         if (!documents.BannerLogo || !documents.logoImage || !documents.panImage || !documents.businessCertificate) {
             req.flash("error", "All document images are required.");
-            return res.redirect(`/add_saloon?id=${find._id}`);
+            return res.redirect(`/add-saloon?id=${find._id}`);
         }
 
         const updated = await saloon.findByIdAndUpdate(
@@ -242,25 +232,21 @@ exports.businessUplodeDocumentAdmin = async (req, res) => {
         );
 
         req.flash("success", "update is Succesfuuly STEP 4");
-        return res.redirect(`/add_saloon?id=${updated._id}`);
+        return res.redirect(`/add-saloon?id=${updated._id}`);
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to upload documents.");
-        return res.redirect("/add_saloon");
+        return res.redirect("/add-saloon");
     }
 }
 
 exports.VIEW_SALOON = async (req, res) => {
     try {
-        const store = await findPrimaryStore(req);
-        if (store) {
-            return res.redirect(`/add_saloon?id=${store._id}`);
-        }
-        return res.redirect("/add_saloon");
+        return res.redirect("/add-saloon");
     } catch (error) {
         console.log(error)
         req.flash("error", "Unable to load stores.");
-        return res.redirect("/add_saloon");
+        return res.redirect("/add-saloon");
 
     }
 }
@@ -272,7 +258,7 @@ exports.DELETE_SALOON = async (req, res) => {
         const id = req.query.id;
         if (!isValidObjectId(id)) {
             req.flash("error", "Invalid store id.");
-            return res.redirect("/add_saloon");
+            return res.redirect("/add-saloon");
         }
         const deleted = await saloon.findByIdAndDelete({ _id: id });
         if (deleted) {
@@ -280,11 +266,11 @@ exports.DELETE_SALOON = async (req, res) => {
         } else {
             req.flash("error", "Store not found.");
         }
-        return res.redirect("/add_saloon")
+        return res.redirect("/add-saloon")
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to delete store.");
-        return res.redirect("/add_saloon");
+        return res.redirect("/add-saloon");
     }
 }
 
@@ -356,11 +342,11 @@ exports.addImagesInSaloon = async (req, res) => {
     try {
         if (!isValidObjectId(req.query.id)) {
             req.flash("error", "Invalid store id.");
-            return res.redirect("/add_saloon");
+            return res.redirect("/add-saloon");
         }
         if (!req.files || req.files.length === 0) {
             req.flash("error", "Please upload at least one image.");
-            return res.redirect(`/add_saloon?id=${req.query.id}`);
+            return res.redirect(`/add-saloon?id=${req.query.id}`);
         }
         let arr = [];
         req.files.forEach(element => {
@@ -370,15 +356,16 @@ exports.addImagesInSaloon = async (req, res) => {
 
         if (result) {
             req.flash("success", "Store images updated successfully.");
-            return res.redirect(`/add_saloon?id=${req.query.id}`)
+            return res.redirect(`/add-saloon?id=${req.query.id}`)
         } else {
             req.flash("error", "Store not found.");
-            return res.redirect("/add_saloon")
+            return res.redirect("/add-saloon")
         }
 
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to update store images.");
-        return res.redirect("/add_saloon");
+        return res.redirect("/add-saloon");
     }
 }
+

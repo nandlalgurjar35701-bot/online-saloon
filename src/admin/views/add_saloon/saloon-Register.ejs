@@ -41,11 +41,11 @@
                       <% if(typeof data !=="undefined" && data){%>
                         <h5 class="card-title">Edit Saloon</h5>
 
-                        <form class="needs-validation" action="/add_saloon_store?id=<%=data._id%>" method="post"
+                        <form class="needs-validation" action="/add-saloon-store?id=<%=data._id%>" method="post"
                           novalidate>
                           <%}else{%>
                             <h5 class="card-title">Add Saloon</h5>
-                            <form class="needs-validation" action="/add_saloon_store" method="post" novalidate>
+                            <form class="needs-validation" action="/add-saloon-store" method="post" novalidate>
                               <%}%>
                                 <div class="row g-3">
                                   <div class="col">
@@ -286,11 +286,11 @@
 
                         <% if(typeof data !=="undefined" && data){%>
                           <h5 class="card-title"> Edit business-profile-info-by-Admin</h5>
-                          <form class="needs-validation" action="/business-profile-info-by-Admin?id=<%= data.id %>"
+                          <form class="needs-validation" action="/business-profile-info-by-admin?id=<%= data.id %>"
                             method="post" novalidate>
                             <%}else{%>
                               <h5 class="card-title">Add business-profile-info-by-Admin</h5>
-                              <form class="needs-validation" action="/business-profile-info-by-Admin" method="post"
+                              <form class="needs-validation" action="/business-profile-info-by-admin" method="post"
                                 novalidate>
                                 <%}%>
 
@@ -609,11 +609,11 @@
                                   <div class="card-body">
                                     <% if(typeof data !=="undefined" && data){%>
                                       <h5 class="card-title">Edit saloon-image</h5>
-                                      <form action="/Add-images-in-saloon?id=<%=data._id%>" method="post"
+                                      <form action="/add-images-in-saloon?id=<%=data._id%>" method="post"
                                         enctype="multipart/form-data">
                                         <%}else{%>
                                           <h5 class="card-title">Add saloon-image</h5>
-                                          <form action="/Add-images-in-saloon" method="post"
+                                          <form action="/add-images-in-saloon" method="post"
                                             enctype="multipart/form-data">
                                             <%}%>
                                               <div class="row g-3">
@@ -723,3 +723,4 @@
 </body>
 
 </html>
+

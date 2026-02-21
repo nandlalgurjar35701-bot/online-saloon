@@ -34,7 +34,7 @@
                     <h5 class="card-title">Filter</h5>
 
                     <!-- No Labels Form -->
-                    <form class="row g-3" action="/view_saloon">
+                    <form class="row g-3" action="/view-saloon">
                       <div class="col-md-4">
                         <label>Choose City</label> <br>
                         <select id="inputState" name="city" class="form-select">
@@ -83,7 +83,7 @@
                         <label></label> <br>
                         <div class="text-center">
                           <button type="submit" class="btn btn-primary">Submit</button>
-                          <a href="/view_saloon"> <button type="button" class="btn btn-secondary">Reset</button></a>
+                          <a href="/view-saloon"> <button type="button" class="btn btn-secondary">Reset</button></a>
                         </div>
                       </div>
                     </form>
@@ -95,7 +95,7 @@
                   <div class="card-body ">
                     <div class="d-flex justify-content-between align-items-center">
                       <h5 class="card-title mb-0">Saloon List</h5>
-                      <a href="/add_saloon" class="btn btn-primary btn-sm">Add Store</a>
+                      <a href="/add-saloon" class="btn btn-primary btn-sm">Add Store</a>
                     </div>
                     <div style="border-top: 1px solid #e9ecef; margin: 12px 0 14px 0;"></div>
 
@@ -217,11 +217,11 @@
                                                   <!-- sahil view end -->
                                 </td>
                                 <td>
-                                  <!-- <a href="/add_saloon?id=<%= data._id%>" class="btn btn-dark">Edit</a>
-                                <a href="/delete_saloon?id=<%= data._id%>" class="btn btn-danger">Delete</a> -->
-                                  <a href="/add_saloon?id=<%= store._id%>" class="btn btn-info" data-bs-toggle="tooltip"
+                                  <!-- <a href="/add-saloon?id=<%= data._id%>" class="btn btn-dark">Edit</a>
+                                <a href="/delete-saloon?id=<%= data._id%>" class="btn btn-danger">Delete</a> -->
+                                  <a href="/add-saloon?id=<%= store._id%>" class="btn btn-info" data-bs-toggle="tooltip"
                                     data-bs-placement="top" data-bs-title="Edit"><i class="ri-edit-box-line"></i></a>
-                                  <a href="/delete_saloon?id=<%= store._id%>" class="btn btn-danger"
+                                  <a href="/delete-saloon?id=<%= store._id%>" class="btn btn-danger"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Saloon">
                                     <i class="ri-delete-bin-5-line"></i>
                                   </a>
@@ -450,3 +450,4 @@
 </body>
 
 </html>
+

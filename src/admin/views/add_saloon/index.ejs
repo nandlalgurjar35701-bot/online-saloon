@@ -37,7 +37,7 @@
                                   <h5 class="card-title">Add Store</h5>
                                   
                                       <% if(typeof saloon_data !=="undefined" && saloon_data){%>
-                                      <form action="/add_saloon_store?id=<%=saloon_data._id%>" method="post" enctype="multipart/form-data">
+                                      <form action="/add-saloon-store?id=<%=saloon_data._id%>" method="post" enctype="multipart/form-data">
                                         <div class="row g-3">
                                           <div class="col">
                                             <input required type="text" name="storeName" class="form-control" value="<%= saloon_data.storeName%>" placeholder="Enter Your Store Name">
@@ -129,7 +129,7 @@
                         
                                       </form>
                                       <%}else{%>
-                                        <form action="/add_saloon_store" method="post" enctype="multipart/form-data">
+                                        <form action="/add-saloon-store" method="post" enctype="multipart/form-data">
 
                                           <div class="row g-3">
                                             <div class="col">
@@ -295,3 +295,4 @@
 </body>
 
 </html>
+
