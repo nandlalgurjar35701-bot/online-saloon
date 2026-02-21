@@ -1,6 +1,6 @@
 const saloon = require("../../api/saloonstore/model");
 
-exports.VIEW_SALOON = async (req) => {
+exports.viewSaloon = async (req) => {
   try {
 
     let match = {}

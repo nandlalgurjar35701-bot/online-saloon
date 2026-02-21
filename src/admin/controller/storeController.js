@@ -33,7 +33,7 @@ exports.saloonRegister = async (req, res) => {
 }
 
 // step 1
-exports.ADD_SALOON_STORE = async (req, res) => {
+exports.addSaloonStore = async (req, res) => {
     try {
         res.locals.message = req.flash();
         const { body, query, user } = req;
@@ -240,7 +240,7 @@ exports.businessUplodeDocumentAdmin = async (req, res) => {
     }
 }
 
-exports.VIEW_SALOON = async (req, res) => {
+exports.viewSaloon = async (req, res) => {
     try {
         return res.redirect("/add-saloon");
     } catch (error) {
@@ -253,7 +253,7 @@ exports.VIEW_SALOON = async (req, res) => {
 
 
 
-exports.DELETE_SALOON = async (req, res) => {
+exports.deleteSaloon = async (req, res) => {
     try {
         const id = req.query.id;
         if (!isValidObjectId(id)) {
@@ -277,7 +277,7 @@ exports.DELETE_SALOON = async (req, res) => {
 
 
 
-exports.GetSaloonAddress = async (req, res) => {
+exports.getSaloonAddress = async (req, res) => {
     try {
         if (!isValidObjectId(req.query.id)) {
             return res.status(400).send([]);
@@ -324,7 +324,7 @@ exports.findSaloonByUser = async (req, res) => {
         console.log(error)
     }
 }
-exports.FindAdminAllSaloon = async (req, res) => {
+exports.findAdminAllSaloon = async (req, res) => {
     try {
         let data;
         if (req.user.type == "admin") {

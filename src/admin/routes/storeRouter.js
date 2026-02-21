@@ -1,39 +1,44 @@
-const auth = require("../../middleware/adminauth")
-const Upload = require("../../middleware/img");
 const { Router } = require("express");
-const app = Router();
-const { ADD_SALOON_STORE, VIEW_SALOON, DELETE_SALOON,
-    GetSaloonAddress, saloonRegister, businessProfile,
+const auth = require("../../middleware/adminauth");
+const upload = require("../../middleware/img");
+const {
+    addSaloonStore,
+    viewSaloon,
+    deleteSaloon,
+    getSaloonAddress,
+    saloonRegister,
+    businessProfile,
     businessBankInfoAdmin,
-    businessUplodeDocumentAdmin, findSaloonByUser, FindAdminAllSaloon,
-    addImagesInSaloon } = require("../controller/storeController");
+    businessUplodeDocumentAdmin,
+    findSaloonByUser,
+    findAdminAllSaloon,
+    addImagesInSaloon,
+} = require("../controller/storeController");
 
-app.get("/view-saloon", auth, VIEW_SALOON)
-app.get("/delete-saloon", auth, DELETE_SALOON)
-app.get("/get-saloon-address", auth, GetSaloonAddress)
+const router = Router();
 
-app.get("/add-saloon", auth, saloonRegister)
-app.post("/add-saloon-store", auth, ADD_SALOON_STORE)
-app.post("/business-profile-info-by-admin", auth, businessProfile)
-app.post("/business-bank-information-admin", auth, businessBankInfoAdmin)
+const uploadBusinessDocuments = upload.fields([
+    { name: "BannerLogo", maxCount: 1 },
+    { name: "logoImage", maxCount: 1 },
+    { name: "panImage", maxCount: 1 },
+    { name: "businessCertificate", maxCount: 1 },
+]);
 
-app.post("/business-uplode-document-admin", auth, Upload.fields([{
-    name: 'BannerLogo', maxCount: 1
-}, {
-    name: 'logoImage', maxCount: 1
-}, {
-    name: 'panImage', maxCount: 1
-}, {
-    name: 'businessCertificate', maxCount: 1
-}]), businessUplodeDocumentAdmin)
+// Store setup and details
+router.get("/add-saloon", auth, saloonRegister);
+router.post("/add-saloon-store", auth, addSaloonStore);
+router.post("/business-profile-info-by-admin", auth, businessProfile);
+router.post("/business-bank-information-admin", auth, businessBankInfoAdmin);
+router.post("/business-uplode-document-admin", auth, uploadBusinessDocuments, businessUplodeDocumentAdmin);
+router.post("/add-images-in-saloon", auth, upload.array("image"), addImagesInSaloon);
 
+// Store query/actions
+router.get("/view-saloon", auth, viewSaloon);
+router.get("/delete-saloon", auth, deleteSaloon);
+router.get("/get-saloon-address", auth, getSaloonAddress);
+router.get("/find-admin-all-saloon", auth, findAdminAllSaloon);
+router.get("/find-saloon-by-user", auth, findSaloonByUser);
 
-app.post("/add-images-in-saloon", auth, Upload.array("image"), addImagesInSaloon)
-
-
-app.get("/find-admin-all-saloon", auth, FindAdminAllSaloon)
-
-app.get("/find-saloon-by-user", auth, findSaloonByUser)
-module.exports = app
+module.exports = router;
 
 
