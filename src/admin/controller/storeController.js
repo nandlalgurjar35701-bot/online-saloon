@@ -1,11 +1,67 @@
 const saloon = require("../../api/saloonstore/model");
 const mongoose = require('mongoose');
+const users = require("../../models/userModel");
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 const findStoreRecord = async (id) => {
     if (!isValidObjectId(id)) return null;
     const objectId = mongoose.Types.ObjectId(id);
     return saloon.findOne({ _id: objectId });
+};
+
+exports.businessOtpSent = async (req, res) => {
+    try {
+        const phone = Number(req.body?.phone);
+        if (!phone) {
+            return res.status(400).send({ status: false, message: "Phone is required", data: [] });
+        }
+
+        let user = await users.findOne({ phone });
+        if (user) {
+            user = await users.findOneAndUpdate({ phone }, { otp: "1234" }, { new: true });
+        } else {
+            user = await users.create({ phone, otp: "1234" });
+        }
+
+        return res.send({
+            statusCode: 200,
+            status: true,
+            message: "Otp Send",
+            data: [user]
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({ status: false, message: "Unable to send otp", data: [] });
+    }
+};
+
+exports.businessOtpVerify = async (req, res) => {
+    try {
+        const phone = Number(req.body?.phone);
+        const otp = String(req.body?.otp || "");
+        if (!phone || !otp) {
+            return res.status(400).send({ status: false, message: "Phone and otp are required", data: [] });
+        }
+
+        const user = await users.findOne({ phone });
+        if (!user) {
+            return res.status(400).send({ status: false, message: "Phone Number Not Matched!", data: [] });
+        }
+        if (String(user.otp) !== otp) {
+            return res.status(400).send({ status: false, message: "Otp Not Matched", data: [] });
+        }
+
+        const updated = await users.findOneAndUpdate({ phone }, { $set: { verify: true } }, { new: true });
+        return res.send({
+            statusCode: 200,
+            status: true,
+            message: "Otp Matched",
+            data: [updated]
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({ status: false, message: "Unable to verify otp", data: [] });
+    }
 };
 
 exports.saloonRegister = async (req, res) => {

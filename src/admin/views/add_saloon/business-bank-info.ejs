@@ -199,43 +199,6 @@
           </div>
         </section>
       </main>
-      <script>
-        function SendOtp(params) {
-          const ele = document.getElementById("Phone");
-          $.ajax({
-            type: 'post',
-            data: { "phone": ele.value },
-            url: '/business-otp-sent',
-            success: function (data) {
-              if (data.status == true) {
-                alert("Oto send ")
-              } else {
-                alert("data not Found")
-              }
-            }
-          })
-        }
-        function verifyOtp(params) {
-          const phone = document.getElementById("Phone");
-          const otp = document.getElementById("otp");
-
-          $.ajax({
-            type: 'post',
-            data: { "phone": phone.value, "otp": otp.value },
-            url: '/business-otp-verify',
-            success: function (data) {
-              if (data.status == true) {
-                alert("Oto verify ")
-              } else {
-                alert("data not Found")
-              }
-            }
-          })
-        }
-
-      </script>
-
-
       <%- include("../../partials/script.ejs") %>
 </body>
 

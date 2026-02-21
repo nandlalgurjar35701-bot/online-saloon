@@ -13,6 +13,8 @@ const {
     findSaloonByUser,
     findAdminAllSaloon,
     addImagesInSaloon,
+    businessOtpSent,
+    businessOtpVerify,
 } = require("../controller/storeController");
 
 const router = Router();
@@ -26,6 +28,8 @@ const uploadBusinessDocuments = upload.fields([
 
 // Store setup and details
 router.get("/add-saloon", auth, saloonRegister);
+router.post("/business-otp-sent", auth, businessOtpSent);
+router.post("/business-otp-verify", auth, businessOtpVerify);
 router.post("/add-saloon-store", auth, addSaloonStore);
 router.post("/business-profile-info-by-admin", auth, businessProfile);
 router.post("/business-bank-information-admin", auth, businessBankInfoAdmin);
