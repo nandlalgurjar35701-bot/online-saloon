@@ -1,4 +1,4 @@
-const homeBannerModel = require('../../models/homeBannerModel')
+const homeBannerModel = require('../../models/homeBannerModel');
 const mongoose = require("mongoose");
 
 exports.homeBanners = async (req, res) => {
@@ -11,7 +11,7 @@ exports.homeBanners = async (req, res) => {
         req.flash("error", "Unable to load banners.");
         return res.redirect("/");
     }
-}
+};
 
 exports.addBanner = async (req, res) => {
     try {
@@ -35,10 +35,8 @@ exports.addBanner = async (req, res) => {
         console.log(err);
         req.flash("error", "Unable to open banner form.");
         return res.redirect("/home-banners");
-    };
+    }
 };
-
-
 
 exports.uplodeBanner = async (req, res) => {
     try {
@@ -71,10 +69,8 @@ exports.uplodeBanner = async (req, res) => {
         console.log(err);
         req.flash("error", "Unable to save banner.");
         return res.redirect('/home-banners');
-    };
+    }
 };
-
-
 
 exports.deleteBanner = async (req, res) => {
     try {
@@ -96,5 +92,5 @@ exports.deleteBanner = async (req, res) => {
         console.log(err);
         req.flash("error", "Unable to delete banner.");
         return res.redirect('/home-banners');
-    };
+    }
 };

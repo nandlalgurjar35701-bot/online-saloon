@@ -3,14 +3,14 @@ const Upload = require("../../middleware/img");
 const responseHandler = require("../../utils/responseHandlers");
 const { Router } = require("express");
 const app = Router();
-const appController = require('../controller/appController');
+const bannerController = require('../controller/bannerController');
 
-app.get("/home-banners", auth, appController.homeBanners);
+app.get("/home-banners", auth, bannerController.homeBanners);
 // app.post("/register-admin-data", adminRegisterData);
 
-app.get("/add-banner", auth, appController.addBanner);
-app.post("/uplode-banner", auth, Upload.single("image"), appController.uplodeBanner);
-app.get("/delete_banner", auth,  appController.deleteBanner);
+app.get("/add-banner", auth, bannerController.addBanner);
+app.post("/uplode-banner", auth, Upload.single("image"), bannerController.uplodeBanner);
+app.get("/delete_banner", auth, bannerController.deleteBanner);
 // app.post("/login-admin-data", loginData);
 
 // app.get("/forget-password", auth, forgetPassword)
