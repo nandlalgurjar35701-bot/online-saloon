@@ -12,6 +12,7 @@ exports.AddCategory = async (req, res, _id) => {
                 req.body.parent_Name = mongoose.Types.ObjectId(req.query.id)
             }
             await CategoryModal.findByIdAndUpdate(req.query.EditId, req.body)
+            req.flash("success", "Category Updated Successfully !");
         } else {
             if (req.file) {
                 req.body.image = req.file.filename
@@ -24,7 +25,7 @@ exports.AddCategory = async (req, res, _id) => {
             } else {
                 req.body.parent_Name = null
             }
-            const data = await CategoryModal.create(req.body)
+            await CategoryModal.create(req.body)
             req.flash("success", "Category Added Successfully !");
         }
         

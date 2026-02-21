@@ -12,6 +12,7 @@
 <body>
   <%- include('../../partials/Header.ejs') %>
     <%- include("../../partials/sidebar.ejs") %>
+      <%- include("../../partials/alertMsg.ejs") %>
 
       <main id="main" class="main">
         <div class="pagetitle">
@@ -29,7 +30,11 @@
               <div class="col-lg-12">
                 <div class="card">
                   <div class="card-body">
-                    <h5 class="card-title">F A Q List</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h5 class="card-title mb-0">Banner List</h5>
+                      <a href="/add-banner" class="btn btn-primary btn-sm">Add Banner</a>
+                    </div>
+                    <div style="border-top: 1px solid #e9ecef; margin: 12px 0 14px 0;"></div>
                     <table class="table datatable">
                       <thead>
                         <tr>
@@ -43,7 +48,7 @@
                       </thead>
                       <tbody>
                         <% let i=0 %>
-                          <% for( singleData of data) { %>
+                          <% for (const singleData of data) { %>
                             <tr>
                               <th scope="row">
                                 <%= ++i %>
@@ -56,13 +61,14 @@
                               </td>
                               <td>
                                 <button type="button" class="btn btn-info view-btn" data-bs-toggle="modal"
-                                  data-bs-target="#exampleModal" data-description="<%- singleData.description %>">
+                                  data-bs-target="#exampleModal"
+                                  data-description="<%= encodeURIComponent(singleData.description || '') %>">
                                   <i class="bi bi-eye"></i>
                                 </button>
                               </td>
                               <td>
                                 <% if(singleData.image){%>
-                                  <img class="rounded-circle" src="uploads/<%= singleData?.image %>" height="50px"
+                                  <img class="rounded-circle" src="/uploads/<%= singleData.image %>" height="50px"
                                     width="50px" alt="">
                                   <!-- <img src="<%= user?.image%>" alt="image" class="rounded-circle" style="width: 40px; height: 50px;border-radius: 50%;"> -->
                                   <%}else{%>
@@ -113,10 +119,11 @@
 
         <script>
           $('#exampleModal').on('show.bs.modal', function (event) {
-            let button = event.relatedTarget;
-            let description = button.getAttribute('data-description');
+            const button = event.relatedTarget;
+            const encodedDescription = button.getAttribute('data-description') || '';
+            const description = encodedDescription ? decodeURIComponent(encodedDescription) : '-';
 
-            document.getElementById('moduleDataAppend').innerHTML = description;
+            document.getElementById('moduleDataAppend').textContent = description;
           });
         </script>
 </body>

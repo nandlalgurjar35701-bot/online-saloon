@@ -65,7 +65,8 @@
                           </form><!-- Vertical Form -->
                           <%}else if(typeof data !="undefined" && data !="" ){%>
                             <h5 class=" card-title">Edit Category</h5>
-                            <form class="needs-validation row g-3" action="/Add-New-Category?EditId=<%= data._id%>"
+                            <form class="needs-validation row g-3"
+                              action="/Add-New-Category?EditId=<%= data._id%><% if (data.parent_Name) { %>&id=<%= data.parent_Name %><% } %>"
                               method="post" enctype="multipart/form-data" novalidate>
 
                               <div class="col-8">
@@ -89,7 +90,7 @@
                               </div>
                               <div class="col-8">
                                 <label for="description" class="form-label">description</label>
-                                <input type="text" name="file" class="form-control" id="description" value="<%= data.description%>" required>
+                                <input type="text" name="description" class="form-control" id="description" value="<%= data.description%>" required>
                                 <div class="invalid-feedback">Please add description.</div>
                               </div>
                               <div class="text-center">
