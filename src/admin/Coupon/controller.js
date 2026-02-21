@@ -1,4 +1,4 @@
-const coupon = require("../../api/coupon/model");
+const coupon = require("../../models/couponModel");
 const mongoose = require("mongoose");
 const { getAllSaloonCity } = require("../../api/saloonstore/controller");
 

@@ -1,4 +1,4 @@
-const productModel = require("../../api/product/model");
+const productModel = require("../../models/productModel");
 const mongoose = require("mongoose");
 
 exports.fetchProductList = async (req) => {

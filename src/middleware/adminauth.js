@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken")
 const userModel = require('../models/adminModel');
-const saloonModel = require("../api/saloonstore/model");
+const saloonModel = require("../models/saloonStoreModel");
 
 const attachSidebarStores = async (req, res) => {
     try {

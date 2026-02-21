@@ -4,7 +4,7 @@ const fs = require("fs");
 const userModel = require("../../models/adminModel.js");
 const { findByIdAndUpdate } = require('./model');
 const path = require("path")
-const saloon = require("../../api/saloonstore/model")
+const saloon = require("../../models/saloonStoreModel")
 
 const service = require("./service")
 
@@ -211,7 +211,7 @@ exports.AdminlogOut = async (req, res) => {
     }
 }
 
-const payment = require("../../api/payment/model")
+const payment = require("../../models/paymentModel")
 exports.paymentRevenues = async (req, res) => {
     try {
         let obj = {};

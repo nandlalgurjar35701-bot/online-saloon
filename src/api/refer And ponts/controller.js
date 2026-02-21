@@ -1,4 +1,4 @@
-const refer = require("../../admin/Refer-And-point/model");
+const refer = require("../../models/referModel");
 const user = require("../../models/userModel");
 const mongoose = require("mongoose");
 const { referConvert } = require("./services")
@@ -78,7 +78,7 @@ exports.pointToMoneyConvert = async (req) => {
 };
 
 
-const trangacation = require("../refer And ponts/wallthTra")
+const trangacation = require("../../models/walletTransactionModel")
 exports.walletTransaction = async (req) => {
     try {
         req.body.tragactionId = Math.random() * 1000000000000000

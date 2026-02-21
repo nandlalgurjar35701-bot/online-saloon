@@ -1,4 +1,4 @@
-const faq = require("../../admin/add_frequent/model");
+const faq = require("../../models/faqModel");
 const mongoose = require("mongoose")
 
 exports.getFaq = async ({ query }) => {

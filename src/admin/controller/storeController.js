@@ -1,4 +1,4 @@
-const saloon = require("../../api/saloonstore/model");
+const saloon = require("../../models/saloonStoreModel");
 const mongoose = require('mongoose');
 const users = require("../../models/userModel");
 

@@ -1,8 +1,8 @@
-const saloonService = require("./model");
-const saloonstore = require("../saloonstore/model")
-const category = require("../category/model")
+const saloonService = require("../../models/productModel");
+const saloonstore = require("../../models/saloonStoreModel")
+const category = require("../../models/categoryModel")
 const mongoose = require("mongoose");
-const cart = require("../cart/model")
+const cart = require("../../models/cartModel")
 
 exports.saloonService = async (req) => {
     try {

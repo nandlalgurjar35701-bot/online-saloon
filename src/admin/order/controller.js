@@ -1,6 +1,6 @@
 
 const { getAllOrder } = require("./services")
-const order = require("../../api/order/model")
+const order = require("../../models/orderModel")
 const mongoose = require("mongoose")
 const { getAllSaloonCity } = require("../../api/saloonstore/controller")
 

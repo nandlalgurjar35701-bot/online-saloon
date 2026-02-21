@@ -1,4 +1,4 @@
-const refer = require("./model");
+const refer = require("../../models/referModel");
 const mongoose = require("mongoose");
 const { query } = require("express");
 

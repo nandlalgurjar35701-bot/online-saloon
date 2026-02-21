@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-const newsletters = require("../../api/Newsletter/model");
+const newsletters = require("../../models/newsletterModel");
 const user = require("../../models/userModel");
-const saloon = require("../../api/saloonstore/model");
-const ContecUs = require("../../api/Contact-Us/model");
+const saloon = require("../../models/saloonStoreModel");
+const ContecUs = require("../../models/contactUsModel");
 
 exports.sendNotification = async (req, res) => {
     try {

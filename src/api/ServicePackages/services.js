@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const services = require("../saloonService/model");
+const services = require("../../models/productModel");
 
 exports.getServicePackage = async (query) => {
     try {

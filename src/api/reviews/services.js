@@ -1,4 +1,4 @@
-const review = require("./model")
+const review = require("../../models/reviewModel")
 const mongoose = require("mongoose")
 
 exports.getreviews = async (query) => {

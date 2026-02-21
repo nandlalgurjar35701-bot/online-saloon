@@ -1,9 +1,9 @@
-const saloonservice = require("../saloonService/model");
+const saloonservice = require("../../models/productModel");
 const mongoose = require("mongoose");
-const cart = require("../cart/model");
-const schedule = require("./model");
-const order = require("../order/model");
-const saloon = require("../saloonstore/model");
+const cart = require("../../models/cartModel");
+const schedule = require("../../models/scheduleModel");
+const order = require("../../models/orderModel");
+const saloon = require("../../models/saloonStoreModel");
 const moment = require("moment");
 
 exports.scheduleYourVisit = async ({ query, body, user }) => {

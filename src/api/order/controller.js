@@ -1,11 +1,11 @@
-const cart = require("../cart/model");
-const order = require("./model");
-const Schedule = require("../Schedule/model");
+const cart = require("../../models/cartModel");
+const order = require("../../models/orderModel");
+const Schedule = require("../../models/scheduleModel");
 const mongoose = require("mongoose")
-const saloon = require("../saloonstore/model")
+const saloon = require("../../models/saloonStoreModel")
 const { addcart } = require("../cart/controller");
 const { query } = require("express");
-const coupon = require("../coupon/model")
+const coupon = require("../../models/couponModel")
 
 exports.userOrder = async ({ query, user }) => {
     try {

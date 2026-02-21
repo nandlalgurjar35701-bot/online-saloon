@@ -1,9 +1,9 @@
-const user = require("../user/model");
-const artist = require("../artist/model");
-const saloonService = require("../saloonService/model")
-const order = require("../order/model")
-const saloon = require("../saloonstore/model")
-const reviews = require("../reviews/model")
+const user = require("../../models/userModel");
+const artist = require("../../models/artistModel");
+const saloonService = require("../../models/productModel")
+const order = require("../../models/orderModel")
+const saloon = require("../../models/saloonStoreModel")
+const reviews = require("../../models/reviewModel")
 const { getAllSaloonCity } = require("../saloonstore/controller")
 
 

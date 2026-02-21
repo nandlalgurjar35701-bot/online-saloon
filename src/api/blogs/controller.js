@@ -1,5 +1,5 @@
-const blog = require("./model")
-const category = require("../category/model")
+const blog = require("../../models/blogModel")
+const category = require("../../models/categoryModel")
 const mongoose = require("mongoose")
 
 

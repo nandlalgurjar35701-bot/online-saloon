@@ -1,4 +1,4 @@
-const saloon = require("../../api/saloonstore/model");
+const saloon = require("../../models/saloonStoreModel");
 
 exports.viewSaloon = async (req) => {
   try {

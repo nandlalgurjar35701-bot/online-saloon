@@ -1,8 +1,8 @@
-const cart = require("../cart/model");
-const order = require("./model");
-const Schedule = require("../Schedule/model");
-const saloon = require("../saloonstore/model")
-const wishlist = require("./model");
+const cart = require("../../models/cartModel");
+const order = require("../../models/wishlistModel");
+const Schedule = require("../../models/scheduleModel");
+const saloon = require("../../models/saloonStoreModel")
+const wishlist = require("../../models/wishlistModel");
 const mongoose = require("mongoose");
 
 exports.userWishlist = async ({ user, query }) => {

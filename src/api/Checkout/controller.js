@@ -1,12 +1,12 @@
-const users = require("../user/model");
-const servish = require("../saloonService/model");
+const users = require("../../models/userModel");
+const servish = require("../../models/productModel");
 const { default: mongoose } = require("mongoose");
-const coupon = require("../coupon/model");
-const order = require("../order/model");
-const userModel = require("../user/model");
-const cart = require("../cart/model");
-const payment = require("../payment/model");
-const transaction = require("../refer And ponts/modelTra");
+const coupon = require("../../models/couponModel");
+const order = require("../../models/orderModel");
+const userModel = require("../../models/userModel");
+const cart = require("../../models/cartModel");
+const payment = require("../../models/paymentModel");
+const transaction = require("../../models/referTransactionModel");
 
 exports.Checkout = async ({ user, query }) => {
     try {

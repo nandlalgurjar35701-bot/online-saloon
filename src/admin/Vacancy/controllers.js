@@ -1,11 +1,11 @@
 const category = require("../../models/categoryModel");
-const vacancy = require("./model");
+const vacancy = require("../../models/vacancyModel");
 const mongoose = require("mongoose")
 const service = require("./services")
 const { getCategoryListing } = require("../../api/category/controller")
 const { findAllProductName } = require("../controller/productController");
-const seloonservice = require("../../api/saloonService/model")
-const store = require("../../api/saloonstore/model");
+const seloonservice = require("../../models/productModel")
+const store = require("../../models/saloonStoreModel");
 const { query } = require("express");
 
 exports.Vacancy = async (req, res) => {

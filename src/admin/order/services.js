@@ -1,5 +1,5 @@
 const { default: mongoose } = require("mongoose");
-const order = require("../../api/order/model")
+const order = require("../../models/orderModel")
 
 
 exports.getAllOrder = async (req) => {

@@ -1,10 +1,10 @@
-const order = require("../../api/order/model")
+const order = require("../../models/orderModel")
 const user = require("../../models/userModel");
-const saloon = require("../../api/saloonstore/model");
-const service = require("../../api/saloonService/model");
-const payment = require("../../api/payment/model");
-const Artice = require("../../api/artist/model");
-const veconcy = require("../Vacancy/model");
+const saloon = require("../../models/saloonStoreModel");
+const service = require("../../models/productModel");
+const payment = require("../../models/paymentModel");
+const Artice = require("../../models/artistModel");
+const veconcy = require("../../models/vacancyModel");
 
 exports.AllDetail = async (req, res) => {
  try {

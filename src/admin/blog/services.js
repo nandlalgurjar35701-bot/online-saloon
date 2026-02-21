@@ -1,5 +1,5 @@
 const { default: mongoose } = require("mongoose");
-const blog = require("../../api/blogs/model");
+const blog = require("../../models/blogModel");
 
 exports.VIEW_BLOG = async (req) => {
     let pipeline = [];

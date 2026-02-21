@@ -1,8 +1,8 @@
-const service = require("../saloonService/model");
+const service = require("../../models/productModel");
 const mongoose = require("mongoose");
-const cart = require("./model");
-const saloon = require("../saloonstore/model");
-const package = require("../../admin/servicePackage/model");
+const cart = require("../../models/cartModel");
+const saloon = require("../../models/saloonStoreModel");
+const package = require("../../models/packageModel");
 
 exports.removeserviceFromCart = async ({ body, user, query }) => {
     try {

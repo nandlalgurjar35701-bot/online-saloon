@@ -1,4 +1,4 @@
-const saloon = require("./model");
+const saloon = require("../../models/saloonStoreModel");
 const mongoose = require("mongoose");
 const { query } = require("express");
 const { error } = require("console");

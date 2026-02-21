@@ -1,5 +1,5 @@
 
-const city = require("./module");
+const city = require("../../models/cityModel");
 
 exports.getStates = async (req, res) => {
  try {

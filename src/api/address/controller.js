@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const cart = require("../cart/model");
-const userAddress = require("./model");
+const cart = require("../../models/cartModel");
+const userAddress = require("../../models/addressModel");
 
 exports.addUserAddress = async ({ user, query, body }) => {
     try {

@@ -1,8 +1,8 @@
 const users = require("../../models/userModel");
-const servish = require("../saloonService/model");
+const servish = require("../../models/productModel");
 const razorpay = require("razorpay");
-const payments = require("./model");
-const { findOne, findOneAndUpdate } = require("./model");
+const payments = require("../../models/paymentModel");
+const { findOne, findOneAndUpdate } = require("../../models/paymentModel");
 const { default: mongoose } = require("mongoose");
 
 var instance = new razorpay({

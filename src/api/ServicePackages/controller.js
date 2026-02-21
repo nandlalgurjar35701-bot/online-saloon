@@ -1,5 +1,5 @@
-const cart = require("../cart/model");
-const package = require("../../admin/servicePackage/model");
+const cart = require("../../models/cartModel");
+const package = require("../../models/packageModel");
 const mongoose = require("mongoose")
 const { getServicePackage } = require("./services")
 

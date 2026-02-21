@@ -1,5 +1,5 @@
-const user = require("../user/model");
-const artist = require("./model");
+const user = require("../../models/userModel");
+const artist = require("../../models/artistModel");
 const mongoose = require("mongoose");
 
 

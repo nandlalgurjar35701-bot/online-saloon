@@ -1,5 +1,5 @@
-const user = require("../user/model");
-const Newsletters = require("./model");
+const user = require("../../models/userModel");
+const Newsletters = require("../../models/newsletterModel");
 const mongoose = require("mongoose");
 
 

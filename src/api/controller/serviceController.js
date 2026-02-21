@@ -1,7 +1,7 @@
 const appServices = require("../services/appServices");
 const Appointment = require("../../models/appointmentModel");
-const Contact = require("../Contact-Us/model");
-const Newsletter = require("../Newsletter/model");
+const Contact = require("../../models/contactUsModel");
+const Newsletter = require("../../models/newsletterModel");
 
 const renderWithData = async (res, viewName, statusCode = 200) => {
   const data = await appServices.index();

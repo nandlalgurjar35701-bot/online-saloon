@@ -1,7 +1,7 @@
 
-const coupon = require("./model");
+const coupon = require("../../models/safetyProgramModel");
 const mongoose = require("mongoose")
-const saloon = require("../saloonstore/model");
+const saloon = require("../../models/saloonStoreModel");
 const { query } = require("express");
 
 

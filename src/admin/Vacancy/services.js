@@ -1,5 +1,5 @@
 const { default: mongoose } = require("mongoose");
-const vacancy = require("./model");
+const vacancy = require("../../models/vacancyModel");
 
 exports.ViewVacancy = async (req) => {
     let pipeline = [];

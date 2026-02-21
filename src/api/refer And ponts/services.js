@@ -1,4 +1,4 @@
-const referTransaction = require("./modelTra")
+const referTransaction = require("../../models/referTransactionModel")
 const mongoose = require("mongoose")
 
 exports.referConvert = async (obj) => {

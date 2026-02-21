@@ -1,4 +1,4 @@
-const Contact = require("../../api/Contact-Us/model");
+const Contact = require("../../models/contactUsModel");
 const mongoose = require("mongoose");
 const { getAllSaloonCity } = require("../../api/saloonstore/controller");
 

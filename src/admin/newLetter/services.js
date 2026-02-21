@@ -1,4 +1,4 @@
-const blog = require("../../api/blogs/model");
+const blog = require("../../models/blogModel");
 
 exports.VIEW_BLOG = async () => {
     let pipeline = [];

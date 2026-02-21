@@ -1,4 +1,4 @@
-const Contact = require("./model");
+const Contact = require("../../models/contactUsModel");
 const { sendmail } = require("../../middleware/mail")
 
 exports.ContactUs = async ({ user, body }) => {

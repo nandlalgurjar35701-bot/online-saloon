@@ -1,5 +1,5 @@
-const review = require("./model")
-const category = require("../category/model")
+const review = require("../../models/reviewModel")
+const category = require("../../models/categoryModel")
 const mongoose = require("mongoose")
 const { getreviews } = require("./services")
 

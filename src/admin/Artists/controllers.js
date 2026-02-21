@@ -1,5 +1,5 @@
 const category = require("../../models/categoryModel");
-const artist = require("../../api/artist/model");
+const artist = require("../../models/artistModel");
 const mongoose = require("mongoose")
 const service = require("./services")
 
