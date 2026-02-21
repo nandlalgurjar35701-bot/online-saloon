@@ -2,7 +2,6 @@ const saloon = require("./model");
 const mongoose = require("mongoose");
 const { query } = require("express");
 const { error } = require("console");
-const getAllSaloonRequistCity = require("../../api/Partner/model")
 
 exports.registerSaloonStore = async ({ body, user, files, query }) => {
     try {
@@ -220,7 +219,7 @@ exports.getAllSaloonRequistCity = async ({ query }) => {
             category.push(query.category);
             condition.category = { $in: category };
         }
-        const findAllSalonn = await getAllSaloonRequistCity.find(condition);
+        const findAllSalonn = await saloon.find(condition);
         for (const item of findAllSalonn) {
             if (!arr.includes(item.location.city)) {
                 arr.push(item.location.city);

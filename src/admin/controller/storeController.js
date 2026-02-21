@@ -1,17 +1,11 @@
 const saloon = require("../../api/saloonstore/model");
-const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-const saloonRequst = require("../../api/Partner/model")
-const { getAllSaloonRequistCity, getAllSaloonCity } = require("../../api/saloonstore/controller")
-const userm = require("../../models/userModel")
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 const findStoreRecord = async (id) => {
     if (!isValidObjectId(id)) return null;
     const objectId = mongoose.Types.ObjectId(id);
-    const findSaloon = await saloon.findOne({ _id: objectId });
-    if (findSaloon) return findSaloon;
-    return saloonRequst.findOne({ _id: objectId });
+    return saloon.findOne({ _id: objectId });
 };
 
 const findPrimaryStore = async (req) => {
@@ -48,24 +42,111 @@ exports.saloonRegister = async (req, res) => {
     }
 }
 
-const { businessSignUp, businessProfileInfo, businessBankInfo, businessUplodeDocument } = require("../../api/Partner/controller")
-
 // step 1
 exports.ADD_SALOON_STORE = async (req, res) => {
     try {
-        res.locals.message = req.flash()
-        //  console.log("hjvh",req.query,"jh",req.body)
-        // jghjhn
-        const businessSign = await businessSignUp(req)
-        if (businessSign.statusCode == 200 && businessSign.status == true) {
-            req.flash("success", businessSign.message)
-            res.redirect(`/add_saloon?id=${businessSign.data[0]._id}`)
+        res.locals.message = req.flash();
+        const { body, query, user } = req;
+        const {
+            storeName, email, Phone, confromPassword, password, ownerName, type, category,
+            Partner_Size, aria, pincode, city, state, description
+        } = body;
+
+        if (query.id) {
+            if (!isValidObjectId(query.id)) {
+                req.flash("error", "Invalid store id.");
+                return res.redirect("/add_saloon");
+            }
+
+            const existingStore = await saloon.findById(query.id);
+            if (!existingStore) {
+                req.flash("error", "Store not found.");
+                return res.redirect("/add_saloon");
+            }
+
+            const duplicateName = await saloon.findOne({ storeName, _id: { $ne: existingStore._id } });
+            if (duplicateName) {
+                req.flash("error", "storeName Already Exists");
+                return res.redirect(`/add_saloon?id=${existingStore._id}`);
+            }
+
+            const duplicateEmail = await saloon.findOne({ email, _id: { $ne: existingStore._id } });
+            if (duplicateEmail) {
+                req.flash("error", "email Already Exists");
+                return res.redirect(`/add_saloon?id=${existingStore._id}`);
+            }
+
+            const duplicatePhone = await saloon.findOne({ Phone, _id: { $ne: existingStore._id } });
+            if (duplicatePhone) {
+                req.flash("error", "Phone Already Exists");
+                return res.redirect(`/add_saloon?id=${existingStore._id}`);
+            }
+
+            const updatePayload = {
+                storeName,
+                email,
+                Phone,
+                ownerName,
+                type,
+                category,
+                Partner_Size,
+                description,
+                location: { aria, pincode, city, state }
+            };
+
+            if (password) {
+                updatePayload.password = password;
+            }
+
+            const updated = await saloon.findByIdAndUpdate(existingStore._id, updatePayload, { new: true });
+            req.flash("success", "saloon update successfully step-1");
+            return res.redirect(`/add_saloon?id=${updated._id}`);
         } else {
-            req.flash("error", businessSign.message)
-            res.redirect(`/add_saloon`)
+            if (!storeName || !email || !Phone || !ownerName) {
+                req.flash("error", "Please fill all required fields.");
+                return res.redirect("/add_saloon");
+            }
+            if (password !== confromPassword) {
+                req.flash("error", "password not match");
+                return res.redirect("/add_saloon");
+            }
+
+            const duplicateName = await saloon.findOne({ storeName });
+            if (duplicateName) {
+                req.flash("error", "storeName Already Exists");
+                return res.redirect("/add_saloon");
+            }
+            const duplicateEmail = await saloon.findOne({ email });
+            if (duplicateEmail) {
+                req.flash("error", "email Already Exists");
+                return res.redirect("/add_saloon");
+            }
+            const duplicatePhone = await saloon.findOne({ Phone });
+            if (duplicatePhone) {
+                req.flash("error", "Phone Already Exists");
+                return res.redirect("/add_saloon");
+            }
+
+            const created = await saloon.create({
+                userId: user?._id || null,
+                storeName,
+                email,
+                Phone,
+                password,
+                ownerName,
+                type,
+                category,
+                Partner_Size,
+                location: { aria, pincode, city, state },
+                description
+            });
+            req.flash("success", "Store added successfully.");
+            return res.redirect(`/add_saloon?id=${created._id}`);
         }
     } catch (error) {
         console.log(error);
+        req.flash("error", "Unable to save store details.");
+        return res.redirect("/add_saloon");
     }
 }
 
@@ -83,14 +164,15 @@ exports.businessProfile = async (req, res) => {
             req.flash("error", "Store not found.");
             return res.redirect("/add_saloon");
         }
-        const businessP = await businessProfileInfo(req)
-        if (businessP.statusCode == 200 && businessP.status == true) {
-            req.flash("success", businessP.message)
-            return res.redirect(`/add_saloon?id=${businessP.data[0]._id}`)
-        } else {
-            req.flash("error", businessP.message)
-            return res.redirect(`/add_saloon?id=${find._id}`)
-        }
+
+        const updated = await saloon.findByIdAndUpdate(
+            find._id,
+            { ProfileInfo: req.body },
+            { new: true }
+        );
+
+        req.flash("success", "update is Succesfuuly step 2");
+        return res.redirect(`/add_saloon?id=${updated._id}`);
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to save business profile info.");
@@ -112,14 +194,14 @@ exports.businessBankInfoAdmin = async (req, res) => {
             return res.redirect("/add_saloon");
         }
 
-        const businessP = await businessBankInfo(req)
-        if (businessP.statusCode == 200 && businessP.status == true) {
-            req.flash("success", businessP.message)
-            return res.redirect(`/add_saloon?id=${businessP.data[0]._id}`)
-        } else {
-            req.flash("error", businessP.message)
-            return res.redirect(`/add_saloon?id=${find._id}`)
-        }
+        const updated = await saloon.findByIdAndUpdate(
+            find._id,
+            { BankInfo: req.body },
+            { new: true }
+        );
+
+        req.flash("success", "update is Succesfuuly step 3");
+        return res.redirect(`/add_saloon?id=${updated._id}`);
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to save bank info.");
@@ -140,16 +222,27 @@ exports.businessUplodeDocumentAdmin = async (req, res) => {
             req.flash("error", "Store not found.");
             return res.redirect("/add_saloon");
         }
+        const files = req.files || {};
+        const documents = {
+            BannerLogo: files.BannerLogo?.[0]?.filename || find.uplodeDocuments?.BannerLogo || "",
+            logoImage: files.logoImage?.[0]?.filename || find.uplodeDocuments?.logoImage || "",
+            panImage: files.panImage?.[0]?.filename || find.uplodeDocuments?.panImage || "",
+            businessCertificate: files.businessCertificate?.[0]?.filename || find.uplodeDocuments?.businessCertificate || "",
+        };
 
-        const businessP = await businessUplodeDocument(req)
-        if (businessP.statusCode == 200 && businessP.status == true) {
-            // res.redirect(`/document-uplode?id=${find._id}`)
-            req.flash("success", businessP.message);
-            return res.redirect(`/add_saloon?id=${find._id}`)
-        } else {
-            req.flash("error", businessP.message)
-            return res.redirect(`/add_saloon?id=${find._id}`)
+        if (!documents.BannerLogo || !documents.logoImage || !documents.panImage || !documents.businessCertificate) {
+            req.flash("error", "All document images are required.");
+            return res.redirect(`/add_saloon?id=${find._id}`);
         }
+
+        const updated = await saloon.findByIdAndUpdate(
+            find._id,
+            { uplodeDocuments: documents },
+            { new: true }
+        );
+
+        req.flash("success", "update is Succesfuuly STEP 4");
+        return res.redirect(`/add_saloon?id=${updated._id}`);
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to upload documents.");
@@ -211,182 +304,6 @@ exports.GetSaloonAddress = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).send([]);
-    }
-}
-
-
-
-exports.viewsSaloonRequest = async (req, res) => {
-    try {
-        res.locals.message = req.flash();
-        let condition = [];
-        const user = req.user
-        let match = {}
-        if (req.query.city != undefined && req.query.city != "") {
-            match['location.city'] = req.query.city
-        }
-        if (req.query.Phone != undefined && req.query.Phone != "") {
-            match.Phone = { $eq: Number(req.query.Phone) }
-        }
-        if (req.query.email != undefined && req.query.email != "") {
-            match.email = { $regex: req.query.email, $options: 'i' }
-        }
-        if (req.query.status != undefined && req.query.status != "") {
-            match.status = req.query.status
-        } else {
-            match.status = "pending"
-        }
-        condition.push({
-            '$match': match
-        })
-        condition.push({
-            '$lookup': {
-                'from': 'users',
-                'localField': 'userId',
-                'foreignField': '_id',
-                'pipeline': [
-                    {
-                        '$project': {
-                            'name': 1
-                        }
-                    }
-                ],
-                'as': 'result'
-            }
-        }, {
-            '$addFields': {
-                'name': {
-                    '$getField': {
-                        'field': 'name',
-                        'input': {
-                            '$arrayElemAt': [
-                                '$result', 0
-                            ]
-                        }
-                    }
-                }
-            }
-        }
-        )
-        const data = await saloonRequst.aggregate(condition)
-        const FindAllcity = await getAllSaloonRequistCity(req)
-        if (data && FindAllcity) {
-            res.render("add_saloon/views-saloon-request", { user, data, query: req.query, city: FindAllcity.data })
-        } else {
-            res.redirect("/")
-        }
-    } catch (error) {
-        console.log(error)
-
-    }
-}
-
-
-exports.saloonApproval = async (req, res) => {
-    try {
-        if (req.query.id != undefined && req.query.id != "") {
-            const _id = mongoose.Types.ObjectId(req.query.id)
-            const findSloonRequist = await saloonRequst.findOne({ _id })
-
-            let ovh = {};
-            ovh.shopNumber = findSloonRequist.shopNumber
-            ovh.aria = findSloonRequist.aria
-            ovh.pincode = findSloonRequist.pincode
-            ovh.city = findSloonRequist.city
-            ovh.state = findSloonRequist.state
-
-            let saloon_details = new saloon({
-                userId: findSloonRequist.userId,
-                storeName: findSloonRequist.storeName,
-                ownerName: findSloonRequist.ownerName,
-                password: findSloonRequist.password,
-                email: findSloonRequist.email,
-                Phone: findSloonRequist.Phone,
-                location: {
-                    aria: findSloonRequist.location.aria,
-                    pincode: findSloonRequist.location.pincode,
-                    city: findSloonRequist.location.city,
-                    state: findSloonRequist.location.state,
-                },
-                category: findSloonRequist.category,
-                status: findSloonRequist.status,
-                Partner_Size: findSloonRequist.Partner_Size,
-                ProfileInfo: {
-                    yourService: findSloonRequist.ProfileInfo.yourService,
-                    alternatePhone: findSloonRequist.ProfileInfo.alternatePhone,
-                    starting_time: findSloonRequist.ProfileInfo.starting_time,
-                    ending_time: findSloonRequist.ProfileInfo.ending_time,
-                    workingday: findSloonRequist.ProfileInfo.workingday,
-                    FaceBookProfile: findSloonRequist.ProfileInfo.FaceBookProfile,
-                    instaProfile: findSloonRequist.ProfileInfo.instaProfile,
-                    webProfile: findSloonRequist.ProfileInfo.webProfile,
-                    amenities: findSloonRequist.ProfileInfo.amenities,
-                },
-                BankInfo: {
-                    panNo: findSloonRequist.BankInfo.panNo,
-                    gstNo: findSloonRequist.BankInfo.gstNo,
-                    bankName: findSloonRequist.BankInfo.bankName,
-                    branchName: findSloonRequist.BankInfo.branchName,
-                    accountNo: findSloonRequist.BankInfo.accountNo,
-                    accoutHolder: findSloonRequist.BankInfo.accoutHolder,
-                    ifscCode: findSloonRequist.BankInfo.ifscCode,
-                    kyc: findSloonRequist.BankInfo.kyc,
-                },
-                uplodeDocuments: {
-                    BannerLogo: findSloonRequist.uplodeDocuments.BannerLogo,
-                    logoImage: findSloonRequist.uplodeDocuments.logoImage,
-                    panImage: findSloonRequist.uplodeDocuments.panImage,
-                    businessCertificate: findSloonRequist.uplodeDocuments.businessCertificate,
-                },
-
-            });
-            const result = await saloon_details.save();
-            if (result) {
-                req.result = result
-                await this.saloonRequistDelete(req, res)
-            };
-        } else {
-            res.redirect("/views-saloon-request")
-        }
-    } catch (error) {
-        console.log(error);
-        ;
-    }
-}
-
-exports.saloonRequistDelete = async (req, res) => {
-    try {
-        res.locals.message = req.flash();
-        if (req.query.id != undefined && req.query.id != "") {
-            // const _id = mongoose.Types.ObjectId(req.query.id)
-            const result = await saloonRequst.findByIdAndUpdate({ _id: req.query.id }, { status: "rejected" }, { new: true });
-            if (result) {
-                if (req.result) {
-                    req.flash("success", "Saloon Request Approval !");
-                    res.redirect("/views-saloon-request");
-                } else {
-                    req.flash("error", "Saloon Request Rejected !");
-                    res.redirect("/views-saloon-request");
-                };
-            };
-        } else {
-            res.redirect("/views-saloon-request");
-        }
-    } catch (error) {
-        console.log(error);
-        ;
-    }
-}
-
-exports.findAddSaloonRequist = async (req, res) => {
-    try {
-        const id = req.query.id
-        const FindData = await saloonRequst.find({ _id: mongoose.Types.ObjectId(id) })
-        if (FindData) {
-            res.send(FindData)
-        }
-    } catch (error) {
-        console.log(error)
     }
 }
 

@@ -1,6 +1,5 @@
 const service = require("../saloonService/model");
 const mongoose = require("mongoose");
-const saloonRequst = require("./model");
 const saloon = require("../saloonstore/model")
 const users = require("../../models/userModel")
 const Service = require("./services")
@@ -90,8 +89,7 @@ exports.businessSignUp = async (req) => {
 
             if (storeName) {
                 const result = await saloon.findOne({ storeName });
-                const result1 = await saloonRequst.findOne({ storeName });
-                if (result || result1) {
+                if (result) {
                     return {
                         statusCode: 400,
                         status: false,
@@ -110,8 +108,7 @@ exports.businessSignUp = async (req) => {
 
             if (email) {
                 const result = await saloon.findOne({ email });
-                const result1 = await saloonRequst.findOne({ email });
-                if (result || result1) {
+                if (result) {
                     return {
                         statusCode: 400,
                         status: false,
@@ -130,8 +127,7 @@ exports.businessSignUp = async (req) => {
 
             if (Phone) {
                 const result = await saloon.findOne({ Phone });
-                const result1 = await saloonRequst.findOne({ Phone });
-                if (result || result1) {
+                if (result) {
                     return {
                         statusCode: 400,
                         status: false,
@@ -190,7 +186,7 @@ exports.businessSignUp = async (req) => {
                 };
             };
 
-            let saloon_details = new saloonRequst({
+            let saloon_details = new saloon({
                 storeName: body.storeName,
                 email: body.email,
                 Phone: body.Phone,
@@ -216,7 +212,7 @@ exports.businessSignUp = async (req) => {
                 return {
                     statusCode: 200,
                     status: true,
-                    message: "Saloon-requist-register Succesfuuly !",
+                    message: "register-Saloon-Store Succesfuuly !",
                     data: [result]
                 };
             } else {
@@ -236,16 +232,8 @@ exports.businessSignUp = async (req) => {
 // step 2
 exports.businessProfileInfo = async ({ query, body }) => {
     try {
-        let findData;
-        let findSaloonRequst;
         if (query.id != undefined && query.id != "") {
-            findSaloonRequst = await saloonRequst.findOne({ _id: mongoose.Types.ObjectId(query.id) })
-            const findSaloon = await saloon.findOne({ _id: mongoose.Types.ObjectId(query.id) })
-            if (findSaloonRequst) {
-                findData = findSaloonRequst
-            } else {
-                findData = findSaloon
-            }
+            const findData = await saloon.findOne({ _id: mongoose.Types.ObjectId(query.id) })
             if (!findData) {
                 return {
                     statusCode: 400,
@@ -254,34 +242,26 @@ exports.businessProfileInfo = async ({ query, body }) => {
                     data: []
                 };
             };
+            const update = await saloon.findOneAndUpdate({ _id: mongoose.Types.ObjectId(query.id) }, { ProfileInfo: body }, { new: true });
+            if (update) {
+                return {
+                    statusCode: 200,
+                    status: true,
+                    message: " update is Succesfuuly step 2",
+                    data: [update]
+                };
+            }
+            return {
+                statusCode: 400,
+                status: false,
+                message: "samething is wrong ",
+                data: []
+            };
         } else {
             return {
                 statusCode: 400,
                 status: false,
                 message: "please Enter saloon Id ",
-                data: []
-            };
-        };
-        let update;
-        if (findSaloonRequst) {
-            update = await saloonRequst.findOneAndUpdate({ _id: mongoose.Types.ObjectId(query.id) }, { ProfileInfo: body }, { new: true })
-        } else {
-            update = await saloon.findOneAndUpdate({ _id: mongoose.Types.ObjectId(query.id) }, { ProfileInfo: body }, { new: true })
-        }
-
-        if (update) {
-
-            return {
-                statusCode: 200,
-                status: true,
-                message: " update is Succesfuuly step 2",
-                data: [update]
-            };
-        } else {
-            return {
-                statusCode: 400,
-                status: false,
-                message: "samething is wrong ",
                 data: []
             };
         };
@@ -294,16 +274,8 @@ exports.businessProfileInfo = async ({ query, body }) => {
 // step 3
 exports.businessBankInfo = async ({ query, body }) => {
     try {
-        let findData;
-        let findSaloonRequst;
         if (query.id != undefined && query.id != "") {
-            findSaloonRequst = await saloonRequst.findOne({ _id: mongoose.Types.ObjectId(query.id) })
-            findsaloon = await saloon.findOne({ _id: mongoose.Types.ObjectId(query.id) })
-            if (findSaloonRequst) {
-                findData = findSaloonRequst
-            } else {
-                findData = findsaloon
-            }
+            const findData = await saloon.findOne({ _id: mongoose.Types.ObjectId(query.id) })
             if (!findData) {
                 return {
                     statusCode: 400,
@@ -312,33 +284,26 @@ exports.businessBankInfo = async ({ query, body }) => {
                     data: []
                 };
             };
+            const update = await saloon.findOneAndUpdate({ _id: mongoose.Types.ObjectId(query.id) }, { BankInfo: body }, { new: true });
+            if (update) {
+                return {
+                    statusCode: 200,
+                    status: true,
+                    message: "update is Succesfuuly step 3",
+                    data: [update]
+                };
+            }
+            return {
+                statusCode: 400,
+                status: false,
+                message: "samething is wrong step 3",
+                data: []
+            };
         } else {
             return {
                 statusCode: 400,
                 status: false,
                 message: "please Enter saloon Id ",
-                data: []
-            };
-        };
-        let update;
-        if (findSaloonRequst) {
-            update = await saloonRequst.findOneAndUpdate({ _id: mongoose.Types.ObjectId(query.id) }, { BankInfo: body }, { new: true })
-        } else {
-            update = await saloon.findOneAndUpdate({ _id: mongoose.Types.ObjectId(query.id) }, { BankInfo: body }, { new: true })
-        }
-
-        if (update) {
-            return {
-                statusCode: 200,
-                status: true,
-                message: "update is Succesfuuly step 3",
-                data: [update]
-            };
-        } else {
-            return {
-                statusCode: 400,
-                status: false,
-                message: "samething is wrong step 3",
                 data: []
             };
         };
@@ -352,14 +317,14 @@ exports.businessBankInfo = async ({ query, body }) => {
 // step 4
 exports.businessUplodeDocument = async (req) => {
     try {
-        let findData;
-        let findSaloonRequst;
-        findSaloonRequst = await saloonRequst.findOne({ _id: mongoose.Types.ObjectId(req.query.id) })
         const findSaloon = await saloon.findOne({ _id: mongoose.Types.ObjectId(req.query.id) })
-        if (findSaloonRequst) {
-            findData = findSaloonRequst
-        } else {
-            findData = findSaloon
+        if (!findSaloon) {
+            return {
+                statusCode: 400,
+                status: false,
+                message: "please Enter valide saloon Id ",
+                data: []
+            };
         }
 
         let obj = {};
@@ -412,12 +377,7 @@ exports.businessUplodeDocument = async (req) => {
             };
         }
 
-        let update;
-        if (findSaloonRequst) {
-            update = await saloonRequst.findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.query.id) }, { uplodeDocuments: obj }, { new: true })
-        } else {
-            update = await saloon.findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.query.id) }, { uplodeDocuments: obj }, { new: true })
-        }
+        const update = await saloon.findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.query.id) }, { uplodeDocuments: obj }, { new: true })
 
         if (update) {
             return {

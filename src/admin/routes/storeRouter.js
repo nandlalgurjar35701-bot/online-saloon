@@ -3,8 +3,7 @@ const Upload = require("../../middleware/img");
 const { Router } = require("express");
 const app = Router();
 const { ADD_SALOON_STORE, VIEW_SALOON, DELETE_SALOON,
-    GetSaloonAddress, viewsSaloonRequest, saloonApproval, saloonRequistDelete,
-    findAddSaloonRequist, saloonRegister, businessProfile,
+    GetSaloonAddress, saloonRegister, businessProfile,
     businessBankInfoAdmin,
     businessUplodeDocumentAdmin, findSaloonByUser, FindAdminAllSaloon,
     addImagesInSaloon } = require("../controller/storeController");
@@ -33,16 +32,6 @@ app.post("/Add-images-in-saloon", auth, Upload.array("image"), addImagesInSaloon
 
 
 app.get("/Find-Admin-All-saloon", auth, FindAdminAllSaloon)
-
-
-
-
-
-app.get("/views-saloon-request", auth, viewsSaloonRequest);
-app.get("/saloon-requist-approval", auth, saloonApproval);
-app.get("/saloon-request-delete", auth, saloonRequistDelete);
-app.get("/find-Add-Saloon-Requist", auth, findAddSaloonRequist)
-
 
 app.get("/find-saloon-by-user", auth, findSaloonByUser)
 module.exports = app

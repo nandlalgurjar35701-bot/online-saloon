@@ -3,7 +3,6 @@ const user = require("../../models/userModel");
 const saloon = require("../../api/saloonstore/model");
 const service = require("../../api/saloonService/model");
 const payment = require("../../api/payment/model");
-const PartnerRequist = require("../../api/Partner/model");
 const Artice = require("../../api/artist/model");
 const veconcy = require("../Vacancy/model");
 
@@ -45,7 +44,6 @@ exports.AllDetail = async (req, res) => {
    condition = {}
   }
   obj.saloon = await saloon.countDocuments(condition)
-  obj.FindRequist = await PartnerRequist.countDocuments()//super Admin
 
   if (req.user.type == "admin") {
    let condition = []
@@ -112,5 +110,4 @@ exports.AllDetail = async (req, res) => {
   console.log(errore);
  };
 };
-
 

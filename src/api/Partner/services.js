@@ -1,19 +1,12 @@
 const saloon = require("../saloonstore/model");
-const saloonRequst = require("../../api/Partner/model");
 const mongoose = require("mongoose");
 
 
 exports.UpdateSaloon = async ({ body, query }) => {
  try {
-  let findData;
-  let findSaloonRequst;
-  findSaloonRequst = await saloonRequst.findOne({ _id: mongoose.Types.ObjectId(query.id) });
+ let findData;
   const findSaloon = await saloon.findOne({ _id: mongoose.Types.ObjectId(query.id) });
-  if (findSaloonRequst) {
-   findData = findSaloonRequst;
-  } else {
-   findData = findSaloon;
-  };
+  findData = findSaloon;
   const { aria, pincode, city, state, ...rest } = body;
   let location = {};
 
@@ -24,12 +17,7 @@ exports.UpdateSaloon = async ({ body, query }) => {
   rest.location = location;
 
 
-  let update;
-  if (findSaloonRequst) {
-   update = await saloonRequst.findByIdAndUpdate({ _id: mongoose.Types.ObjectId(query.id) }, rest);
-  } else {
-   update = await saloon.findByIdAndUpdate({ _id: mongoose.Types.ObjectId(query.id) }, rest);
-  };
+  const update = await saloon.findByIdAndUpdate({ _id: mongoose.Types.ObjectId(query.id) }, rest);
 
   if (update) {
    return {
