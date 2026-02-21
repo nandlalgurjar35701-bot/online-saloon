@@ -25,12 +25,11 @@
                 <h1 class="display-4 mb-4">Salon Moments</h1>
             </div>
             <div class="row g-4">
-                <div class="col-sm-6 col-md-4"><img src="/web/img/gallery-1.jpg" class="img-fluid rounded" alt="Gallery"></div>
-                <div class="col-sm-6 col-md-4"><img src="/web/img/gallery-2.jpg" class="img-fluid rounded" alt="Gallery"></div>
-                <div class="col-sm-6 col-md-4"><img src="/web/img/gallery-3.jpg" class="img-fluid rounded" alt="Gallery"></div>
-                <div class="col-sm-6 col-md-4"><img src="/web/img/gallery-4.jpg" class="img-fluid rounded" alt="Gallery"></div>
-                <div class="col-sm-6 col-md-4"><img src="/web/img/gallery-5.jpg" class="img-fluid rounded" alt="Gallery"></div>
-                <div class="col-sm-6 col-md-4"><img src="/web/img/gallery-6.jpg" class="img-fluid rounded" alt="Gallery"></div>
+                <% (data?.gallery || []).forEach(function(item) { %>
+                    <div class="col-sm-6 col-md-4">
+                        <img src="<%= !item.image ? '/web/img/gallery-1.jpg' : (item.image.startsWith('http') || item.image.startsWith('/') ? item.image : (item.image.startsWith('gallery-') ? '/web/img/' + item.image : '/uploads/' + item.image)) %>" class="img-fluid rounded" alt="<%= item.title || 'Gallery' %>">
+                    </div>
+                <% }) %>
             </div>
         </div>
     </div>

@@ -181,7 +181,6 @@
                     <h1 class="display-3">Spa & Beauty Services</h1>
                 </div>
                 <div class="row g-4">
-                    <% console.log()%>
                         <% if (data?.category?.length) { %>
                             <% data.category.forEach((cat)=> { %>
                                 <div class="col-lg-6">
@@ -207,7 +206,7 @@
                                             <div class="col-4">
                                                 <div
                                                     class="services-img d-flex align-items-center justify-content-center rounded">
-                                                    <img src="./uploads/<%= cat.image %>" class="img-fluid rounded"
+                                                    <img src="/uploads/<%= cat.image %>" class="img-fluid rounded"
                                                         alt="<%= cat.name %>">
                                                 </div>
                                             </div>
@@ -237,7 +236,7 @@
                                                     <div class="col-4">
                                                         <div
                                                             class="services-img d-flex align-items-center justify-content-center rounded">
-                                                            <img src="./web/img/services-1.jpg"
+                                                            <img src="/web/img/services-1.jpg"
                                                                 class="img-fluid rounded" alt="">
                                                         </div>
                                                     </div>
@@ -266,37 +265,42 @@
                         <div class="appointment-form p-5">
                             <p class="fs-4 text-uppercase text-primary">Get In Touch</p>
                             <h1 class="display-4 mb-4 text-white">Get Appointment</h1>
-                            <form>
+                            <form action="/appointment" method="post">
                                 <div class="row gy-3 gx-4">
                                     <div class="col-lg-6">
-                                        <input type="text"
+                                        <input type="text" name="name"
                                             class="form-control py-3 border-white bg-transparent text-white"
-                                            placeholder="First Name">
+                                            placeholder="First Name" required>
                                     </div>
                                     <div class="col-lg-6">
-                                        <input type="email"
+                                        <input type="email" name="email"
                                             class="form-control py-3 border-white bg-transparent text-white"
                                             placeholder="Email">
                                     </div>
                                     <div class="col-lg-6">
-                                        <select class="form-select py-3 border-white bg-transparent"
-                                            aria-label="Default select example">
-                                            <option selected>Open this select menu</option>
-                                            <option value="1">One</option>
-                                            <option value="2">Two</option>
-                                            <option value="3">Three</option>
+                                        <input type="text" name="phone"
+                                            class="form-control py-3 border-white bg-transparent text-white"
+                                            placeholder="Phone" required>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <select class="form-select py-3 border-white bg-transparent" name="service"
+                                            aria-label="Select service" required>
+                                            <option value="">Select Service</option>
+                                            <% (data?.category || []).forEach(function(cat) { %>
+                                                <option value="<%= cat.Name %>"><%= cat.Name %></option>
+                                            <% }) %>
                                         </select>
                                     </div>
                                     <div class="col-lg-6">
-                                        <input type="date" class="form-control py-3 border-white bg-transparent">
+                                        <input type="date" name="date" class="form-control py-3 border-white bg-transparent" required>
                                     </div>
                                     <div class="col-lg-12">
                                         <textarea class="form-control border-white bg-transparent text-white"
-                                            name="text" id="area-text" cols="30" rows="5"
+                                            name="message" id="area-text" cols="30" rows="5"
                                             placeholder="Write Comments"></textarea>
                                     </div>
                                     <div class="col-lg-12">
-                                        <button type="button"
+                                        <button type="submit"
                                             class="btn btn-primary btn-primary-outline-0 w-100 py-3 px-5">SUBMIT
                                             NOW</button>
                                     </div>

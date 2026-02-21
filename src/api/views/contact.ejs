@@ -24,23 +24,31 @@
                 <div class="col-lg-4">
                     <div class="bg-light rounded p-4 h-100">
                         <h4>Address</h4>
-                        <p class="mb-3">123 Salon Street, New Delhi</p>
+                        <p class="mb-3"><%= data?.siteSetting?.address || "123 Salon Street, New Delhi" %></p>
                         <h4>Phone</h4>
-                        <p class="mb-3">+91 98765 43210</p>
+                        <p class="mb-3"><%= data?.siteSetting?.phone || "+01234567890" %></p>
                         <h4>Email</h4>
-                        <p class="mb-0">hello@salon.com</p>
+                        <p class="mb-0"><%= data?.siteSetting?.email || "info@example.com" %></p>
                     </div>
                 </div>
                 <div class="col-lg-8">
                     <div class="bg-light rounded p-4">
                         <h4 class="mb-4">Send Message</h4>
-                        <form>
+                        <form action="/contact" method="post">
                             <div class="row g-3">
-                                <div class="col-md-6"><input type="text" class="form-control" placeholder="Your Name"></div>
-                                <div class="col-md-6"><input type="email" class="form-control" placeholder="Your Email"></div>
-                                <div class="col-12"><input type="text" class="form-control" placeholder="Subject"></div>
-                                <div class="col-12"><textarea class="form-control" rows="5" placeholder="Message"></textarea></div>
-                                <div class="col-12"><button type="button" class="btn btn-primary py-2 px-4">Send</button></div>
+                                <div class="col-md-6"><input type="text" name="name" class="form-control" placeholder="Your Name" required></div>
+                                <div class="col-md-6"><input type="email" name="email" class="form-control" placeholder="Your Email" required></div>
+                                <div class="col-md-6"><input type="text" name="phone" class="form-control" placeholder="Phone Number" required></div>
+                                <div class="col-md-6">
+                                    <select name="services" class="form-select">
+                                        <option value="">Select Service</option>
+                                        <% (data?.category || []).forEach(function(cat) { %>
+                                            <option value="<%= cat.Name %>"><%= cat.Name %></option>
+                                        <% }) %>
+                                    </select>
+                                </div>
+                                <div class="col-12"><textarea name="message" class="form-control" rows="5" placeholder="Message" required></textarea></div>
+                                <div class="col-12"><button type="submit" class="btn btn-primary py-2 px-4">Send</button></div>
                             </div>
                         </form>
                     </div>

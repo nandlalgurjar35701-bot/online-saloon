@@ -25,39 +25,19 @@
                 <h1 class="display-4 mb-4 text-white">What Our Clients Say</h1>
             </div>
             <div class="owl-carousel testimonial-carousel">
-                <div class="testimonial-item rounded p-4">
-                    <div class="row">
-                        <div class="col-4">
-                            <img src="/web/img/testimonial-1.jpg" class="img-fluid rounded-circle" alt="Client">
-                        </div>
-                        <div class="col-8">
-                            <h4 class="text-primary">Priya S.</h4>
-                            <p class="fs-6 mb-0 text-white">Amazing service quality and very professional staff.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-item rounded p-4">
-                    <div class="row">
-                        <div class="col-4">
-                            <img src="/web/img/testimonial-2.jpg" class="img-fluid rounded-circle" alt="Client">
-                        </div>
-                        <div class="col-8">
-                            <h4 class="text-primary">Neha R.</h4>
-                            <p class="fs-6 mb-0 text-white">Loved the ambience. Booking and service were smooth.</p>
+                <% (data?.testimonials || []).forEach(function(item) { %>
+                    <div class="testimonial-item rounded p-4">
+                        <div class="row">
+                            <div class="col-4">
+                                <img src="<%= !item.image ? '/web/img/testimonial-1.jpg' : (item.image.startsWith('http') || item.image.startsWith('/') ? item.image : (item.image.startsWith('testimonial-') ? '/web/img/' + item.image : '/uploads/' + item.image)) %>" class="img-fluid rounded-circle" alt="Client">
+                            </div>
+                            <div class="col-8">
+                                <h4 class="text-primary"><%= item.name %></h4>
+                                <p class="fs-6 mb-0 text-white"><%= item.message %></p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="testimonial-item rounded p-4">
-                    <div class="row">
-                        <div class="col-4">
-                            <img src="/web/img/testimonial-3.jpg" class="img-fluid rounded-circle" alt="Client">
-                        </div>
-                        <div class="col-8">
-                            <h4 class="text-primary">Anita K.</h4>
-                            <p class="fs-6 mb-0 text-white">Great hygiene and excellent results every time.</p>
-                        </div>
-                    </div>
-                </div>
+                <% }) %>
             </div>
         </div>
     </div>

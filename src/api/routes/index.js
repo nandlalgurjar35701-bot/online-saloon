@@ -1,7 +1,7 @@
+const serviceController = require("../controller/serviceController");
+
 module.exports = (app) => {
     app.use(require("./userRoute"));
     app.use(require("./serviceRoute"));
-    app.use((req, res) => {
-        return res.status(404).render("404");
-    });
+    app.use(serviceController.notFoundPage);
 };

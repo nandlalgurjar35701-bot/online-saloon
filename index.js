@@ -29,6 +29,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.json());
 
+app.use((req, res, next) => {
+  res.locals.successMessages = req.flash("success");
+  res.locals.errorMessages = req.flash("error");
+  next();
+});
+
 // Middleware to log each API hit
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.originalUrl}`);

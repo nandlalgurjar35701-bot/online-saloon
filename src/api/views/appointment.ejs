@@ -25,14 +25,22 @@
                     <div class="appointment-form p-5">
                         <p class="fs-4 text-uppercase text-primary">Get In Touch</p>
                         <h1 class="display-5 mb-4 text-white">Schedule Your Visit</h1>
-                        <form>
+                        <form action="/appointment" method="post">
                             <div class="row gy-3 gx-4">
-                                <div class="col-lg-6"><input type="text" class="form-control py-3 border-white bg-transparent text-white" placeholder="Name"></div>
-                                <div class="col-lg-6"><input type="email" class="form-control py-3 border-white bg-transparent text-white" placeholder="Email"></div>
-                                <div class="col-lg-6"><input type="text" class="form-control py-3 border-white bg-transparent text-white" placeholder="Phone"></div>
-                                <div class="col-lg-6"><input type="date" class="form-control py-3 border-white bg-transparent text-white"></div>
-                                <div class="col-lg-12"><textarea class="form-control border-white bg-transparent text-white" rows="4" placeholder="Message"></textarea></div>
-                                <div class="col-lg-12"><button type="button" class="btn btn-primary w-100 py-3 px-5">Submit</button></div>
+                                <div class="col-lg-6"><input type="text" name="name" class="form-control py-3 border-white bg-transparent text-white" placeholder="Name" required></div>
+                                <div class="col-lg-6"><input type="email" name="email" class="form-control py-3 border-white bg-transparent text-white" placeholder="Email"></div>
+                                <div class="col-lg-6"><input type="text" name="phone" class="form-control py-3 border-white bg-transparent text-white" placeholder="Phone" required></div>
+                                <div class="col-lg-6">
+                                    <select name="service" class="form-select py-3 border-white bg-transparent" required>
+                                        <option value="">Select Service</option>
+                                        <% (data?.category || []).forEach(function(cat) { %>
+                                            <option value="<%= cat.Name %>"><%= cat.Name %></option>
+                                        <% }) %>
+                                    </select>
+                                </div>
+                                <div class="col-lg-6"><input type="date" name="date" class="form-control py-3 border-white bg-transparent text-white" required></div>
+                                <div class="col-lg-12"><textarea name="message" class="form-control border-white bg-transparent text-white" rows="4" placeholder="Message"></textarea></div>
+                                <div class="col-lg-12"><button type="submit" class="btn btn-primary w-100 py-3 px-5">Submit</button></div>
                             </div>
                         </form>
                     </div>
@@ -40,11 +48,11 @@
                 <div class="col-lg-6">
                     <div class="appointment-time p-5">
                         <h1 class="display-5 mb-4">Opening Hours</h1>
-                        <p class="fs-5 text-white mb-2">Mon - Fri: 09:00 AM - 09:00 PM</p>
-                        <p class="fs-5 text-white mb-2">Saturday: 09:00 AM - 08:00 PM</p>
-                        <p class="fs-5 text-white mb-2">Sunday: 10:00 AM - 06:00 PM</p>
+                        <p class="fs-5 text-white mb-2">Mon - Fri: <%= data?.siteSetting?.openingHours?.monFri || "09:00 AM - 09:00 PM" %></p>
+                        <p class="fs-5 text-white mb-2">Saturday: <%= data?.siteSetting?.openingHours?.saturday || "09:00 AM - 08:00 PM" %></p>
+                        <p class="fs-5 text-white mb-2">Sunday: <%= data?.siteSetting?.openingHours?.sunday || "10:00 AM - 06:00 PM" %></p>
                         <hr class="text-white">
-                        <p class="fs-5 text-white mb-0">Call us: +91 98765 43210</p>
+                        <p class="fs-5 text-white mb-0">Call us: <%= data?.siteSetting?.phone || "+01234567890" %></p>
                     </div>
                 </div>
             </div>

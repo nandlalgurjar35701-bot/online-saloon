@@ -438,7 +438,13 @@ exports.EditUserProfile = async ({ user, file }) => {
 
 exports.about = async (req, res) => {
     try {
-        const data = await aboutModel.findOne()
+        const websiteData = await appServices.index();
+        const aboutData = await aboutModel.findOne().lean();
+        const data = {
+            ...websiteData,
+            title: aboutData?.title || "",
+            description: aboutData?.description || "",
+        };
         res.render('about', { data })
     } catch (error) {
         console.log(error);
