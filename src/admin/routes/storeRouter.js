@@ -2,15 +2,15 @@ const auth = require("../../middleware/adminauth")
 const Upload = require("../../middleware/img");
 const { Router } = require("express");
 const app = Router();
-const { ADD_SALOON, ADD_SALOON_STORE, VIEW_SALOON, DELETE_SALOON,
+const { ADD_SALOON_STORE, VIEW_SALOON, DELETE_SALOON,
     GetSaloonAddress, viewsSaloonRequest, saloonApproval, saloonRequistDelete,
-    findAddSaloonRequist, saloonRegister, businessProfileInfo, businessProfile,
-    businessBankInfoForm, businessBankInfoAdmin, businessUplodeDocument,
+    findAddSaloonRequist, saloonRegister, businessProfile,
+    businessBankInfoAdmin,
     businessUplodeDocumentAdmin, findSaloonByUser, FindAdminAllSaloon,
-    addImagesInSaloon } = require("./contollers");
+    addImagesInSaloon } = require("../controller/storeController");
 
 app.get("/view_saloon", auth, VIEW_SALOON)
-app.get("/delete_saloon", DELETE_SALOON)
+app.get("/delete_saloon", auth, DELETE_SALOON)
 app.get("/get-saloon-address", auth, GetSaloonAddress)
 
 app.get("/add_saloon", auth, saloonRegister)
@@ -29,7 +29,7 @@ app.post("/business-uplode-document-admin", auth, Upload.fields([{
 }]), businessUplodeDocumentAdmin)
 
 
-app.post("/Add-images-in-saloon", Upload.array("image"), auth, addImagesInSaloon)
+app.post("/Add-images-in-saloon", auth, Upload.array("image"), addImagesInSaloon)
 
 
 app.get("/Find-Admin-All-saloon", auth, FindAdminAllSaloon)

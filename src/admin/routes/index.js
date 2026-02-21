@@ -1,5 +1,6 @@
 module.exports = (app) => {
     app.use(require("../admin1/route"));
+    app.use(require("./storeRouter"));
     app.use(require("./appRouter"));
     app.use(require("./aboutRouter"));
     app.use(require("../add_service/routes"));

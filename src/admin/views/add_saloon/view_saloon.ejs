@@ -12,6 +12,7 @@
 <body>
   <%- include('../../partials/Header.ejs') %>
     <%- include("../../partials/sidebar.ejs") %>
+      <%- include("../../partials/alertMsg.ejs") %>
 
       <main id="main" class="main">
         <div class="pagetitle">
@@ -92,7 +93,11 @@
                 </div>
                 <div class="card">
                   <div class="card-body ">
-                    <h5 class="card-title">Saloon List</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h5 class="card-title mb-0">Saloon List</h5>
+                      <a href="/add_saloon" class="btn btn-primary btn-sm">Add Store</a>
+                    </div>
+                    <div style="border-top: 1px solid #e9ecef; margin: 12px 0 14px 0;"></div>
 
                     <!-- Table with stripped rows -->
                     <table class="table datatable text-nowrap">
@@ -116,56 +121,56 @@
                       </thead>
                       <tbody>
                         <% let i=0 %>
-                          <% for( data of data) { %>
+                          <% for (const store of data) { %>
                             <tr>
                               <th scope="row">
                                 <%= ++i %>
                               </th>
                               <td>
-                                <%= data.storeName %>
+                                <%= store.storeName %>
                               </td>
                               <td>
-                                <%= data.name %>
+                                <%= store.name %>
                               </td>
                               <td>
-                                <%= data.email %>
+                                <%= store.email %>
                               </td>
                               <td>
-                                <%= data.Phone %>
+                                <%= store.Phone %>
                               </td>
                               <td>
-                                <%= data.type %>
+                                <%= store.type %>
                               </td>
                               <td>
-                                <button type="button" value="<%= data._id %>" id="location" onclick="saloonAdd(this)"
+                                <button type="button" value="<%= store._id %>" id="location" onclick="saloonAdd(this)"
                                   class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top"
                                   data-bs-title="location">
                                   <i class="bi bi-eye"></i>
                                 </button>
                               </td>
                               <td>
-                                <button type="button" value="<%= data._id %>" id="profile" onclick="saloonAdd(this)"
+                                <button type="button" value="<%= store._id %>" id="profile" onclick="saloonAdd(this)"
                                   class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top"
                                   data-bs-title="profile">
                                   <i class="bi bi-eye"></i>
                                 </button>
                               </td>
                               <td>
-                                <button type="button" value="<%= data._id %>" id="Document" onclick="saloonAdd(this)"
+                                <button type="button" value="<%= store._id %>" id="Document" onclick="saloonAdd(this)"
                                   class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top"
                                   data-bs-title="Document">
                                   <i class="bi bi-eye"></i>
                                 </button>
                               </td>
                               <td>
-                                <button type="button" value="<%= data._id %>" id="BankInfo" onclick="saloonAdd(this)"
+                                <button type="button" value="<%= store._id %>" id="BankInfo" onclick="saloonAdd(this)"
                                   class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top"
                                   data-bs-title="BankInfo">
                                   <i class="bi bi-eye"></i>
                                 </button>
                               </td>
                               <td>
-                                <button type="button" value="<%= data._id %>" id="description" onclick="saloonAdd(this)"
+                                <button type="button" value="<%= store._id %>" id="description" onclick="saloonAdd(this)"
                                   class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top"
                                   data-bs-title="Description">
                                   <i class="bi bi-eye"></i>
@@ -173,14 +178,14 @@
                               </td>
                               <% let NumberOfservice;%>
                                 <td>
-                                  <a href="/add_service?saloonId=<%= data._id%>" class="btn btn-success text-warning"
+                                  <a href="/add_service?saloonId=<%= store._id%>" class="btn btn-success text-warning"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Add New Service"><i
                                       class="ri-file-add-line"></i></a>
-                                  <%data.ccc.forEach(element=> {%>
+                                  <%store.ccc.forEach(element=> {%>
 
                                     <%if( element._id==0){%>
                                       <% NumberOfservice=element.count %>
-                                        <a href="/view_service?id=<%= data._id%>" class="btn btn-success"
+                                        <a href="/view_service?id=<%= store._id%>" class="btn btn-success"
                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="view Service">
                                           <%= element.count %>
                                             <i class="bi bi-eye"></i>
@@ -191,16 +196,16 @@
                                 </td>
                                 <td>
                                   <%if(NumberOfservice>1){%>
-                                    <a href="/add-new-package?saloonId=<%= data._id%>"
+                                    <a href="/add-new-package?saloonId=<%= store._id%>"
                                       class="btn btn-success text-warning" data-bs-toggle="tooltip"
                                       data-bs-placement="top" data-bs-title="Add New Package">
                                       <i class="ri-file-add-line"></i></a>
                                     <% }%>
 
-                                      <%if(data.ccc.length>1){%>
-                                        <%data.ccc.forEach(element=> {%>
+                                      <%if(store.ccc.length>1){%>
+                                        <%store.ccc.forEach(element=> {%>
                                           <%if( element._id==1){%>
-                                            <a href="/view-package?id=<%= data._id%>" class="btn btn-success"
+                                            <a href="/view-package?id=<%= store._id%>" class="btn btn-success"
                                               data-bs-toggle="tooltip" data-bs-placement="top"
                                               data-bs-title="view Package">
                                               <%= element.count %>
@@ -214,9 +219,9 @@
                                 <td>
                                   <!-- <a href="/add_saloon?id=<%= data._id%>" class="btn btn-dark">Edit</a>
                                 <a href="/delete_saloon?id=<%= data._id%>" class="btn btn-danger">Delete</a> -->
-                                  <a href="/add_saloon?id=<%= data._id%>" class="btn btn-info" data-bs-toggle="tooltip"
+                                  <a href="/add_saloon?id=<%= store._id%>" class="btn btn-info" data-bs-toggle="tooltip"
                                     data-bs-placement="top" data-bs-title="Edit"><i class="ri-edit-box-line"></i></a>
-                                  <a href="/delete_saloon?id=<%= data._id%>" class="btn btn-danger"
+                                  <a href="/delete_saloon?id=<%= store._id%>" class="btn btn-danger"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Saloon">
                                     <i class="ri-delete-bin-5-line"></i>
                                   </a>
