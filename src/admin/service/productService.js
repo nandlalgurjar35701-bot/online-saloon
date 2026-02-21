@@ -1,4 +1,4 @@
-const saloonService = require("../../api/saloonService/model");
+const productModel = require("../../api/product/model");
 const mongoose = require("mongoose");
 
 exports.fetchProductList = async (req) => {
@@ -35,5 +35,5 @@ exports.fetchProductList = async (req) => {
     },
   });
 
-  return saloonService.aggregate(pipeline);
+  return productModel.aggregate(pipeline);
 };

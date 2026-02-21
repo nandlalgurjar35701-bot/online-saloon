@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const saloon = require("../../api/saloonstore/model");
 const Category = require("../../models/categoryModel");
-const saloonService = require("../../api/saloonService/model");
+const productModel = require("../../api/product/model");
 const productService = require("../service/productService");
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
@@ -13,7 +13,7 @@ exports.addProductPage = async (req, res) => {
     let serviceData = null;
 
     if (req.query.id && isValidObjectId(req.query.id)) {
-      serviceData = await saloonService.findById(req.query.id);
+      serviceData = await productModel.findById(req.query.id);
     }
 
     return res.render("product/add-product", {
@@ -39,12 +39,12 @@ exports.addProductStore = async (req, res) => {
     }
 
     if (query.id && isValidObjectId(query.id)) {
-      await saloonService.findByIdAndUpdate(query.id, body);
+      await productModel.findByIdAndUpdate(query.id, body);
       req.flash("success", "Product updated successfully.");
       return res.redirect("/view-product");
     }
 
-    await saloonService.create(body);
+    await productModel.create(body);
     req.flash("success", "Product added successfully.");
     return res.redirect("/view-product");
   } catch (error) {
@@ -77,7 +77,7 @@ exports.deleteProduct = async (req, res) => {
       return res.redirect("/view-product");
     }
 
-    await saloonService.findByIdAndDelete(req.query.id);
+    await productModel.findByIdAndDelete(req.query.id);
     req.flash("success", "Product deleted successfully.");
     return res.redirect("/view-product");
   } catch (error) {
@@ -131,7 +131,7 @@ exports.findSaloon = async (req, res) => {
 
 exports.findAllProductName = async () => {
   try {
-    const names = await saloonService.distinct("ServiceName", { ServiceName: { $ne: "" } });
+    const names = await productModel.distinct("ServiceName", { ServiceName: { $ne: "" } });
     return names.filter(Boolean);
   } catch (error) {
     console.log(error);
