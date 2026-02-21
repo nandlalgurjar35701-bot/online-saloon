@@ -4,15 +4,21 @@ const cors = require("cors");
 const path = require("path");
 const flash = require("connect-flash");
 const session = require("express-session");
-const cookiparser = require("cookie-parser");
+const cookieParser = require("cookie-parser");
+require('dotenv').config();
+
 app.use(express.static(path.join(__dirname, '/public')));
 
 app.set('views', path.join(__dirname, 'src/admin/views'));
 app.set("view engine", "ejs");
-app.use(cookiparser('keyboard cat'));
-app.use(session({ cookie: { maxAge: 60000000 }, resave: true, saveUninitialized: true, secret: "secretsession" }));
+app.use(cookieParser(process.env.COOKIE_SECRET || "keyboard cat"));
+app.use(session({
+    cookie: { maxAge: 60000000 },
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.SESSION_SECRET || "secretsession"
+}));
 app.use(flash());
-app.use(cookiparser());
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -20,11 +26,10 @@ app.use(express.json());
 // Middleware to log each API hit
 app.use((req, res, next) => {
     const now = new Date().toISOString();
-    console.log(`${req.method} ${req.originalUrl}`);
+    console.log(`[${now}] ${req.method} ${req.originalUrl}`);
     next();
 });
 
-require('dotenv').config();
 require('./src/datasources/connection');
 const port = process.env.adminPORT || 7171;
 // const routes = require("./src/api");
