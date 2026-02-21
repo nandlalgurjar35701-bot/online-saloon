@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("./partials/head.ejs") %>
+<body>
+    <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" role="status"></div>
+    </div>
+
+    <%- include("./partials/header.ejs") %>
+
+    <div class="container-fluid bg-breadcrumb py-5">
+        <div class="container text-center py-5">
+            <h3 class="text-white display-3 mb-4">404 Page</h3>
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active text-white">404</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="container-fluid py-5">
+        <div class="container py-5 text-center">
+            <i class="bi bi-exclamation-triangle display-1 text-secondary"></i>
+            <h1 class="display-1">404</h1>
+            <h2 class="mb-4">Page Not Found</h2>
+            <p class="mb-4">The page you are looking for does not exist.</p>
+            <a class="btn btn-primary rounded-pill py-3 px-5" href="/">Go To Home</a>
+        </div>
+    </div>
+
+    <%- include("./partials/footerlink.ejs") %>
+</body>
+</html>

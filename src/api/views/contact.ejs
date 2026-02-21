@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("./partials/head.ejs") %>
+<body>
+    <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" role="status"></div>
+    </div>
+
+    <%- include("./partials/header.ejs") %>
+
+    <div class="container-fluid bg-breadcrumb py-5">
+        <div class="container text-center py-5">
+            <h3 class="text-white display-3 mb-4">Contact Us</h3>
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active text-white">Contact</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="bg-light rounded p-4 h-100">
+                        <h4>Address</h4>
+                        <p class="mb-3">123 Salon Street, New Delhi</p>
+                        <h4>Phone</h4>
+                        <p class="mb-3">+91 98765 43210</p>
+                        <h4>Email</h4>
+                        <p class="mb-0">hello@salon.com</p>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="bg-light rounded p-4">
+                        <h4 class="mb-4">Send Message</h4>
+                        <form>
+                            <div class="row g-3">
+                                <div class="col-md-6"><input type="text" class="form-control" placeholder="Your Name"></div>
+                                <div class="col-md-6"><input type="email" class="form-control" placeholder="Your Email"></div>
+                                <div class="col-12"><input type="text" class="form-control" placeholder="Subject"></div>
+                                <div class="col-12"><textarea class="form-control" rows="5" placeholder="Message"></textarea></div>
+                                <div class="col-12"><button type="button" class="btn btn-primary py-2 px-4">Send</button></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include("./partials/footerlink.ejs") %>
+</body>
+</html>
