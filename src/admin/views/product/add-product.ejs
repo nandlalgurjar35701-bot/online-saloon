@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Service</title>
+  <title>Product</title>
 
   <%- include('../../partials/headlink.ejs') %>
 </head>
@@ -33,10 +33,10 @@
                 <div class="col-lg-12">
                   <div class="card">
                     <div class="card-body">
-                      <!-- <h3 class="card-title">Add Saloon Service </h3> -->
+                      <!-- <h3 class="card-title">Add Product </h3> -->
                       <% if(typeof service_data !=="undefined" && service_data){%>
-                        <h5 class="card-title">Edit Service</h5>
-                        <form class="needs-validation" action="/add_service_store?id=<%= service_data._id%>"
+                        <h5 class="card-title">Edit Product</h5>
+                        <form class="needs-validation" action="/add-product-store?id=<%= service_data._id%>"
                           method="post" enctype="multipart/form-data" novalidate>
                           <div class="row g-3">
                             <div class="col">
@@ -107,8 +107,8 @@
                           </div>
                         </form>
                         <%}else{%>
-                          <h5 class="card-title">Add Service</h5>
-                          <form class="needs-validation" action="/add_service_store" method="post"
+                          <h5 class="card-title">Add Product</h5>
+                          <form class="needs-validation" action="/add-product-store" method="post"
                             enctype="multipart/form-data" novalidate>
 
                             <div class="row g-3">

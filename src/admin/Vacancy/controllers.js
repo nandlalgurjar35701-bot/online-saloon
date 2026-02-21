@@ -3,7 +3,7 @@ const vacancy = require("./model");
 const mongoose = require("mongoose")
 const service = require("./services")
 const { getCategoryListing } = require("../../api/category/controller")
-const { FindAllServiceName } = require("../add_service/controllers")
+const { findAllProductName } = require("../controller/productController");
 const seloonservice = require("../../api/saloonService/model")
 const store = require("../../api/saloonstore/model");
 const { query } = require("express");
@@ -14,7 +14,7 @@ exports.Vacancy = async (req, res) => {
         let data;
         const { query, ...rest } = req
         const FindCategory_data = await category.find({ parent_Name: null })
-        const services = await FindAllServiceName(req)
+        const services = await findAllProductName()
         if (req.query.id != undefined && req.query.id != "") {
             data = await vacancy.findOne({ _id: req.query.id })
         }

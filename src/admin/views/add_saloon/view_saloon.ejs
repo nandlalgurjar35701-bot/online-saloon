@@ -178,14 +178,14 @@
                               </td>
                               <% let NumberOfservice;%>
                                 <td>
-                                  <a href="/add_service?saloonId=<%= store._id%>" class="btn btn-success text-warning"
+                                  <a href="/add-product?saloonId=<%= store._id%>" class="btn btn-success text-warning"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Add New Service"><i
                                       class="ri-file-add-line"></i></a>
                                   <%store.ccc.forEach(element=> {%>
 
                                     <%if( element._id==0){%>
                                       <% NumberOfservice=element.count %>
-                                        <a href="/view_service?id=<%= store._id%>" class="btn btn-success"
+                                        <a href="/view-product?id=<%= store._id%>" class="btn btn-success"
                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="view Service">
                                           <%= element.count %>
                                             <i class="bi bi-eye"></i>
