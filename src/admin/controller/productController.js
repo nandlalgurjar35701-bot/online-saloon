@@ -12,6 +12,7 @@ exports.addProductPage = async (req, res) => {
     const category = await Category.find({
       type: { $in: ["product", 0, "0", null] },
     });
+    const saloonList = await saloon.find({}, { _id: 1, storeName: 1 }).sort({ storeName: 1 });
     let serviceData = null;
 
     if (req.query.id && isValidObjectId(req.query.id)) {
@@ -21,6 +22,7 @@ exports.addProductPage = async (req, res) => {
     return res.render("product/add-product", {
       user: req.user,
       category,
+      saloonList,
       service_data: serviceData,
       query: req.query,
     });
@@ -35,6 +37,18 @@ exports.addProductStore = async (req, res) => {
   try {
     res.locals.message = req.flash();
     const { body, files, query } = req;
+
+    if (!body.saloonStore || !isValidObjectId(body.saloonStore)) {
+      req.flash("error", "Please select a valid saloon.");
+      return res.redirect(query.id ? `/add-product?id=${query.id}` : "/add-product");
+    }
+    body.saloonStore = mongoose.Types.ObjectId(body.saloonStore);
+
+    if (!body.category || !isValidObjectId(body.category)) {
+      req.flash("error", "Please select a valid category.");
+      return res.redirect(query.id ? `/add-product?id=${query.id}` : "/add-product");
+    }
+    body.category = mongoose.Types.ObjectId(body.category);
 
     if (Array.isArray(files) && files.length > 0) {
       body.image = files.map((element) => element.filename);

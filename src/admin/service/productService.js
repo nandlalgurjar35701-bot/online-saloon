@@ -10,7 +10,7 @@ exports.fetchProductList = async (req) => {
   }
 
   if (req.query.ServiceName !== undefined && req.query.ServiceName !== "") {
-    match.ServiceName = { $regex: req.query.ServiceName };
+    match.ServiceName = { $regex: req.query.ServiceName, $options: "i" };
   }
 
   if (req.query.id !== undefined && req.query.id !== "") {
@@ -34,6 +34,36 @@ exports.fetchProductList = async (req) => {
       preserveNullAndEmptyArrays: true,
     },
   });
+  pipeline.push({
+    $lookup: {
+      from: "saloons",
+      localField: "saloonStore",
+      foreignField: "_id",
+      as: "saloon_data",
+    },
+  });
+  pipeline.push({
+    $addFields: {
+      saloon_name: {
+        $getField: {
+          field: "storeName",
+          input: { $arrayElemAt: ["$saloon_data", 0] },
+        },
+      },
+    },
+  });
+
+  if (req.query.CategoryName !== undefined && req.query.CategoryName !== "") {
+    pipeline.push({
+      $match: { "category.Name": { $regex: req.query.CategoryName, $options: "i" } },
+    });
+  }
+
+  if (req.query.StoreName !== undefined && req.query.StoreName !== "") {
+    pipeline.push({
+      $match: { saloon_name: { $regex: req.query.StoreName, $options: "i" } },
+    });
+  }
 
   return productModel.aggregate(pipeline);
 };

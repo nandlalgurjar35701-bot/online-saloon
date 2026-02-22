@@ -59,6 +59,11 @@
                             placeholder="CategoryName">
                         </div>
                         <div class="col-md-4">
+                          <label>Enter Saloon Name</label> <br>
+                          <input type="text" name="StoreName" class="form-control" value="<%= query?.StoreName %>"
+                            placeholder="Saloon Name">
+                        </div>
+                        <div class="col-md-4">
 
                         </div>
                         <div class="col-md-3">
@@ -88,6 +93,7 @@
                             <th scope="col">Service Name</th>
                             <th scope="col"> Price</th>
                             <th scope="col">Time(min) </th>
+                            <th scope="col">Saloon</th>
                             <th scope="col">Image</th>
                             <th scope="col"> Category </th>
                             <th scope="col">Action</th>
@@ -108,6 +114,9 @@
                                 </td>
                                 <td>
                                   <%= data?.timePeriod_in_minits %>
+                                </td>
+                                <td>
+                                  <%= data?.saloon_name || "-" %>
                                 </td>
                                 <td>
                                   <% const productImages = (Array.isArray(data?.image) && data.image.length > 0) ? data.image : ["default.png"]; %>

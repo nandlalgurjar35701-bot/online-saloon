@@ -72,6 +72,19 @@
                           </div><br>
 
                           <div class="row g-3">
+                            <div class="col">
+                              <label>Select Saloon</label>
+                              <select class="form-select" name="saloonStore" required>
+                                <option value="">Select Saloon</option>
+                                <% for (let s of saloonList) { %>
+                                  <option value="<%= s._id %>" <%=service_data?.saloonStore?.toString()==s._id.toString()
+                                    ? 'selected' : '' %>>
+                                    <%= s.storeName %>
+                                  </option>
+                                <% } %>
+                              </select>
+                              <div class="invalid-feedback">Please Select Saloon.</div>
+                            </div>
 
                             <div class="col">
                               <label>Select Category</label>
@@ -145,6 +158,19 @@
                             </div><br>
 
                             <div class="row g-3">
+                              <div class="col">
+                                <label for="">Select Saloon</label>
+                                <select class="form-select" name="saloonStore" required>
+                                  <option value="">Select Saloon</option>
+                                  <% for(let s of saloonList){%>
+                                    <option value="<%= s?._id%>">
+                                      <%= s?.storeName%>
+                                    </option>
+                                  <%}%>
+                                </select>
+                                <div class="valid-feedback">Looks good!</div>
+                                <div class="invalid-feedback">Please Select Saloon.</div>
+                              </div>
                               <div class="col">
                                 <label for="">Select Category</label>
                                 <select class="form-select" name="category" aria-label="multiple select example"

@@ -31,6 +31,10 @@ const productSchema = new mongoose.Schema(
       type: ObjectId,
       default: null,
     },
+    saloonStore: {
+      type: ObjectId,
+      default: null,
+    },
     Services: {
       type: [ObjectId],
       default: null,
