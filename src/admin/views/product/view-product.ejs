@@ -88,7 +88,7 @@
                             <th scope="col">Service Name</th>
                             <th scope="col"> Price</th>
                             <th scope="col">Time(min) </th>
-                            <th scope="col">Service Type</th>
+                            <th scope="col">Image</th>
                             <th scope="col"> Category </th>
                             <th scope="col">Action</th>
                           </tr>
@@ -110,7 +110,13 @@
                                   <%= data?.timePeriod_in_minits %>
                                 </td>
                                 <td>
-                                  <%= data?.ServicesType %>
+                                  <% const productImages = (Array.isArray(data?.image) && data.image.length > 0) ? data.image : ["default.png"]; %>
+                                  <img
+                                    src="/uploads/<%= productImages[0] %>"
+                                    alt="product-image"
+                                    class="rounded border product-thumb"
+                                    data-images='<%- JSON.stringify(productImages) %>'
+                                    style="width: 52px; height: 52px; object-fit: cover; cursor: zoom-in;">
                                 </td>
                                 <td>
                                   <%= data?.category?.Name || "?" %>
@@ -141,7 +147,66 @@
 
         </main>
 
+        <div class="modal fade" id="productImageModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Product Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body text-center">
+                <img id="zoomedProductImage" src="" alt="zoomed-product-image"
+                  style="max-width: 100%; max-height: 70vh; object-fit: contain;">
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <button type="button" id="prevImageBtn" class="btn btn-outline-secondary btn-sm" aria-label="Previous image">&larr;</button>
+                  <small id="imageCounter" class="text-muted">1 / 1</small>
+                  <button type="button" id="nextImageBtn" class="btn btn-outline-secondary btn-sm" aria-label="Next image">&rarr;</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <%- include("../../partials/script.ejs") %>
+          <script>
+            let modalImages = [];
+            let modalImageIndex = 0;
+
+            function renderModalImage() {
+              const imageName = modalImages[modalImageIndex] || "default.png";
+              $("#zoomedProductImage").attr("src", `/uploads/${imageName}`);
+              $("#imageCounter").text(`${modalImageIndex + 1} / ${modalImages.length || 1}`);
+              $("#prevImageBtn").prop("disabled", modalImageIndex <= 0);
+              $("#nextImageBtn").prop("disabled", modalImageIndex >= modalImages.length - 1);
+            }
+
+            $(document).on("click", ".product-thumb", function () {
+              const imagesRaw = $(this).attr("data-images") || "[]";
+              try {
+                const parsedImages = JSON.parse(imagesRaw);
+                modalImages = Array.isArray(parsedImages) && parsedImages.length > 0 ? parsedImages : ["default.png"];
+              } catch (error) {
+                modalImages = ["default.png"];
+              }
+              modalImageIndex = 0;
+              renderModalImage();
+              $("#productImageModal").modal("show");
+            });
+
+            $("#prevImageBtn").on("click", function () {
+              if (modalImageIndex > 0) {
+                modalImageIndex -= 1;
+                renderModalImage();
+              }
+            });
+
+            $("#nextImageBtn").on("click", function () {
+              if (modalImageIndex < modalImages.length - 1) {
+                modalImageIndex += 1;
+                renderModalImage();
+              }
+            });
+          </script>
 </body>
 
 </html>
