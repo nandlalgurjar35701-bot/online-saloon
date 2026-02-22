@@ -15,10 +15,25 @@ exports.removeserviceFromCart = async ({ body, user, query }) => {
             if (findData) {
                 if (query.serviceId) {
                     if (findData.cartdata.length > 0) {
-                        let i = 1;
+                        let isUpdated = false;
                         for (const item of findData.cartdata) {
-                            if (item.serviceId.toString() == query.serviceId && i === 1) {
-                                i++;
+                            if (!isUpdated && item.serviceId.toString() === query.serviceId) {
+                                const currentQty = Number(item.quantity || 1);
+                                const lineAmount = Number(item.Amount || 0);
+                                const unitPrice = currentQty > 0 ? lineAmount / currentQty : lineAmount;
+
+                                if (currentQty > 1) {
+                                    const updatedQty = currentQty - 1;
+                                    const updatedAmount = Number(unitPrice) * updatedQty;
+                                    cartdata.push({
+                                        serviceId: item.serviceId,
+                                        quantity: updatedQty,
+                                        Amount: updatedAmount,
+                                        timePeriod_in_minits: item.timePeriod_in_minits,
+                                    });
+                                    Amount.push(updatedAmount);
+                                }
+                                isUpdated = true;
                             } else {
                                 cartdata.push(item);
                                 Amount.push(Number(item.Amount));
@@ -114,7 +129,7 @@ exports.getcart = async ({ user, query }) => {
             }
         }, {
             '$lookup': {
-                'from': 'saloonservices',
+                'from': 'products',
                 'localField': 'cartdata.serviceId',
                 'foreignField': '_id',
                 'as': 'result'
@@ -260,18 +275,33 @@ exports.addcart = async ({ user, query }) => {
                     };
                 } const FindCart = await cart.findOne({ userId: user._id, saloonId: mongoose.Types.ObjectId(query.saloonId) });
                 if (FindCart) {
+                    let isMerged = false;
                     if (FindCart.cartdata.length > 0) {
                         for (const item of FindCart.cartdata) {
-                            let serviceId = item.serviceId.toString()
-                            serviceArr.push(item)
+                            if (item.serviceId.toString() === findService._id.toString()) {
+                                const currentQty = Number(item.quantity || 1);
+                                const updatedQty = currentQty + 1;
+                                const updatedAmount = Number(findService.ServicePrice || 0) * updatedQty;
+                                serviceArr.push({
+                                    serviceId: item.serviceId,
+                                    Amount: updatedAmount,
+                                    quantity: updatedQty,
+                                    timePeriod_in_minits: item.timePeriod_in_minits || findService.timePeriod_in_minits,
+                                });
+                                isMerged = true;
+                            } else {
+                                serviceArr.push(item)
+                            }
                         };
                     };
-                    serviceArr.push({
-                        serviceId: findService._id,
-                        Amount: findService.ServicePrice,
-                        quantity: 1,
-                        timePeriod_in_minits: findService.timePeriod_in_minits,
-                    });
+                    if (!isMerged) {
+                        serviceArr.push({
+                            serviceId: findService._id,
+                            Amount: Number(findService.ServicePrice || 0),
+                            quantity: 1,
+                            timePeriod_in_minits: findService.timePeriod_in_minits,
+                        });
+                    }
                 }
                 let totalamount = [];
                 serviceArr.forEach(element => {
@@ -304,19 +334,34 @@ exports.addcart = async ({ user, query }) => {
 
                 const FindCart = await cart.findOne({ userId: user._id, saloonId: mongoose.Types.ObjectId(query.saloonId) });
                 if (FindCart) {
+                    let isMerged = false;
                     if (FindCart.cartdata.length > 0) {
                         for (const item of FindCart.cartdata) {
-                            let serviceId = item.serviceId.toString()
-                            serviceArr.push(item)
+                            if (item.serviceId.toString() === findService._id.toString()) {
+                                const currentQty = Number(item.quantity || 1);
+                                const updatedQty = currentQty + 1;
+                                const updatedAmount = Number(findService.ServicePrice || 0) * updatedQty;
+                                serviceArr.push({
+                                    serviceId: item.serviceId,
+                                    Amount: updatedAmount,
+                                    quantity: updatedQty,
+                                    timePeriod_in_minits: item.timePeriod_in_minits || findService.timePeriod_in_minits,
+                                });
+                                isMerged = true;
+                            } else {
+                                serviceArr.push(item)
+                            }
                         };
                     };
 
-                    serviceArr.push({
-                        serviceId: findService._id,
-                        Amount: findService.ServicePrice,
-                        quantity: 1,
-                        timePeriod_in_minits: findService.timePeriod_in_minits,
-                    });
+                    if (!isMerged) {
+                        serviceArr.push({
+                            serviceId: findService._id,
+                            Amount: Number(findService.ServicePrice || 0),
+                            quantity: 1,
+                            timePeriod_in_minits: findService.timePeriod_in_minits,
+                        });
+                    }
                     let totalamount = [];
                     serviceArr.forEach(element => {
                         totalamount.push(Number(element.Amount))

@@ -1,6 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('./partials/head.ejs') %>
+    <style>
+        .wishlist-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 2;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.92);
+            color: #444;
+        }
+        .wishlist-toggle.active {
+            color: #dc3545;
+        }
+        .cart-stepper {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #e5e5e5;
+            border-radius: 999px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .cart-stepper.d-none {
+            display: none !important;
+        }
+        .cart-add-btn {
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #0d6efd;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cart-add-btn.d-none {
+            display: none !important;
+        }
+        .cart-stepper button {
+            border: none;
+            width: 34px;
+            height: 34px;
+            background: #f5f5f5;
+            font-weight: 700;
+        }
+        .cart-stepper .qty {
+            width: 38px;
+            text-align: center;
+            font-weight: 700;
+            color: #0d6efd;
+        }
+    </style>
 
     <body>
         <!-- Spinner Start -->
@@ -69,7 +124,15 @@
                                 <% const imagePath = productImage ? (String(productImage).startsWith('http') ? productImage : '/uploads/' + productImage) : '/web/img/services-1.jpg'; %>
                                 <div class="col-md-6 col-lg-4">
                                     <div class="services-item bg-light border-4 border-end border-primary rounded p-4 h-100">
-                                        <div class="services-img rounded mb-3" style="height: 190px; overflow: hidden;">
+                                        <div class="services-img rounded mb-3 position-relative" style="height: 190px; overflow: hidden;">
+                                            <button
+                                                type="button"
+                                                class="wishlist-toggle"
+                                                data-saloon-id="<%= product.saloonStore || '' %>"
+                                                title="Add to Wishlist"
+                                                <%= product.saloonStore ? '' : 'disabled' %>>
+                                                <i class="fas fa-heart"></i>
+                                            </button>
                                             <img src="<%= imagePath %>" class="img-fluid w-100 h-100" style="object-fit: cover;"
                                                 alt="<%= product.ServiceName || 'Product' %>">
                                         </div>
@@ -77,14 +140,18 @@
                                         <p class="mb-2 text-muted"><%= product.description || '' %></p>
                                         <div class="d-flex align-items-center justify-content-between mt-3">
                                             <h5 class="text-primary mb-0">Rs. <%= Number(product.ServicePrice || 0) %></h5>
-                                            <button
-                                                type="button"
-                                                class="btn btn-primary btn-sm add-to-cart-btn"
+                                            <div class="cart-action"
                                                 data-service-id="<%= product._id %>"
-                                                data-saloon-id="<%= product.saloonStore || '' %>"
-                                                <%= product.saloonStore ? '' : 'disabled' %>>
-                                                Add to Cart
-                                            </button>
+                                                data-saloon-id="<%= product.saloonStore || '' %>">
+                                                <button type="button" class="cart-add-btn" <%= product.saloonStore ? '' : 'disabled' %>>
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </button>
+                                                <div class="cart-stepper d-none">
+                                                    <button type="button" class="qty-minus" <%= product.saloonStore ? '' : 'disabled' %>>-</button>
+                                                    <span class="qty">0</span>
+                                                    <button type="button" class="qty-plus" <%= product.saloonStore ? '' : 'disabled' %>>+</button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -114,48 +181,193 @@
                         alert(message);
                     };
 
-                    const buttons = document.querySelectorAll(".add-to-cart-btn");
-                    buttons.forEach((button) => {
-                        button.addEventListener("click", async () => {
-                            const serviceId = button.getAttribute("data-service-id");
-                            const saloonId = button.getAttribute("data-saloon-id");
-                            const token = getAuthToken();
+                    const getHeaders = () => ({ Authorization: `Bearer ${getAuthToken()}` });
+                    const cartActions = Array.from(document.querySelectorAll(".cart-action"));
+                    const wishlistButtons = Array.from(document.querySelectorAll(".wishlist-toggle"));
+                    const serviceState = {};
+                    const wishlistState = {};
 
+                    const updateQtyUi = () => {
+                        cartActions.forEach((action) => {
+                            const serviceId = action.getAttribute("data-service-id");
+                            const qty = Number(serviceState[serviceId]?.qty || 0);
+                            const addBtn = action.querySelector(".cart-add-btn");
+                            const stepper = action.querySelector(".cart-stepper");
+                            const qtyEl = action.querySelector(".qty");
+                            if (qtyEl) qtyEl.textContent = String(qty);
+                            if (qty <= 0) {
+                                addBtn?.classList.remove("d-none");
+                                stepper?.classList.add("d-none");
+                            } else {
+                                addBtn?.classList.add("d-none");
+                                stepper?.classList.remove("d-none");
+                            }
+                        });
+                    };
+
+                    const updateWishlistUi = () => {
+                        wishlistButtons.forEach((btn) => {
+                            const saloonId = btn.getAttribute("data-saloon-id");
+                            btn.classList.toggle("active", Boolean(wishlistState[saloonId]));
+                        });
+                    };
+
+                    const syncCartState = async () => {
+                        if (!getAuthToken()) return;
+                        try {
+                            const response = await fetch("/get-cart", { headers: getHeaders() });
+                            const result = await response.json();
+                            Object.keys(serviceState).forEach((key) => delete serviceState[key]);
+                            if (response.ok && result?.status && Array.isArray(result.data)) {
+                                result.data.forEach((saloonEntry) => {
+                                    const cartItems = Array.isArray(saloonEntry.cart) ? saloonEntry.cart : [];
+                                    cartItems.forEach((item) => {
+                                        const serviceId = item?.cartdata?.serviceId;
+                                        if (!serviceId) return;
+                                        const serviceKey = String(serviceId);
+                                        const itemQty = Number(item?.cartdata?.quantity || 1);
+                                        if (!serviceState[serviceKey]) {
+                                            serviceState[serviceKey] = { qty: 0, cartId: String(item._id || "") };
+                                        }
+                                        serviceState[serviceKey].qty += itemQty;
+                                        if (!serviceState[serviceKey].cartId && item?._id) {
+                                            serviceState[serviceKey].cartId = String(item._id);
+                                        }
+                                    });
+                                });
+                            }
+                            updateQtyUi();
+                        } catch (error) {
+                        }
+                    };
+
+                    const syncWishlistState = async () => {
+                        if (!getAuthToken()) return;
+                        try {
+                            const response = await fetch("/get-wishlist", { headers: getHeaders() });
+                            const result = await response.json();
+                            Object.keys(wishlistState).forEach((key) => delete wishlistState[key]);
+                            if (response.ok && result?.status && Array.isArray(result.data)) {
+                                result.data.forEach((item) => {
+                                    const saloonId = item?.result?._id || item?.saloonId;
+                                    if (saloonId) wishlistState[String(saloonId)] = true;
+                                });
+                            }
+                            updateWishlistUi();
+                        } catch (error) {
+                        }
+                    };
+
+                    const addOneToCart = async ({ serviceId, saloonId, triggerBtn }) => {
+                        const token = getAuthToken();
+                        if (!token) {
+                            showMessage("Please login first to add product to cart.");
+                            return;
+                        }
+                        if (!serviceId || !saloonId) {
+                            showMessage("Invalid service details.");
+                            return;
+                        }
+                        if (triggerBtn) triggerBtn.disabled = true;
+                        try {
+                            const response = await fetch(`/add-cart?serviceId=${serviceId}&saloonId=${saloonId}`, {
+                                method: "GET",
+                                headers: getHeaders(),
+                            });
+                            const result = await response.json();
+                            if (!(response.ok && result?.status)) {
+                                showMessage(result?.message || "Unable to add to cart.");
+                            }
+                            await syncCartState();
+                        } catch (error) {
+                            showMessage("Unable to add to cart right now.");
+                        } finally {
+                            if (triggerBtn) triggerBtn.disabled = false;
+                        }
+                    };
+
+                    cartActions.forEach((action) => {
+                        const addBtn = action.querySelector(".cart-add-btn");
+                        const plusBtn = action.querySelector(".qty-plus");
+                        const minusBtn = action.querySelector(".qty-minus");
+                        const serviceId = action.getAttribute("data-service-id");
+                        const saloonId = action.getAttribute("data-saloon-id");
+
+                        addBtn?.addEventListener("click", async () => {
+                            await addOneToCart({ serviceId, saloonId, triggerBtn: addBtn });
+                        });
+
+                        plusBtn?.addEventListener("click", async () => {
+                            const token = getAuthToken();
                             if (!token) {
                                 showMessage("Please login first to add product to cart.");
                                 return;
                             }
-                            if (!serviceId || !saloonId) {
-                                showMessage("Invalid service details.");
+                            await addOneToCart({ serviceId, saloonId, triggerBtn: plusBtn });
+                        });
+
+                        minusBtn?.addEventListener("click", async () => {
+                            const token = getAuthToken();
+                            if (!token) {
+                                showMessage("Please login first.");
                                 return;
                             }
+                            const state = serviceState[String(serviceId)];
+                            if (!state || !state.qty || !state.cartId) return;
 
-                            const originalText = button.textContent;
-                            button.disabled = true;
-                            button.textContent = "Adding...";
-
+                            minusBtn.disabled = true;
                             try {
-                                const response = await fetch(`/add-cart?serviceId=${serviceId}&saloonId=${saloonId}`, {
+                                const response = await fetch(`/remove-service-from-cart?id=${state.cartId}&serviceId=${serviceId}`, {
                                     method: "GET",
-                                    headers: {
-                                        Authorization: `Bearer ${token}`,
-                                    },
+                                    headers: getHeaders(),
                                 });
-
                                 const result = await response.json();
-                                if (response.ok && result?.status) {
-                                    showMessage(result.message || "Added to cart.");
-                                } else {
-                                    showMessage(result?.message || "Unable to add to cart.");
+                                if (!(response.ok && result?.status)) {
+                                    showMessage(result?.message || "Unable to update cart.");
                                 }
+                                await syncCartState();
                             } catch (error) {
-                                showMessage("Unable to add to cart right now.");
+                                showMessage("Unable to update cart right now.");
                             } finally {
-                                button.disabled = false;
-                                button.textContent = originalText;
+                                minusBtn.disabled = false;
                             }
                         });
                     });
+
+                    wishlistButtons.forEach((button) => {
+                        button.addEventListener("click", async () => {
+                            const token = getAuthToken();
+                            const saloonId = button.getAttribute("data-saloon-id");
+                            if (!token) {
+                                showMessage("Please login first to update wishlist.");
+                                return;
+                            }
+                            if (!saloonId) {
+                                showMessage("Invalid wishlist item.");
+                                return;
+                            }
+                            button.disabled = true;
+                            try {
+                                const response = await fetch(`/wishlist?id=${saloonId}`, {
+                                    method: "GET",
+                                    headers: getHeaders(),
+                                });
+                                const result = await response.json();
+                                if (response.ok && result?.status) {
+                                    await syncWishlistState();
+                                } else {
+                                    showMessage(result?.message || "Unable to update wishlist.");
+                                }
+                            } catch (error) {
+                                showMessage("Unable to update wishlist right now.");
+                            } finally {
+                                button.disabled = false;
+                            }
+                        });
+                    });
+
+                    syncCartState();
+                    syncWishlistState();
                 })();
             </script>
 

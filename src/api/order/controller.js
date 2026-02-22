@@ -236,7 +236,7 @@ exports.getUserOrder = async ({ user, query }) => {
             }
         }, {
             '$lookup': {
-                'from': 'saloonservices',
+                'from': 'products',
                 'localField': 'cartdata.serviceId',
                 'foreignField': '_id',
                 'as': 'cartdata'
@@ -280,7 +280,8 @@ exports.getUserOrder = async ({ user, query }) => {
                     '$push': {
                         '_id': '$cartdata._id',
                         'ServiceName': '$cartdata.ServiceName',
-                        'ServicePrice': '$cartdata.ServicePrice'
+                        'ServicePrice': '$cartdata.ServicePrice',
+                        'quantity': '$cartdata.quantity'
                     }
                 },
                 'orderDetail': {
