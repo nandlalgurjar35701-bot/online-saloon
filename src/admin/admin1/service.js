@@ -2,6 +2,7 @@ const order = require("../../models/orderModel")
 const user = require("../../models/userModel");
 const saloon = require("../../models/saloonStoreModel");
 const service = require("../../models/productModel");
+const productPackage = require("../../models/productPackageModel");
 const payment = require("../../models/paymentModel");
 const Artice = require("../../models/artistModel");
 const veconcy = require("../../models/vacancyModel");
@@ -46,60 +47,14 @@ exports.AllDetail = async (req, res) => {
   obj.saloon = await saloon.countDocuments(condition)
 
   if (req.user.type == "admin") {
-   let condition = []
-   let match = {};
-   match.userId = req.user._id
-   condition.push({
-    '$match': match
-   }, {
-    '$lookup': {
-     'from': 'saloonservices',
-     'localField': '_id',
-     'foreignField': 'saloonStore',
-     'pipeline': [
-      {
-       '$match': {
-        'ServicesType': 0
-       }
-      }
-     ],
-     'as': 'stores'
-    }
-   }, {
-    '$unwind': {
-     'path': '$stores'
-    }
-   })
-   const findservice = await saloon.aggregate(condition)
-   obj.Findservice = findservice.length
-   condition = []
-   condition.push({
-    '$match': match
-   }, {
-    '$lookup': {
-     'from': 'saloonservices',
-     'localField': '_id',
-     'foreignField': 'saloonStore',
-     'pipeline': [
-      {
-       '$match': {
-        'ServicesType': 1
-       }
-      }
-     ],
-     'as': 'stores'
-    }
-   }, {
-    '$unwind': {
-     'path': '$stores'
-    }
-   })
-   const findpackeges = await saloon.aggregate(condition)
-   obj.Findpackeges = findpackeges.length
+   const adminSaloons = await saloon.find({ userId: req.user._id }, { _id: 1 }).lean();
+   const saloonIds = adminSaloons.map((item) => item._id);
+   obj.Findservice = await service.countDocuments({ saloonStore: { $in: saloonIds } })
+   obj.Findpackeges = await productPackage.countDocuments({ saloonStore: { $in: saloonIds } })
 
   } else {
-   obj.Findservice = await service.countDocuments({ ServicesType: 0 })
-   obj.Findpackeges = await service.countDocuments({ ServicesType: 1 })
+   obj.Findservice = await service.countDocuments()
+   obj.Findpackeges = await productPackage.countDocuments()
   }
 
 

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const services = require("../../models/productModel");
+const services = require("../../models/productPackageModel");
 
 exports.getServicePackage = async (query) => {
     try {
@@ -12,13 +12,7 @@ exports.getServicePackage = async (query) => {
                     },
                 },
             });
-        } else {
-            condition.push({
-                '$match': {
-                    'ServicesType': 1
-                },
-            });
-        };
+        }
 
 
         condition.push({
@@ -34,7 +28,7 @@ exports.getServicePackage = async (query) => {
             }
         }, {
             '$lookup': {
-                'from': 'saloonservices',
+                'from': 'products',
                 'localField': 'Services',
                 'foreignField': '_id',
                 'pipeline': [

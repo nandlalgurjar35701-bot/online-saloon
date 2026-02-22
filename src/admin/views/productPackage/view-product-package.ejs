@@ -128,7 +128,7 @@
                                   <%= data?.type %>
                                 </td>
                                 <td>
-                                  <%= data?.last_category_data.Name %>
+                                  <%= data?.last_category_data?.Name || "-" %>
                                 </td>
                                 <td>
                                   <button type="button" value="<%= data?._id %>" onclick="FindPackage(this)"

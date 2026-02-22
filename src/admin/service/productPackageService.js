@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const productModel = require("../../models/productModel");
+const productPackageModel = require("../../models/productPackageModel");
 const saloonModel = require("../../models/saloonStoreModel");
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
@@ -8,7 +9,6 @@ exports.findServicesForPackage = async (saloonId) => {
   if (!isValidObjectId(saloonId)) return [];
   return productModel.find({
     saloonStore: mongoose.Types.ObjectId(saloonId),
-    ServicesType: 0,
   });
 };
 
@@ -31,6 +31,18 @@ exports.findStoreOptions = async (req) => {
 
 exports.saveProductPackage = async (req) => {
   const body = { ...req.body };
+  const isEdit = req.query.id && isValidObjectId(req.query.id);
+
+  if (!body.ServiceName || !String(body.ServiceName).trim()) {
+    throw new Error("Package name is required.");
+  }
+  if (!body.saloonStore || !isValidObjectId(body.saloonStore)) {
+    throw new Error("Please select a valid saloon.");
+  }
+  if (!body.category || !isValidObjectId(body.category)) {
+    throw new Error("Please select a valid category.");
+  }
+
   const selectedServices = Array.isArray(body.Services)
     ? body.Services
     : body.Services
@@ -48,23 +60,33 @@ exports.saveProductPackage = async (req) => {
     })
     .filter((item) => isValidObjectId(item));
 
-  if (req.file?.filename) body.image = [req.file.filename];
-  body.ServicesType = 1;
+  if (body.Services.length === 0) {
+    throw new Error("Please select at least one product.");
+  }
 
-  if (req.query.id && isValidObjectId(req.query.id)) {
-    return productModel.findByIdAndUpdate(
+  body.saloonStore = mongoose.Types.ObjectId(body.saloonStore);
+  body.category = mongoose.Types.ObjectId(body.category);
+  body.ServicePrice = Number(body.ServicePrice || 0);
+  body.FinalPrice = Number(body.FinalPrice || 0);
+  body.timePeriod_in_minits = Number(body.timePeriod_in_minits || 0);
+
+  if (req.file?.filename) body.image = [req.file.filename];
+  else if (!isEdit) body.image = [];
+
+  if (isEdit) {
+    return productPackageModel.findByIdAndUpdate(
       mongoose.Types.ObjectId(req.query.id),
       body,
       { new: true }
     );
   }
 
-  return productModel.create(body);
+  return productPackageModel.create(body);
 };
 
 exports.getProductPackageList = async (req) => {
   const pipeline = [];
-  const match = { ServicesType: 1 };
+  const match = {};
 
   if (req.query.ServicePrice) match.ServicePrice = { $gt: Number(req.query.ServicePrice) };
   if (req.query.ServiceName) match.ServiceName = { $regex: req.query.ServiceName, $options: "i" };
@@ -113,7 +135,7 @@ exports.getProductPackageList = async (req) => {
         };
 
   pipeline.push({ $lookup: categoryLookup });
-  pipeline.push({ $unwind: { path: "$last_category_data" } });
+  pipeline.push({ $unwind: { path: "$last_category_data", preserveNullAndEmptyArrays: true } });
   pipeline.push({
     $addFields: {
       saloon_name: {
@@ -135,16 +157,16 @@ exports.getProductPackageList = async (req) => {
     pipeline.push({ $match: { saloon_name: { $exists: true } } });
   }
 
-  return productModel.aggregate(pipeline);
+  return productPackageModel.aggregate(pipeline);
 };
 
 exports.findPackageServices = async (id) => {
   if (!isValidObjectId(id)) return [];
-  return productModel.aggregate([
+  return productPackageModel.aggregate([
     { $match: { _id: mongoose.Types.ObjectId(id) } },
     {
       $lookup: {
-        from: "saloonservices",
+        from: "products",
         localField: "Services",
         foreignField: "_id",
         as: "Services",

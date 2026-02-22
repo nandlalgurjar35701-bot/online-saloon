@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { getCategoryListing } = require("../../api/category/controller");
-const productModel = require("../../models/productModel");
+const productPackageModel = require("../../models/productPackageModel");
 const productPackageService = require("../service/productPackageService");
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
@@ -11,7 +11,7 @@ exports.addProductPackagePage = async (req, res) => {
     let productPackageData;
 
     if (req.query.id && isValidObjectId(req.query.id)) {
-      productPackageData = await productModel.findOne({ _id: req.query.id });
+      productPackageData = await productPackageModel.findOne({ _id: req.query.id });
       if (productPackageData) {
         req.query.saloonId = productPackageData.saloonStore;
         req.query.id = productPackageData.category?.toString();
@@ -40,11 +40,12 @@ exports.addProductPackagePage = async (req, res) => {
 
 exports.createOrUpdateProductPackage = async (req, res) => {
   try {
-    await productPackageService.saveProductPackage(req);
+    const saved = await productPackageService.saveProductPackage(req);
+    req.flash("success", saved ? "Product package saved successfully." : "Product package updated successfully.");
     return res.redirect("/view-product-package");
   } catch (error) {
     console.log(error);
-    req.flash("error", "Unable to save product package.");
+    req.flash("error", error.message || "Unable to save product package.");
     return res.redirect("/add-product-package");
   }
 };
@@ -72,7 +73,7 @@ exports.deleteProductPackage = async (req, res) => {
       return res.redirect("/view-product-package");
     }
 
-    await productModel.findByIdAndDelete({ _id: mongoose.Types.ObjectId(req.query.id) });
+    await productPackageModel.findByIdAndDelete({ _id: mongoose.Types.ObjectId(req.query.id) });
     return res.redirect("/view-product-package");
   } catch (error) {
     console.log(error);
