@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>view-blog</title>
+  <title>View About</title>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
 
   <%- include('../../partials/headlink.ejs') %>
@@ -14,6 +14,7 @@
 <body>
   <%- include('../../partials/Header.ejs') %>
     <%- include("../../partials/sidebar.ejs") %>
+      <%- include("../../partials/alertMsg") %>
 
       <main id="main" class="main">
         <div class="pagetitle">
@@ -35,31 +36,17 @@
                     <h5 class="card-title">Filter</h5>
 
                     <!-- No Labels Form -->
-                    <form class="row g-3" action="/view_blog">
-                      <div class="col-md-3">
-                        <label>Choose Category</label> <br>
-                        <select id="inputState" name="Category" class="form-select">
-                          <option selected="" value="">Choose Category</option>
-
-                        </select>
-                      </div>
-                      <div class="col-md-3">
-                        <label>Choose Writer Name</label> <br>
-                        <select id="inputState" name="WriterName" class="form-select">
-                          <option selected="" value="">select Writer Name</option>
-
-                        </select>
-                      </div>
-                      <div class="col-md-3">
+                    <form class="row g-3" action="/view-about">
+                      <div class="col-md-9">
                         <label>Enter Title</label> <br>
-                        <input type="text" name="Title" class="form-control" value="<%= query.Title ? query.Title:''%>"
+                        <input type="text" name="title" class="form-control" value="<%= query.title ? query.title:''%>"
                           placeholder="Enter Title">
                       </div>
                       <div class="col-md-3">
                         <div class="text-center">
                           <label></label> <br>
                           <button type="submit" class="btn btn-primary">Submit</button>
-                          <a href="/view_blog"> <button type="button" class="btn btn-secondary">Reset</button></a>
+                          <a href="/view-about"> <button type="button" class="btn btn-secondary">Reset</button></a>
                         </div>
                       </div>
                     </form>
@@ -70,7 +57,11 @@
                 </div>
                 <div class="card">
                   <div class="card-body">
-                    <h5 class="card-title">Blog List</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h5 class="card-title mb-0">About List</h5>
+                      <a href="/about" class="btn btn-primary btn-sm">Add About</a>
+                    </div>
+                    <div style="border-top: 1px solid #e9ecef; margin: 12px 0 14px 0;"></div>
 
                     <!-- Table with stripped rows -->
                     <table class="table datatable">
@@ -108,7 +99,7 @@
                                 <a href="/about?id=<%= singleData._id%>" class="btn btn-info"><i
                                     class="ri-edit-box-line" data-bs-toggle="tooltip" data-bs-placement="top"
                                     data-bs-title="Edit"></i></a>
-                                <a href="/delete-About?id=<%= singleData._id%>" class="btn btn-danger"><i
+                                <a href="/delete-about?id=<%= singleData._id%>" class="btn btn-danger"><i
                                     class="ri-delete-bin-5-line" data-bs-toggle="tooltip" data-bs-placement="top"
                                     data-bs-title="Delete"></i></a>
                               </td>

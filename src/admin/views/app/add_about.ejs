@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Write-Blog</title>
+  <title>Add About</title>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
   <%- include('../../partials/headlink.ejs') %>
@@ -15,6 +15,7 @@
 
   <%- include('../../partials/Header.ejs') %>
     <%- include("../../partials/sidebar.ejs") %>
+      <%- include("../../partials/alertMsg.ejs") %>
 
       <main id="main" class="main">
 
@@ -34,15 +35,15 @@
 
               <div class="card">
                 <div class="card-body">
-                  <h5 class="card-title">Add Blog</h5>
+                  <h5 class="card-title"><%= data ? "Edit About" : "Add About" %></h5>
 
                   <form id="form" method="post" enctype="multipart/form-data">
 
                     <!-- TITLE -->
                     <div class="row g-3">
                       <div class="col">
-                        <label>Blog Title</label>
-                        <input type="text" name="Title" class="form-control" placeholder="Enter Your Blog Title"
+                        <label>About Title</label>
+                        <input type="text" name="Title" class="form-control" placeholder="Enter About Title"
                           required value="<%= data ? data.title : '' %>">
                       </div>
                     </div>
@@ -52,7 +53,7 @@
                     <!-- DESCRIPTION -->
                     <div class="card">
                       <div class="card-body">
-                        <h5 class="card-title">Blog Description</h5>
+                        <h5 class="card-title">About Description</h5>
 
                         <!-- TUMHARA EXISTING EDITOR -->
                         <div class="quill-editor-full">
@@ -97,10 +98,8 @@
               document.querySelector(".ql-editor").innerHTML;
 
             $("#hidden").val(descriptionHTML);
-
-            const formData = new FormData(this);
             $.ajax({
-              url: "/add_about_store",
+              url: "/add-about-store",
               type: "POST",
               data: {
                 id: $("input[name='id']").val() || null,

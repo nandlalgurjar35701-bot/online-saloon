@@ -1,49 +1,73 @@
-const aboutModel = require('../../models/aboutModel')
+const aboutService = require("../service/aboutService");
 
-exports.about = async ({ query }, res) => {
-    try {
-        let data = null
-        if (query.id) {
-            data = await aboutModel.findById(query.id);
-        }
-        res.render("app/add_about", { user: {}, data, query })
-    } catch (error) {
-        console.log(error);
+exports.renderAboutForm = async (req, res) => {
+  try {
+    res.locals.message = req.flash();
+    const data = req.query.id ? await aboutService.getAboutById(req.query.id) : null;
+
+    if (req.query.id && !data) {
+      req.flash("error", "About record not found.");
+      return res.redirect("/view-about");
     }
-}
 
-
-exports.viewAbout = async (req, res) => {
-    try {
-        let data = await aboutModel.find()
-        res.render("app/view_about", { user: {}, data, query: req.query })
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-exports.createAbout = async ({ body, query }, res) => {
-    try {
-        console.log(body, '----body', query)
-
-        let data = {};
-        if (body.id) {
-            data = await aboutModel.findByIdAndUpdate(body.id, body);
-        } else {
-            data = await aboutModel.create(body);
-        }
-
-        return res.redirect("/view-about");
-    } catch (err) {
-        console.log(err);
-    };
+    return res.render("app/add_about", {
+      user: req.user,
+      data,
+      query: req.query,
+    });
+  } catch (error) {
+    console.log(error);
+    req.flash("error", "Unable to load about form.");
+    return res.redirect("/view-about");
+  }
 };
 
-exports.deleteAbout = async ({ query }, res) => {
-    try {
-        data = await aboutModel.findByIdAndDelete(query.id);
-        return res.redirect("/view-about");
-    } catch (err) {
-        console.log(err);
-    };
+exports.renderAboutList = async (req, res) => {
+  try {
+    res.locals.message = req.flash();
+    const data = await aboutService.getAboutList(req.query);
+    return res.render("app/view_about", {
+      user: req.user,
+      data,
+      query: req.query,
+    });
+  } catch (error) {
+    console.log(error);
+    req.flash("error", "Unable to load about list.");
+    return res.redirect("/");
+  }
 };
+
+exports.saveAbout = async (req, res) => {
+  try {
+    await aboutService.saveAbout(req.body);
+    req.flash("success", "About saved successfully.");
+    return res.redirect("/view-about");
+  } catch (error) {
+    console.log(error);
+    req.flash("error", error.message || "Unable to save about.");
+    return res.redirect(req.body?.id ? `/about?id=${req.body.id}` : "/about");
+  }
+};
+
+exports.deleteAbout = async (req, res) => {
+  try {
+    const deleted = await aboutService.deleteAboutById(req.query.id);
+    if (!deleted) {
+      req.flash("error", "About record not found.");
+      return res.redirect("/view-about");
+    }
+
+    req.flash("success", "About deleted successfully.");
+    return res.redirect("/view-about");
+  } catch (error) {
+    console.log(error);
+    req.flash("error", "Unable to delete about.");
+    return res.redirect("/view-about");
+  }
+};
+
+// Backward-compatible aliases
+exports.about = exports.renderAboutForm;
+exports.viewAbout = exports.renderAboutList;
+exports.createAbout = exports.saveAbout;
