@@ -55,6 +55,18 @@
             font-weight: 700;
             color: #0d6efd;
         }
+        .checkout-btn {
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #198754;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+        }
     </style>
 
     <body>
@@ -151,6 +163,10 @@
                                                     <span class="qty">0</span>
                                                     <button type="button" class="qty-plus" <%= product.saloonStore ? '' : 'disabled' %>>+</button>
                                                 </div>
+                                                <button type="button" class="checkout-btn" title="Checkout"
+                                                    <%= product.saloonStore ? '' : 'disabled' %>>
+                                                    <i class="fas fa-credit-card"></i>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -237,6 +253,8 @@
                                 });
                             }
                             updateQtyUi();
+                            const totalQty = Object.values(serviceState).reduce((sum, item) => sum + Number(item.qty || 0), 0);
+                            window.dispatchEvent(new CustomEvent("cart:updated", { detail: { count: totalQty } }));
                         } catch (error) {
                         }
                     };
@@ -290,6 +308,7 @@
                         const addBtn = action.querySelector(".cart-add-btn");
                         const plusBtn = action.querySelector(".qty-plus");
                         const minusBtn = action.querySelector(".qty-minus");
+                        const checkoutBtn = action.querySelector(".checkout-btn");
                         const serviceId = action.getAttribute("data-service-id");
                         const saloonId = action.getAttribute("data-saloon-id");
 
@@ -331,6 +350,15 @@
                             } finally {
                                 minusBtn.disabled = false;
                             }
+                        });
+
+                        checkoutBtn?.addEventListener("click", () => {
+                            const token = getAuthToken();
+                            if (!token) {
+                                showMessage("Please login first.");
+                                return;
+                            }
+                            window.location.href = "/my-orders";
                         });
                     });
 

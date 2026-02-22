@@ -59,14 +59,14 @@
                         <a href="/contact" class="nav-item nav-link">Contact Us</a>
                     </div>
                     <div class="d-flex align-items-center flex-nowrap pt-xl-0">
-                        <button
+                        <button id="headerCartBtn"
                             class="btn-search btn btn-primary btn-primary-outline-0 rounded-circle btn-lg-square position-relative">
                             <i class="fas fa-shopping-cart"></i>
 
                             <!-- cart count -->
-                            <span
+                            <span id="headerCartCount"
                                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                3
+                                0
                             </span>
                         </button>
                         <button id="guestAuthBtn" type="button"
@@ -188,6 +188,8 @@
         };
         const guestAuthBtn = document.getElementById("guestAuthBtn");
         const userMenuWrapper = document.getElementById("userMenuWrapper");
+        const headerCartCount = document.getElementById("headerCartCount");
+        const headerCartBtn = document.getElementById("headerCartBtn");
         const authModalEl = document.getElementById("authModal");
         const applyAuthUi = () => {
             const token = readToken();
@@ -204,8 +206,53 @@
             const instance = bootstrap.Modal.getInstance(authModalEl);
             if (instance) instance.hide();
         };
+        const syncHeaderCartCount = async () => {
+            const token = readToken();
+            if (!headerCartCount) return;
+            if (!token) {
+                headerCartCount.textContent = "0";
+                return;
+            }
+            try {
+                const response = await fetch("/get-cart", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const result = await response.json();
+                if (!(response.ok && result?.status) || !Array.isArray(result.data)) {
+                    headerCartCount.textContent = "0";
+                    return;
+                }
+                let count = 0;
+                result.data.forEach((saloonEntry) => {
+                    const cartItems = Array.isArray(saloonEntry.cart) ? saloonEntry.cart : [];
+                    cartItems.forEach((item) => {
+                        count += Number(item?.cartdata?.quantity || 0);
+                    });
+                });
+                headerCartCount.textContent = String(count);
+            } catch (error) {
+                headerCartCount.textContent = "0";
+            }
+        };
 
         applyAuthUi();
+        syncHeaderCartCount();
+
+        if (headerCartBtn) {
+            headerCartBtn.addEventListener("click", () => {
+                if (!readToken()) {
+                    show("Please login first.");
+                    return;
+                }
+                window.location.href = "/my-orders";
+            });
+        }
+
+        window.addEventListener("cart:updated", (event) => {
+            if (!headerCartCount) return;
+            const count = Number(event?.detail?.count || 0);
+            headerCartCount.textContent = String(count);
+        });
 
         const loginForm = document.getElementById("loginForm");
         if (loginForm) {
@@ -332,6 +379,7 @@
                 }
                 clearToken();
                 applyAuthUi();
+                if (headerCartCount) headerCartCount.textContent = "0";
                 window.location.reload();
             });
         }
