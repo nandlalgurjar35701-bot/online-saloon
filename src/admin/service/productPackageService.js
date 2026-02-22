@@ -4,16 +4,31 @@ const productPackageModel = require("../../models/productPackageModel");
 const saloonModel = require("../../models/saloonStoreModel");
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
+const getNormalizedRole = (value) => String(value || "").toLowerCase();
 
-exports.findServicesForPackage = async (saloonId) => {
+exports.findServicesForPackage = async (saloonId, reqUser) => {
   if (!isValidObjectId(saloonId)) return [];
-  return productModel.find({
+  const match = {
     saloonStore: mongoose.Types.ObjectId(saloonId),
-  });
+  };
+
+  if (getNormalizedRole(reqUser?.type) === "admin") {
+    const ownedStore = await saloonModel.findOne({
+      _id: mongoose.Types.ObjectId(saloonId),
+      userId: reqUser?._id,
+    }).select({ _id: 1 });
+
+    if (!ownedStore) return [];
+  }
+
+  return productModel.find(match);
 };
 
 exports.findStoreOptions = async (req) => {
   const match = {};
+  if (getNormalizedRole(req.user?.type) === "admin") {
+    match.userId = req.user?._id;
+  }
 
   if (req.query.saloonId && isValidObjectId(req.query.saloonId)) {
     match._id = mongoose.Types.ObjectId(req.query.saloonId);
@@ -61,6 +76,17 @@ exports.saveProductPackage = async (req) => {
   }
 
   body.saloonStore = mongoose.Types.ObjectId(body.saloonStore);
+
+  if (getNormalizedRole(req.user?.type) === "admin") {
+    const ownedStore = await saloonModel.findOne({
+      _id: body.saloonStore,
+      userId: req.user?._id,
+    }).select({ _id: 1 });
+    if (!ownedStore) {
+      throw new Error("You are not allowed to use this saloon.");
+    }
+  }
+
   body.category = mongoose.Types.ObjectId(body.category);
   body.ServicePrice = Number(body.ServicePrice || 0);
   body.FinalPrice = Number(body.FinalPrice || 0);
@@ -101,6 +127,12 @@ exports.getProductPackageList = async (req) => {
       as: "saloon_data",
     },
   });
+
+  if (getNormalizedRole(req.user?.type) === "admin") {
+    pipeline.push({
+      $match: { "saloon_data.userId": req.user._id },
+    });
+  }
 
   const categoryLookup =
     req.query.CategoryName && req.query.CategoryName !== ""

@@ -1,5 +1,6 @@
 const productModel = require("../../models/productModel");
 const mongoose = require("mongoose");
+const getNormalizedRole = (value) => String(value || "").toLowerCase();
 
 exports.fetchProductList = async (req) => {
   const pipeline = [];
@@ -42,6 +43,13 @@ exports.fetchProductList = async (req) => {
       as: "saloon_data",
     },
   });
+
+  if (getNormalizedRole(req.user?.type) === "admin") {
+    pipeline.push({
+      $match: { "saloon_data.userId": req.user._id },
+    });
+  }
+
   pipeline.push({
     $addFields: {
       saloon_name: {

@@ -5,6 +5,9 @@ const productModel = require("../../models/productModel");
 const productService = require("../service/productService");
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
+const getNormalizedRole = (value) => String(value || "").toLowerCase();
+const getStoreScopeForUser = (user) =>
+  getNormalizedRole(user?.type) === "admin" ? { userId: user?._id } : {};
 
 exports.addProductPage = async (req, res) => {
   try {
@@ -12,7 +15,9 @@ exports.addProductPage = async (req, res) => {
     const category = await Category.find({
       type: { $in: ["product", 0, "0", null] },
     });
-    const saloonList = await saloon.find({}, { _id: 1, storeName: 1 }).sort({ storeName: 1 });
+    const saloonList = await saloon
+      .find(getStoreScopeForUser(req.user), { _id: 1, storeName: 1 })
+      .sort({ storeName: 1 });
     let serviceData = null;
 
     if (req.query.id && isValidObjectId(req.query.id)) {
@@ -37,12 +42,19 @@ exports.addProductStore = async (req, res) => {
   try {
     res.locals.message = req.flash();
     const { body, files, query } = req;
+    const storeScope = getStoreScopeForUser(req.user);
 
     if (!body.saloonStore || !isValidObjectId(body.saloonStore)) {
       req.flash("error", "Please select a valid saloon.");
       return res.redirect(query.id ? `/add-product?id=${query.id}` : "/add-product");
     }
     body.saloonStore = mongoose.Types.ObjectId(body.saloonStore);
+
+    const storeExists = await saloon.findOne({ _id: body.saloonStore, ...storeScope }).select({ _id: 1 });
+    if (!storeExists) {
+      req.flash("error", "You are not allowed to use this saloon.");
+      return res.redirect(query.id ? `/add-product?id=${query.id}` : "/add-product");
+    }
 
     if (!body.category || !isValidObjectId(body.category)) {
       req.flash("error", "Please select a valid category.");
@@ -129,12 +141,13 @@ exports.getProductCategoryOptions = async (req, res) => {
 
 exports.findSaloon = async (req, res) => {
   try {
+    const storeScope = getStoreScopeForUser(req.user);
     if (!isValidObjectId(req.query.id)) {
       return res.status(400).send({});
     }
 
     const data = await saloon.findOne(
-      { _id: mongoose.Types.ObjectId(req.query.id) },
+      { _id: mongoose.Types.ObjectId(req.query.id), ...storeScope },
       { type: 1, storeName: 1 }
     );
 

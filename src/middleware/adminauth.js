@@ -2,10 +2,18 @@ const jwt = require("jsonwebtoken")
 const userModel = require('../models/adminModel');
 const saloonModel = require("../models/saloonStoreModel");
 
+const getNormalizedRole = (value) => String(value || "").toLowerCase();
+
 const attachSidebarStores = async (req, res) => {
     try {
+        const role = getNormalizedRole(req.user?.type);
+        const condition = {};
+        if (role === "admin") {
+            condition.userId = req.user?._id;
+        }
+
         const stores = await saloonModel
-            .find({})
+            .find(condition)
             .select({ _id: 1, storeName: 1 })
             .sort({ createdAt: -1 })
             .lean();

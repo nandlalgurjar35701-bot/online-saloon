@@ -284,7 +284,8 @@
                     abc += `<select  aria-label="multiple select example"  class="form-select"  name="requiredSaloon" id="${num + 1}"  multiple>`
                     abc += `<option value="" disabled >select vacanicy in witch sallon</option>`
                     data.forEach((item) => {
-                      abc += `<option value=${item.location.city} <% data?.city %>..includes(${item?.location.city}==true?"selected":"")>${item.location.city}</option>`
+                      const singleSalonSelected = data.length === 1 ? "selected" : "";
+                      abc += `<option value=${item.location.city} ${singleSalonSelected}>${item.location.city}</option>`
                     })
 
                     abc += `</select> 

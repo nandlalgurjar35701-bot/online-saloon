@@ -2,9 +2,15 @@ const saloon = require("../../models/saloonStoreModel");
 const mongoose = require('mongoose');
 const users = require("../../models/userModel");
 const adminUsers = require("../../models/adminModel");
+const productModel = require("../../models/productModel");
+const productPackageModel = require("../../models/productPackageModel");
 const bcrypt = require("bcrypt");
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
+const getNormalizedRole = (value) => String(value || "").toLowerCase();
+const isAdminRole = (value) => getNormalizedRole(value) === "admin";
+const getStoreScopeForUser = (user) => (isAdminRole(user?.type) ? { userId: user?._id } : {});
+
 const findStoreRecord = async (id) => {
     if (!isValidObjectId(id)) return null;
     const objectId = mongoose.Types.ObjectId(id);
@@ -96,12 +102,26 @@ exports.saloonRegister = async (req, res) => {
        
         res.locals.message = req.flash()
         let saloon_data;
+        const storeScope = getStoreScopeForUser(req.user);
+
+        if (!req.query.id && isAdminRole(req.user?.type)) {
+            const adminStores = await saloon
+                .find(storeScope)
+                .select({ _id: 1 })
+                .sort({ createdAt: -1 })
+                .limit(2);
+
+            if (adminStores.length === 1) {
+                return res.redirect(`/add-saloon?id=${adminStores[0]._id}`);
+            }
+        }
+
         if (req.query.id) {
             if (!isValidObjectId(req.query.id)) {
                 req.flash("error", "Invalid store id.");
                 return res.redirect("/add-saloon");
             }
-            saloon_data = await findStoreRecord(req.query.id);
+            saloon_data = await saloon.findOne({ _id: mongoose.Types.ObjectId(req.query.id), ...storeScope });
             if (!saloon_data) {
                 req.flash("error", "Store not found.");
                 return res.redirect("/add-saloon");
@@ -120,6 +140,7 @@ exports.addSaloonStore = async (req, res) => {
     try {
         res.locals.message = req.flash();
         const { body, query, user } = req;
+        const storeScope = getStoreScopeForUser(user);
         const {
             storeName, email, Phone, confromPassword, password, ownerName, type, category,
             Partner_Size, aria, pincode, city, state, description
@@ -131,7 +152,7 @@ exports.addSaloonStore = async (req, res) => {
                 return res.redirect("/add-saloon");
             }
 
-            const existingStore = await saloon.findById(query.id);
+            const existingStore = await saloon.findOne({ _id: query.id, ...storeScope });
             if (!existingStore) {
                 req.flash("error", "Store not found.");
                 return res.redirect("/add-saloon");
@@ -239,11 +260,12 @@ exports.addSaloonStore = async (req, res) => {
 exports.businessProfile = async (req, res) => {
     try {
         res.locals.message = req.flash();
+        const storeScope = getStoreScopeForUser(req.user);
         if (!req.query.id || !isValidObjectId(req.query.id)) {
             req.flash("error", "Invalid store id.");
             return res.redirect("/add-saloon");
         }
-        const find = await findStoreRecord(req.query.id);
+        const find = await saloon.findOne({ _id: mongoose.Types.ObjectId(req.query.id), ...storeScope });
         if (!find) {
             req.flash("error", "Store not found.");
             return res.redirect("/add-saloon");
@@ -268,11 +290,12 @@ exports.businessProfile = async (req, res) => {
 exports.businessBankInfoAdmin = async (req, res) => {
     try {
         res.locals.message = req.flash()
+        const storeScope = getStoreScopeForUser(req.user);
         if (!req.query.id || !isValidObjectId(req.query.id)) {
             req.flash("error", "Invalid store id.");
             return res.redirect("/add-saloon");
         }
-        const find = await findStoreRecord(req.query.id);
+        const find = await saloon.findOne({ _id: mongoose.Types.ObjectId(req.query.id), ...storeScope });
         if (!find) {
             req.flash("error", "Store not found.");
             return res.redirect("/add-saloon");
@@ -297,11 +320,12 @@ exports.businessBankInfoAdmin = async (req, res) => {
 exports.businessUplodeDocumentAdmin = async (req, res) => {
     try {
         res.locals.message = req.flash()
+        const storeScope = getStoreScopeForUser(req.user);
         if (!req.query.id || !isValidObjectId(req.query.id)) {
             req.flash("error", "Invalid store id.");
             return res.redirect("/add-saloon");
         }
-        const find = await findStoreRecord(req.query.id);
+        const find = await saloon.findOne({ _id: mongoose.Types.ObjectId(req.query.id), ...storeScope });
         if (!find) {
             req.flash("error", "Store not found.");
             return res.redirect("/add-saloon");
@@ -350,13 +374,27 @@ exports.viewSaloon = async (req, res) => {
 exports.deleteSaloon = async (req, res) => {
     try {
         const id = req.query.id;
+        const storeScope = getStoreScopeForUser(req.user);
         if (!isValidObjectId(id)) {
             req.flash("error", "Invalid store id.");
             return res.redirect("/add-saloon");
         }
-        const deleted = await saloon.findByIdAndDelete({ _id: id });
+        const deleted = await saloon.findOneAndDelete({ _id: id, ...storeScope });
         if (deleted) {
-            req.flash("success", "Store deleted successfully.");
+            const storeId = mongoose.Types.ObjectId(id);
+            await Promise.all([
+                productModel.deleteMany({ saloonStore: storeId }),
+                productPackageModel.deleteMany({ saloonStore: storeId }),
+            ]);
+
+            if (deleted.userId && isValidObjectId(deleted.userId)) {
+                const remainingStoreCount = await saloon.countDocuments({ userId: deleted.userId });
+                if (remainingStoreCount === 0) {
+                    await adminUsers.findByIdAndDelete(deleted.userId);
+                }
+            }
+
+            req.flash("success", "Store with related products, packages, and admin user cleanup processed successfully.");
         } else {
             req.flash("error", "Store not found.");
         }
@@ -373,10 +411,11 @@ exports.deleteSaloon = async (req, res) => {
 
 exports.getSaloonAddress = async (req, res) => {
     try {
+        const storeScope = getStoreScopeForUser(req.user);
         if (!isValidObjectId(req.query.id)) {
             return res.status(400).send([]);
         }
-        const FindData = await saloon.find({ _id: mongoose.Types.ObjectId(req.query.id) })
+        const FindData = await saloon.find({ _id: mongoose.Types.ObjectId(req.query.id), ...storeScope })
         if (FindData) {
             return res.send(FindData)
         }
@@ -420,7 +459,8 @@ exports.findSaloonByUser = async (req, res) => {
 }
 exports.findAdminAllSaloon = async (req, res) => {
     try {
-        const data = await saloon.find()
+        const storeScope = getStoreScopeForUser(req.user);
+        const data = await saloon.find(storeScope)
         return res.send(data)
     } catch (error) {
         console.log(error)
@@ -429,6 +469,7 @@ exports.findAdminAllSaloon = async (req, res) => {
 
 exports.addImagesInSaloon = async (req, res) => {
     try {
+        const storeScope = getStoreScopeForUser(req.user);
         if (!isValidObjectId(req.query.id)) {
             req.flash("error", "Invalid store id.");
             return res.redirect("/add-saloon");
@@ -441,7 +482,7 @@ exports.addImagesInSaloon = async (req, res) => {
         req.files.forEach(element => {
             arr.push(`${process.env.url}/uploads/${element.filename}`)
         });
-        const result = await saloon.findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.query.id) }, { image: arr }, { new: true })
+        const result = await saloon.findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.query.id), ...storeScope }, { image: arr }, { new: true })
 
         if (result) {
             req.flash("success", "Store images updated successfully.");

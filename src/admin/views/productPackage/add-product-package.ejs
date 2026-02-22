@@ -110,7 +110,7 @@
                                           onchange="FindService(this) ,FindSaloon(this)" required>
                                           <option value="">Select Saloon</option>
                                           <% salon.forEach(element=> {%>
-                                            <option value="<%=element._id%>" <%= data?.saloonStore?.toString() === element._id.toString() ? 'selected' : '' %>>
+                                            <option value="<%=element._id%>" <%= data?.saloonStore?.toString() === element._id.toString() || (!data?.saloonStore && salon.length === 1) ? 'selected' : '' %>>
                                               <%=element.storeName%>
                                             </option>
                                             <% });%>

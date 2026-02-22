@@ -77,8 +77,7 @@
                               <select class="form-select" name="saloonStore" required>
                                 <option value="">Select Saloon</option>
                                 <% for (let s of saloonList) { %>
-                                  <option value="<%= s._id %>" <%=service_data?.saloonStore?.toString()==s._id.toString()
-                                    ? 'selected' : '' %>>
+                                  <option value="<%= s._id %>" <%= service_data?.saloonStore?.toString() === s._id.toString() || (!service_data?.saloonStore && saloonList.length === 1) ? 'selected' : '' %>>
                                     <%= s.storeName %>
                                   </option>
                                 <% } %>
@@ -163,7 +162,7 @@
                                 <select class="form-select" name="saloonStore" required>
                                   <option value="">Select Saloon</option>
                                   <% for(let s of saloonList){%>
-                                    <option value="<%= s?._id%>">
+                                    <option value="<%= s?._id%>" <%= saloonList.length === 1 ? 'selected' : '' %>>
                                       <%= s?.storeName%>
                                     </option>
                                   <%}%>

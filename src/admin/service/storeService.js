@@ -1,4 +1,5 @@
 const saloon = require("../../models/saloonStoreModel");
+const getNormalizedRole = (value) => String(value || "").toLowerCase();
 
 exports.viewSaloon = async (req) => {
   try {
@@ -19,7 +20,7 @@ exports.viewSaloon = async (req) => {
     if (req.query.gender != undefined && req.query.gender != "") {
       match.type = req.query.gender
     }
-    if (req.user?.type == "admin") {
+    if (getNormalizedRole(req.user?.type) === "admin") {
       match.userId = req.user._id;
     }
 

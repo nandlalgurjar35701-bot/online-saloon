@@ -84,7 +84,7 @@ exports.deleteProductPackage = async (req, res) => {
 
 exports.findServicesForProductPackage = async (req, res) => {
   try {
-    const data = await productPackageService.findServicesForPackage(req.query.saloonId);
+    const data = await productPackageService.findServicesForPackage(req.query.saloonId, req.user);
     return res.send(data);
   } catch (error) {
     console.log(error);
