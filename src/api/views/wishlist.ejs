@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('./partials/head.ejs') %>
+<body>
+    <div id="spinner"
+        class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" role="status"></div>
+    </div>
+
+    <%- include('./partials/header.ejs') %>
+
+    <div class="container-fluid bg-breadcrumb py-5">
+        <div class="container text-center py-5">
+            <h3 class="text-white display-5 mb-2">My Wishlist</h3>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <div id="wishlistContainer" class="row g-4"></div>
+    </div>
+
+    <%- include('./partials/footerlink.ejs') %>
+
+    <script>
+        (function () {
+            const token = localStorage.getItem("auth") || localStorage.getItem("token") || localStorage.getItem("accessToken");
+            if (!token) {
+                alert("Please login first.");
+                window.location.href = "/";
+                return;
+            }
+
+            const container = document.getElementById("wishlistContainer");
+            const imageUrl = (item) => {
+                const image = item?.result?.image;
+                if (Array.isArray(image) && image.length) return `/uploads/${image[0]}`;
+                if (typeof image === "string" && image) return image.startsWith("http") ? image : `/uploads/${image}`;
+                return "/web/img/services-1.jpg";
+            };
+
+            const renderEmpty = (message) => {
+                container.innerHTML = `<div class="col-12 text-center"><p class="mb-0">${message}</p></div>`;
+            };
+
+            const loadWishlist = async () => {
+                try {
+                    const response = await fetch("/get-wishlist", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    const result = await response.json();
+                    if (!(response.ok && result?.status) || !Array.isArray(result.data) || result.data.length === 0) {
+                        renderEmpty(result?.message || "No wishlist data found.");
+                        return;
+                    }
+
+                    container.innerHTML = result.data.map((item) => `
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                <img src="${imageUrl(item)}" class="card-img-top" style="height: 220px; object-fit: cover;" alt="Salon">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-2">${item?.result?.storeName || "Salon"}</h5>
+                                    <p class="card-text text-muted mb-1">${item?.result?.location?.city || ""}</p>
+                                    <p class="card-text text-muted mb-0">${item?.result?.location?.state || ""}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join("");
+                } catch (error) {
+                    renderEmpty("Unable to load wishlist.");
+                }
+            };
+
+            loadWishlist();
+        })();
+    </script>
+</body>
+</html>

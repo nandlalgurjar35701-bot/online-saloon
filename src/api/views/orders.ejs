@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('./partials/head.ejs') %>
+<body>
+    <div id="spinner"
+        class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" role="status"></div>
+    </div>
+
+    <%- include('./partials/header.ejs') %>
+
+    <div class="container-fluid bg-breadcrumb py-5">
+        <div class="container text-center py-5">
+            <h3 class="text-white display-5 mb-2">My Orders</h3>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <div id="ordersContainer" class="row g-4"></div>
+    </div>
+
+    <%- include('./partials/footerlink.ejs') %>
+
+    <script>
+        (function () {
+            const token = localStorage.getItem("auth") || localStorage.getItem("token") || localStorage.getItem("accessToken");
+            if (!token) {
+                alert("Please login first.");
+                window.location.href = "/";
+                return;
+            }
+
+            const container = document.getElementById("ordersContainer");
+            const renderEmpty = (message) => {
+                container.innerHTML = `<div class="col-12 text-center"><p class="mb-0">${message}</p></div>`;
+            };
+
+            const getImage = (order) => {
+                const image = order?.saloon?.image;
+                if (Array.isArray(image) && image.length) return `/uploads/${image[0]}`;
+                if (typeof image === "string" && image) return image.startsWith("http") ? image : `/uploads/${image}`;
+                return "/web/img/services-1.jpg";
+            };
+
+            const loadOrders = async () => {
+                try {
+                    const response = await fetch("/get-user-order", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    const result = await response.json();
+                    if (!(response.ok && result?.status) || !Array.isArray(result.data) || result.data.length === 0) {
+                        renderEmpty(result?.message || "No orders found.");
+                        return;
+                    }
+
+                    container.innerHTML = result.data.map((entry) => {
+                        const services = Array.isArray(entry?.services) ? entry.services : [];
+                        const serviceNames = services.map((service) => service.ServiceName).filter(Boolean).join(", ");
+                        return `
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="row g-0">
+                                        <div class="col-md-3">
+                                            <img src="${getImage(entry)}" class="img-fluid h-100 w-100" style="object-fit: cover;" alt="Salon">
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="card-body">
+                                                <h5 class="card-title mb-2">${entry?.saloon?.storeName || "Salon"}</h5>
+                                                <p class="mb-1"><strong>Order ID:</strong> ${entry?.orderDetail?.orderId || "-"}</p>
+                                                <p class="mb-1"><strong>Status:</strong> ${entry?.orderDetail?.status || "-"}</p>
+                                                <p class="mb-1"><strong>Total:</strong> Rs. ${Number(entry?.orderDetail?.totalamount || 0)}</p>
+                                                <p class="mb-0"><strong>Services:</strong> ${serviceNames || "-"}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join("");
+                } catch (error) {
+                    renderEmpty("Unable to load orders.");
+                }
+            };
+
+            loadOrders();
+        })();
+    </script>
+</body>
+</html>

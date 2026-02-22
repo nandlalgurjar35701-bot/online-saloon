@@ -71,6 +71,33 @@ exports.contactPage = async (req, res) => {
   }
 };
 
+exports.profilePage = async (req, res) => {
+  try {
+    return await renderWithData(res, "profile");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).render("404");
+  }
+};
+
+exports.wishlistPage = async (req, res) => {
+  try {
+    return await renderWithData(res, "wishlist");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).render("404");
+  }
+};
+
+exports.ordersPage = async (req, res) => {
+  try {
+    return await renderWithData(res, "orders");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).render("404");
+  }
+};
+
 exports.createAppointment = async (req, res) => {
   try {
     const { name, email, phone, service, date, message } = req.body;

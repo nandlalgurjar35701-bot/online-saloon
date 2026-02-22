@@ -204,16 +204,6 @@
             const instance = bootstrap.Modal.getInstance(authModalEl);
             if (instance) instance.hide();
         };
-        const authedFetch = async (url, options = {}) => {
-            const token = readToken();
-            return fetch(url, {
-                ...options,
-                headers: {
-                    ...(options.headers || {}),
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-        };
 
         applyAuthUi();
 
@@ -314,55 +304,22 @@
 
         const menuEditProfile = document.getElementById("menuEditProfile");
         if (menuEditProfile) {
-            menuEditProfile.addEventListener("click", async () => {
-                try {
-                    const response = await authedFetch("/user-Profile");
-                    const result = await response.json();
-                    if (response.ok && result?.status) {
-                        const userData = Array.isArray(result.data) ? result.data[0] : null;
-                        show(`Profile: ${userData?.name || "-"} | ${userData?.email || "-"}`);
-                    } else {
-                        show(result?.message || "Unable to load profile.");
-                    }
-                } catch (error) {
-                    show("Unable to load profile.");
-                }
+            menuEditProfile.addEventListener("click", () => {
+                window.location.href = "/my-profile";
             });
         }
 
         const menuWishlist = document.getElementById("menuWishlist");
         if (menuWishlist) {
-            menuWishlist.addEventListener("click", async () => {
-                try {
-                    const response = await authedFetch("/get-wishlist");
-                    const result = await response.json();
-                    if (response.ok && result?.status) {
-                        const count = Array.isArray(result.data) ? result.data.length : 0;
-                        show(`Wishlist items: ${count}`);
-                    } else {
-                        show(result?.message || "Unable to load wishlist.");
-                    }
-                } catch (error) {
-                    show("Unable to load wishlist.");
-                }
+            menuWishlist.addEventListener("click", () => {
+                window.location.href = "/my-wishlist";
             });
         }
 
         const menuOrders = document.getElementById("menuOrders");
         if (menuOrders) {
-            menuOrders.addEventListener("click", async () => {
-                try {
-                    const response = await authedFetch("/get-user-order");
-                    const result = await response.json();
-                    if (response.ok && result?.status) {
-                        const count = Array.isArray(result.data) ? result.data.length : 0;
-                        show(`Orders: ${count}`);
-                    } else {
-                        show(result?.message || "Unable to load orders.");
-                    }
-                } catch (error) {
-                    show("Unable to load orders.");
-                }
+            menuOrders.addEventListener("click", () => {
+                window.location.href = "/my-orders";
             });
         }
 

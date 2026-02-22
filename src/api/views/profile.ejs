@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('./partials/head.ejs') %>
+<body>
+    <div id="spinner"
+        class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" role="status"></div>
+    </div>
+
+    <%- include('./partials/header.ejs') %>
+
+    <div class="container-fluid bg-breadcrumb py-5">
+        <div class="container text-center py-5">
+            <h3 class="text-white display-5 mb-2">My Profile</h3>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4">Edit Profile</h4>
+                        <form id="profileForm">
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" name="name" id="profileName">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" id="profileEmail">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" name="phone" id="profilePhone">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Gender</label>
+                                <select class="form-select" name="gender" id="profileGender">
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Date Of Birth</label>
+                                <input type="date" class="form-control" name="dateOfBirth" id="profileDob">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Profile Image</label>
+                                <input type="file" class="form-control" name="file" id="profileImage">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('./partials/footerlink.ejs') %>
+
+    <script>
+        (function () {
+            const token = localStorage.getItem("auth") || localStorage.getItem("token") || localStorage.getItem("accessToken");
+            if (!token) {
+                alert("Please login first.");
+                window.location.href = "/";
+                return;
+            }
+
+            const setValue = (id, value) => {
+                const element = document.getElementById(id);
+                if (element) element.value = value || "";
+            };
+
+            const loadProfile = async () => {
+                try {
+                    const response = await fetch("/user-Profile", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    const result = await response.json();
+                    if (!(response.ok && result?.status)) {
+                        alert(result?.message || "Unable to load profile.");
+                        return;
+                    }
+                    const user = Array.isArray(result.data) ? result.data[0] : {};
+                    setValue("profileName", user?.name);
+                    setValue("profileEmail", user?.email);
+                    setValue("profilePhone", user?.phone);
+                    setValue("profileGender", user?.gender);
+                    if (user?.dateOfBirth) {
+                        setValue("profileDob", String(user.dateOfBirth).slice(0, 10));
+                    }
+                } catch (error) {
+                    alert("Unable to load profile.");
+                }
+            };
+
+            const form = document.getElementById("profileForm");
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const formData = new FormData(form);
+                try {
+                    const response = await fetch("/user-Edit-Profile", {
+                        method: "POST",
+                        headers: { Authorization: `Bearer ${token}` },
+                        body: formData,
+                    });
+                    const result = await response.json();
+                    if (response.ok && result?.status) {
+                        alert(result?.message || "Profile updated successfully.");
+                        return;
+                    }
+                    alert(result?.message || "Unable to update profile.");
+                } catch (error) {
+                    alert("Unable to update profile.");
+                }
+            });
+
+            loadProfile();
+        })();
+    </script>
+</body>
+</html>
