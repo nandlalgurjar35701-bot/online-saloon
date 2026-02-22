@@ -88,10 +88,6 @@ exports.loginData = async (req, res) => {
                     req.flash("error", "Detail is Not Found ");
                     return res.redirect("/");
                 };
-                if (user.type != "admin" && user.type != "super-admin") {
-                    req.flash("error", "your are not eligible to login");
-                    return res.redirect("/");
-                };
                 const match = await bcrypt.compare(password, user.password);
                 if (match) {
                     const accessToken = jwt.sign({ _id: user._id }, process.env.accessToken);
@@ -215,62 +211,7 @@ const payment = require("../../models/paymentModel")
 exports.paymentRevenues = async (req, res) => {
     try {
         let obj = {};
-        let data;
-        if (req.user.type == "admin") {
-            let condition = [];
-            condition.push({
-                '$match': {
-                    'userId': req.user._id
-                }
-            }, {
-                '$lookup': {
-                    'from': 'orders',
-                    'localField': '_id',
-                    'foreignField': 'saloonId',
-                    'pipeline': [
-                        {
-                            '$project': {
-                                'PaymentId': 1
-                            }
-                        }
-                    ],
-                    'as': 'order'
-                }
-            }, {
-                '$unwind': {
-                    'path': '$order'
-                }
-            }, {
-                '$replaceRoot': {
-                    'newRoot': '$order'
-                }
-            }, {
-                '$lookup': {
-                    'from': 'payments',
-                    'localField': 'PaymentId',
-                    'foreignField': '_id',
-                    'pipeline': [
-                        {
-                            '$match': {
-                                'payment': 'Payment successfull'
-                            }
-                        }
-                    ],
-                    'as': 'payment'
-                }
-            }, {
-                '$unwind': {
-                    'path': '$payment'
-                }
-            }, {
-                '$replaceRoot': {
-                    'newRoot': '$payment'
-                }
-            })
-            data = await saloon.aggregate(condition);
-        } else {
-            data = await payment.find({ payment: "Payment successfull" }, { "orderData.amount": 1 });
-        }
+        const data = await payment.find({ payment: "Payment successfull" }, { "orderData.amount": 1 });
         if (data) {
             arr = []
             for (const item of data) {

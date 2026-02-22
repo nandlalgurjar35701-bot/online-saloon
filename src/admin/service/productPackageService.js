@@ -19,10 +19,6 @@ exports.findStoreOptions = async (req) => {
     match._id = mongoose.Types.ObjectId(req.query.saloonId);
   }
 
-  if (req.user.type === "admin") {
-    match.userId = mongoose.Types.ObjectId(req.user._id);
-  }
-
   return saloonModel
     .find(match, { _id: 1, storeName: 1 })
     .sort({ storeName: 1 })
@@ -97,26 +93,14 @@ exports.getProductPackageList = async (req) => {
 
   pipeline.push({ $match: match });
 
-  if (req.user.type === "admin") {
-    pipeline.push({
-      $lookup: {
-        from: "saloons",
-        localField: "saloonStore",
-        foreignField: "_id",
-        pipeline: [{ $match: { userId: req.user._id } }],
-        as: "saloon_data",
-      },
-    });
-  } else {
-    pipeline.push({
-      $lookup: {
-        from: "saloons",
-        localField: "saloonStore",
-        foreignField: "_id",
-        as: "saloon_data",
-      },
-    });
-  }
+  pipeline.push({
+    $lookup: {
+      from: "saloons",
+      localField: "saloonStore",
+      foreignField: "_id",
+      as: "saloon_data",
+    },
+  });
 
   const categoryLookup =
     req.query.CategoryName && req.query.CategoryName !== ""
@@ -151,10 +135,6 @@ exports.getProductPackageList = async (req) => {
     pipeline.push({
       $match: { saloon_name: { $regex: req.query.StoreName, $options: "i" } },
     });
-  }
-
-  if (req.user.type === "admin") {
-    pipeline.push({ $match: { saloon_name: { $exists: true } } });
   }
 
   return productPackageModel.aggregate(pipeline);

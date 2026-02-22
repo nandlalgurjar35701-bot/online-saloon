@@ -6,9 +6,6 @@ const ContecUs = require("../../models/contactUsModel");
 
 exports.sendNotification = async (req, res) => {
     try {
-        if (req.user.type == "admin") {
-            return res.redirect("/")
-        }
         res.locals.message = req.flash();
         let data
         if (req.query.id != undefined && req.query.id != "") {

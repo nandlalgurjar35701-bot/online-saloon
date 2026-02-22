@@ -27,32 +27,14 @@ exports.getAllOrder = async (req) => {
                 '$match': match
             })
         }
-        if (req.user.type == "admin") {
-            condition.push({
-                '$lookup': {
-                    'from': 'saloons',
-                    'localField': 'saloonId',
-                    'foreignField': '_id',
-                    'pipeline': [
-                        {
-                            '$match': {
-                                'userId': req.user._id
-                            }
-                        }
-                    ],
-                    'as': 'saloon'
-                }
-            })
-        } else {
-            condition.push({
-                '$lookup': {
-                    'from': 'saloons',
-                    'localField': 'saloonId',
-                    'foreignField': '_id',
-                    'as': 'saloon'
-                }
-            })
-        }
+        condition.push({
+            '$lookup': {
+                'from': 'saloons',
+                'localField': 'saloonId',
+                'foreignField': '_id',
+                'as': 'saloon'
+            }
+        })
 
         condition.push({
             '$lookup': {
@@ -102,16 +84,6 @@ exports.getAllOrder = async (req) => {
             condition.push({
                 '$match': {
                     'saloon.location.city': req.query.city
-                }
-            })
-        }
-
-        if (req.user.type == "admin") {
-            condition.push({
-                '$match': {
-                    'saloon._id': {
-                        '$exists': true
-                    }
                 }
             })
         }

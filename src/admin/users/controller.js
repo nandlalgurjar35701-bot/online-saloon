@@ -8,9 +8,6 @@ const { findOne } = require("../../models/userModel");
 
 exports.allUser = async (req, res) => {
     try {
-        if (req.user.type == "admin") {
-            return res.redirect("/")
-        }
         res.locals.message = req.flash();
         const Finddata = await allUser(req)
         res.render("users/view-user", { data: Finddata.data, user: req.user, query: req.query, })
@@ -59,14 +56,12 @@ exports.warning = async (req, res) => {
 };
 exports.unblock = async (req, res) => {
     try {
-        let Finddata;
         res.locals.message = req.flash();
-        const data = await user.findOne({ _id: mongoose.Types.ObjectId(req.query.id) });
-        if (data.type == "block-User") {
-            Finddata = await user.findByIdAndUpdate({ _id: mongoose.Types.ObjectId(req.query.id) }, { type: "user" }, { new: true })
-        } else {
-            Finddata = await user.findByIdAndUpdate({ _id: mongoose.Types.ObjectId(req.query.id) }, { type: "admin" }, { new: true })
-        }
+        const Finddata = await user.findByIdAndUpdate(
+            { _id: mongoose.Types.ObjectId(req.query.id) },
+            { type: "user" },
+            { new: true }
+        );
         req.flash("success", "unblock successfully")
         if (Finddata) {
             res.redirect("/all-user")

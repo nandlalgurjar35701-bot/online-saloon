@@ -4,9 +4,6 @@ const { getAllSaloonCity } = require("../../api/saloonstore/controller");
 
 exports.ContactUsRequist = async (req, res) => {
     try {
-        if (req.user.type == "admin") {
-            return res.redirect("/")
-        }
         let condition = {}
         if (req.query.phone != undefined && req.query.phone != "") {
             condition.phone = Number(req.query.phone)

@@ -382,12 +382,7 @@ exports.findSaloonByUser = async (req, res) => {
 }
 exports.findAdminAllSaloon = async (req, res) => {
     try {
-        let data;
-        if (req.user.type == "admin") {
-            data = await saloon.find({ userId: req.user._id })
-        } else {
-            data = await saloon.find()
-        }
+        const data = await saloon.find()
         return res.send(data)
     } catch (error) {
         console.log(error)

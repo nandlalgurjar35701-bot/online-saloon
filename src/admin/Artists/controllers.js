@@ -5,9 +5,6 @@ const service = require("./services")
 
 exports.Artists = async (req, res) => {
     try {
-        if (req.user.type == "admin") {
-            res.redirect("/")
-        }
         const condition = []
         const obj = {};
         if (req.query.id != undefined && req.query.id != "") {

@@ -21,13 +21,6 @@ exports.ViewAllPayment = async (req, res) => {
             serchobj2["orderData.amount"] = { $gte: Number(req.query.amount) * 100 };
         }
         let condition = [];
-        if (req.user.type == "admin") {
-            condition.push({
-                '$match': {
-                    'userId': req.user._id
-                }
-            })
-        }
         condition.push({
             '$lookup': {
                 'from': 'orders',
