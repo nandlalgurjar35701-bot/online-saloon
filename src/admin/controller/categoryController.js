@@ -2,11 +2,32 @@ const { AddCategory } = require("../service/categoryService");
 const CategoryModule = require("../../models/categoryModel");
 const mongoose = require('mongoose');
 
+const buildTypeCondition = (typeValue) => {
+    if (!typeValue) return null;
+    if (typeValue === "productpackage" || typeValue === "1" || typeValue === 1) {
+        return { $in: ["productpackage", 1, "1"] };
+    }
+    return { $in: ["product", 0, "0", null] };
+};
+
 exports.Category = async (req, res) => {
     try {
         res.locals.message = req.flash();
         if (req.query.id) {
-            return res.render("category/index", { user: req.user, id: req.query.id });
+            if (!mongoose.Types.ObjectId.isValid(req.query.id)) {
+                req.flash("error", "Invalid parent category id.");
+                return res.redirect("/view-category");
+            }
+            const parentCategory = await CategoryModule.findById(req.query.id).lean();
+            if (!parentCategory) {
+                req.flash("error", "Parent category not found.");
+                return res.redirect("/view-category");
+            }
+            return res.render("category/index", {
+                user: req.user,
+                id: req.query.id,
+                parentType: parentCategory.type || "product"
+            });
         } else if (req.query.EditId) {
             if (!mongoose.Types.ObjectId.isValid(req.query.EditId)) {
                 req.flash("error", "Invalid category id.");
@@ -54,8 +75,9 @@ exports.ViwesCategory = async (req, res) => {
         } else {
             condition = { parent_Name: null };
         }
-        if (req.query.type != undefined && req.query.type != "") {
-            condition.type = Number(req.query.type);
+        const typeCondition = buildTypeCondition(req.query.type);
+        if (typeCondition) {
+            condition.type = typeCondition;
         }
 
         const data = await CategoryModule.find(condition);

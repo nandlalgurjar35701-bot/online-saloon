@@ -1,5 +1,12 @@
 const category = require("../../models/categoryModel");
 
+const buildTypeCondition = (typeValue) => {
+    if (typeValue === "productpackage" || typeValue === "1" || typeValue === 1) {
+        return { $in: ["productpackage", 1, "1"] };
+    }
+    return { $in: ["product", 0, "0", null] };
+};
+
 exports.getCategoryListing = async (req) => {
     try {
         let condition = {};
@@ -9,11 +16,7 @@ exports.getCategoryListing = async (req) => {
             condition.parent_Name = null
         };
 
-        if (req.query.type != undefined && req.query.type != "") {
-            condition.type = 1
-        } else {
-            condition.type = 0
-        }
+        condition.type = buildTypeCondition(req.query.type);
 
         const FindData = await category.find(condition);
 

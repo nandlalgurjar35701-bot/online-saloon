@@ -14,13 +14,13 @@ exports.addProductPackagePage = async (req, res) => {
       productPackageData = await productModel.findOne({ _id: req.query.id });
       if (productPackageData) {
         req.query.saloonId = productPackageData.saloonStore;
-        req.query.id = productPackageData.category?.[0];
+        req.query.id = productPackageData.category?.toString();
       }
     } else {
       req.query.id = "";
     }
 
-    req.query.type = 1;
+    req.query.type = "productpackage";
     const Category = await getCategoryListing(req);
     const salon = await productPackageService.findStoreOptions(req);
 

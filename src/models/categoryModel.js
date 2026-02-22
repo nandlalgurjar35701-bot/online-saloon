@@ -16,11 +16,14 @@ const add_Category = new mongoose.Schema({
     description: {
         type: String,
         default: ""
+    },
+    type: {
+        type: String,
+        default: "product"
     }
 }, { versionKey: false, timestamps: true });
 
 
 const category = new mongoose.model("category", add_Category);
 module.exports = category;
-
 

@@ -52,6 +52,14 @@
 
                             </div>
                             <div class="col-10">
+                              <label class="form-label">Category Type</label>
+                              <select name="type" class="form-select" required>
+                                <option value="product" <%= (parentType || "product") === "product" ? "selected" : "" %>>Product</option>
+                                <option value="productpackage" <%= parentType === "productpackage" ? "selected" : "" %>>Product Package</option>
+                              </select>
+                              <div class="invalid-feedback">Please select category type.</div>
+                            </div>
+                            <div class="col-10">
                               <label for="inputPassword4" class="form-label">Sub Category Image</label>
                               <input type="file" name="file" class="form-control" id="inputPassword4" required />
                               <div class="invalid-feedback">Please Select Sub Category Image.</div>
@@ -74,6 +82,14 @@
                                 <input type="text" class="form-control" name="Name" value="<%= data.Name%>" required>
                                 <div class="invalid-feedback">Please Category Name.</div>
 
+                              </div>
+                              <div class="col-8">
+                                <label class="form-label">Category Type</label>
+                                <select name="type" class="form-select" required>
+                                  <option value="product" <%= (data.type === "product" || data.type === 0 || data.type === "0" || !data.type) ? "selected" : "" %>>Product</option>
+                                  <option value="productpackage" <%= (data.type === "productpackage" || data.type === 1 || data.type === "1") ? "selected" : "" %>>Product Package</option>
+                                </select>
+                                <div class="invalid-feedback">Please select category type.</div>
                               </div>
                               <div class="col-8">
                                 <label for="inputPassword4" class="form-label">Edit Category Image</label>
@@ -109,6 +125,14 @@
                                   <input type="text" class="form-control" name="Name" placeholder="Enter Category Name"
                                     id="" required>
                                   <div class="invalid-feedback">Please Enter Category Name.</div>
+                                </div>
+                                <div class="col-6">
+                                  <label class="form-label">Category Type</label>
+                                  <select name="type" class="form-select" required>
+                                    <option value="product" selected>Product</option>
+                                    <option value="productpackage">Product Package</option>
+                                  </select>
+                                  <div class="invalid-feedback">Please select category type.</div>
                                 </div>
                                 <div class="col-6">
                                   <label for="inputPassword4" class="form-label">Category Image</label>

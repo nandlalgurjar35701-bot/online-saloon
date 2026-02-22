@@ -83,7 +83,7 @@
                                             <% } %>
                                               <div class="valid-feedback">Looks good!</div>
                                               <div class="invalid-feedback">Please select Image.</div>
-                                              <img src="/uploads/<%= data?.image?.[0] || 'default.png' %>"
+                                              <img src="/uploads/<%= Array.isArray(data?.image) ? (data?.image?.[0] || 'default.png') : (data?.image || 'default.png') %>"
                                                 style="max-width: 200px; max-height: 68px;" alt="img">
                                       </div>
                                     </div><br>
@@ -93,8 +93,9 @@
                                         <label for="">Select Category</label>
                                         <select class="form-select" name="category" aria-label="multiple select example"
                                           required>
+                                          <option value="">Select Category</option>
                                           <% Category.data.forEach(element=> {%>
-                                            <option value="<%=element._id%>">
+                                            <option value="<%=element._id%>" <%= data?.category?.toString() === element._id.toString() ? 'selected' : '' %>>
                                               <%=element.Name%>
                                             </option>
                                             <% });%>
@@ -107,8 +108,9 @@
                                         <select class="form-select" name="saloonStore" id="saloonStore"
                                           aria-label="Default select example"
                                           onchange="FindService(this) ,FindSaloon(this)" required>
+                                          <option value="">Select Saloon</option>
                                           <% salon.forEach(element=> {%>
-                                            <option value="<%=element._id%>">
+                                            <option value="<%=element._id%>" <%= data?.saloonStore?.toString() === element._id.toString() ? 'selected' : '' %>>
                                               <%=element.storeName%>
                                             </option>
                                             <% });%>
@@ -139,9 +141,13 @@
 
                                     <div class="row g-3">
                                       <div class="col">
-                                        <div id="myselect" class="col-md-12">
-
-                                        </div>
+                                        <label for="">Select Products</label>
+                                        <select style="width:100%;" multiple class="form-select" id="txtSelectedValues"
+                                          onchange="ServicePriceTotel()" name="Services" required>
+                                          <option value="" disabled>Select Saloon First</option>
+                                        </select>
+                                        <div class="invalid-feedback">Please select at least one product.</div>
+                                        <div id="selectedServicesBox" class="mt-2"></div>
                                       </div>
                                       <div class="col">
                                         <label for="">package Final Price</label> <br>
@@ -174,88 +180,86 @@
         <script>
 
           $(document).ready(function () {
-            const ee = document.getElementById("saloonStore")
-            FindService(ee)
-            FindSaloon(ee)
+            const salonSelect = document.getElementById("saloonStore")
+            if (salonSelect?.value) {
+              FindService(salonSelect)
+              FindSaloon(salonSelect)
+            } else {
+              $('#selectedServicesBox').html('<small class="text-muted">No product selected.</small>');
+            }
           });
-          let arrr;
-          <% if (data?.Services.length > 0) {%>
-            // yaha ye -  eske pass me hona chhaiye just 
-            arrr = <%- JSON.stringify(data.Services) %>
+          let selectedServiceIds;
+          <% if (data?.Services?.length > 0) {%>
+            selectedServiceIds = <%- JSON.stringify(data.Services) %>
           <% } else {%>
-            arrr =[]
+            selectedServiceIds = []
               <% }%>
-                function FindService(select) {
+          function normalizeIdList(list) {
+            return (list || []).map((item) => item.toString());
+          }
 
-                  let num = Number(select.id)
-                  let category = select.value
-                  $.ajax({
-                    type: 'get',
-                    data: { "saloonId": category, },
-                    url: '/find-services-for-product-package',
-                    success: function (data) {
-                      if (data.length > 0) {
-                        let abc = `<div id="subcategory-${num + 1}"><label for="inputAddress" class="form-label">choice Service</label>`
-                        abc += `<select style="width:100%;"  multiple class="form-select" id="txtSelectedValues"  onchange="ServicePriceTotel(this)" name="Services" id="${num + 1}">`
-                        abc += `<option value="" disabled>select Services</option>`
-                        data.forEach((item) => {
-                          if (arrr.includes(item._id.toString()) == true) {
-                            abc += `<option value=${JSON.stringify({ id: item._id, amount: item.ServicePrice })} selected >${item.ServiceName}</option>`
-                          } else {
-                            abc += `<option value=${JSON.stringify({ id: item._id, amount: item.ServicePrice })}>${item.ServiceName}</option>`
-                          }
-                        })
-                        abc += `</select> 
-                  <div class="invalid-feedback">Please Select Sub Category.</div> </div>`
-                        let num2 = num + 1
-                        while (true) {
-                          let cat = $(`#subcategory-${num2}`)
-                          if (cat.html()) {
-                            cat.remove();
-                          } else {
-                            break;
-                          }
-                          ++num2
-                        }
-                        $('#myselect').append(abc)
-                      } else {
-                        alert("data not found")
-                        let num2 = num + 1
-                        while (true) {
-                          let cat = $(`#subcategory-${num2}`)
-                          if (cat.html()) {
-                            cat.remove();
-                          } else {
-                            break;
-                          }
-                          ++num2
-                        }
-                      }
-                    }
-                  })
+          function renderSelectedServices() {
+            const selectedOptions = $('#txtSelectedValues option:selected');
+            if (selectedOptions.length === 0) {
+              $('#selectedServicesBox').html('<small class="text-muted">No product selected.</small>');
+              return;
+            }
+
+            let tags = '';
+            selectedOptions.each(function () {
+              tags += `<span class="badge bg-primary me-1 mb-1">${$(this).text()}</span>`;
+            });
+            $('#selectedServicesBox').html(tags);
+          }
+
+          function FindService(select) {
+            const salonId = select.value;
+            if (!salonId) {
+              $('#txtSelectedValues').html('<option value="" disabled selected>Select Saloon First</option>');
+              $('#Amount').val(0);
+              $('#selectedServicesBox').html('<small class="text-muted">No product selected.</small>');
+              return;
+            }
+
+            $.ajax({
+              type: 'get',
+              data: { saloonId: salonId },
+              url: '/find-services-for-product-package',
+              success: function (data) {
+                if (data.length === 0) {
+                  $('#txtSelectedValues').html('<option value="" disabled selected>No products found</option>');
+                  $('#selectedServicesBox').html('<small class="text-muted">No products found for this saloon.</small>');
+                  $('#Amount').val(0);
+                  return;
                 }
 
-          // $("#txtSelectedValues").change(function () {
-          //   // if ($("select option:selected").length > 3) {
-          //   //   $(this).removeAttr("selected");
-          //   //   alert('You can select upto 3 options only');
-          //   // }
-          // });
+                const preselectedIds = normalizeIdList(selectedServiceIds);
+                let html = '';
+                data.forEach((item) => {
+                  const value = JSON.stringify({
+                    id: item._id,
+                    amount: Number(item.ServicePrice || 0)
+                  });
+                  const isSelected = preselectedIds.includes(item._id.toString()) ? 'selected' : '';
+                  html += `<option value='${value}' ${isSelected}>${item.ServiceName}</option>`;
+                });
 
-
-
-
-
-          function ServicePriceTotel(a) {
-            let arr = []
-            var selectedValues = $('#txtSelectedValues').val();
-            // $("element[attribute-name=attribute-value]")
-            selectedValues.forEach(element => {
-              let data = JSON.parse(element)
-              arr.push(Number(data.amount))
+                $('#txtSelectedValues').html(html);
+                ServicePriceTotel();
+                selectedServiceIds = [];
+              }
             });
-            const sum = arr.reduce((acc, ele) => acc + ele, 0);
-            $('#Amount').val(sum)
+          }
+
+          function ServicePriceTotel() {
+            const selectedValues = $('#txtSelectedValues').val() || [];
+            let sum = 0;
+            selectedValues.forEach((element) => {
+              const data = JSON.parse(element);
+              sum += Number(data.amount || 0);
+            });
+            $('#Amount').val(sum);
+            renderSelectedServices();
           }
 
 
@@ -263,6 +267,7 @@
         <script>
           const amountInput = document.getElementById('Amount');
           const finalPriceInput = document.getElementById('FinalPrice');
+          const existingPackageType = "<%= data?.type || '' %>";
 
           amountInput.addEventListener('input', () => {
             finalPriceInput.value = Math.min(amountInput.value, finalPriceInput.value);
@@ -287,7 +292,7 @@
                   let abc;
                   abc = ` <select class="form-select" name="type" id="Gender" aria-label="Default select example"
                                   required>
-                                <option value="male">Male</option>
+                                <option value="male" selected>Male</option>
                           </select>`
                   $('#gendeAll').append(abc)
                 } else if (data.type == "female") {
@@ -295,7 +300,7 @@
                   let abc;
                   abc = `<select class="form-select" name="type" id="Gender" aria-label="Default select example"
                                   required>
-                                 <option value="female">Female</option>
+                                 <option value="female" selected>Female</option>
                           </select>`
 
                   $('#gendeAll').append(abc)
@@ -305,9 +310,9 @@
                   abc = `<select class="form-select" name="type" id="Gender" aria-label="Default select example"
                                   required>
                                   <option value="">Select Type</option>
-                                  <option value="male">Male</option>
-                                  <option value="female">Female</option>
-                                  <option value="unisex">Unisex</option>
+                                  <option value="male" ${existingPackageType === "male" ? "selected" : ""}>Male</option>
+                                  <option value="female" ${existingPackageType === "female" ? "selected" : ""}>Female</option>
+                                  <option value="unisex" ${existingPackageType === "unisex" ? "selected" : ""}>Unisex</option>
                                 </select>`
                   $('#gendeAll').append(abc)
                 };

@@ -13,40 +13,20 @@ exports.findServicesForPackage = async (saloonId) => {
 };
 
 exports.findStoreOptions = async (req) => {
-  const pipeline = [];
+  const match = {};
 
   if (req.query.saloonId && isValidObjectId(req.query.saloonId)) {
-    pipeline.push({
-      $match: { _id: mongoose.Types.ObjectId(req.query.saloonId) },
-    });
+    match._id = mongoose.Types.ObjectId(req.query.saloonId);
   }
 
   if (req.user.type === "admin") {
-    pipeline.push({
-      $match: { userId: mongoose.Types.ObjectId(req.user._id) },
-    });
+    match.userId = mongoose.Types.ObjectId(req.user._id);
   }
 
-  pipeline.push(
-    {
-      $lookup: {
-        from: "saloonservices",
-        localField: "_id",
-        foreignField: "saloonStore",
-        as: "ss",
-      },
-    },
-    { $unwind: { path: "$ss" } },
-    {
-      $group: {
-        _id: "$_id",
-        fieldN: { $first: { _id: "$_id", storeName: "$storeName" } },
-      },
-    },
-    { $replaceRoot: { newRoot: "$fieldN" } }
-  );
-
-  return saloonModel.aggregate(pipeline);
+  return saloonModel
+    .find(match, { _id: 1, storeName: 1 })
+    .sort({ storeName: 1 })
+    .lean();
 };
 
 exports.saveProductPackage = async (req) => {
@@ -57,8 +37,18 @@ exports.saveProductPackage = async (req) => {
       ? [body.Services]
       : [];
 
-  body.Services = selectedServices.map((item) => JSON.parse(item).id);
-  if (req.file?.filename) body.image = req.file.filename;
+  body.Services = selectedServices
+    .map((item) => {
+      try {
+        const parsed = JSON.parse(item);
+        return parsed?.id || null;
+      } catch (error) {
+        return item;
+      }
+    })
+    .filter((item) => isValidObjectId(item));
+
+  if (req.file?.filename) body.image = [req.file.filename];
   body.ServicesType = 1;
 
   if (req.query.id && isValidObjectId(req.query.id)) {

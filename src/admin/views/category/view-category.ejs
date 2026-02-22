@@ -51,8 +51,8 @@
                           <label>Choose Type</label> <br>
                           <select id="inputState" name="type" class="form-select">
                             <option selected="" value="">Choose For</option>
-                            <option value="0" <%=query.type=="0" ? 'selected' :'' %> >service</option>
-                            <option value="1" <%=query.type=="1" ? 'selected' :'' %> >packages</option>
+                            <option value="product" <%= (query.type=="product" || query.type=="0") ? 'selected' :'' %> >Product</option>
+                            <option value="productpackage" <%= (query.type=="productpackage" || query.type=="1") ? 'selected' :'' %> >Product Package</option>
                             <!-- <option value="succes">succes</option> -->
                           </select>
                         </div>
@@ -101,6 +101,7 @@
                                   <th>sr no</th>
                                   <th scope="col">Category Name</th>
                                   <th scope="col">description</th>
+                                  <th scope="col">type</th>
                                   <th scope="col">images</th>
 
                                   <th scope="col">action</th>
@@ -131,6 +132,9 @@
                                             Learn more
                                           </button>
                                         <% } %>
+                                      </td>
+                                      <td>
+                                        <%= (category.type === "productpackage" || category.type === 1 || category.type === "1") ? "Product Package" : "Product" %>
                                       </td>
                                       <td>
                                         <% if(typeof category.image !="undefined" && category.image!="" ){%>

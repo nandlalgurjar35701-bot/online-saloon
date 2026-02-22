@@ -9,7 +9,9 @@ const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 exports.addProductPage = async (req, res) => {
   try {
     res.locals.message = req.flash();
-    const category = await Category.find();
+    const category = await Category.find({
+      type: { $in: ["product", 0, "0", null] },
+    });
     let serviceData = null;
 
     if (req.query.id && isValidObjectId(req.query.id)) {
