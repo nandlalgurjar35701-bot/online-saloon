@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>View-Package</title>
+  <title>View-Product-Package</title>
   <%- include('../../partials/headlink.ejs') %>
 </head>
 
@@ -34,7 +34,7 @@
                       <h5 class="card-title">Filter</h5>
 
                       <!-- No Labels Form -->
-                      <form class="row g-3" action="/view-package">
+                      <form class="row g-3" action="/view-product-package">
                         <div class="col-md-4">
                           <label>Enter Store Name</label> <br>
                           <% if(query?.StoreName!="" ){%>
@@ -74,7 +74,7 @@
                           <label></label> <br>
                           <div class="text-center">
                             <button type="submit" class="btn btn-primary">Submit</button>
-                            <a href="/view-package"> <button type="button" class="btn btn-secondary">Reset</button></a>
+                            <a href="/view-product-package"> <button type="button" class="btn btn-secondary">Reset</button></a>
                           </div>
                         </div>
                       </form>
@@ -84,7 +84,7 @@
                   </div>
                   <div class="card">
                     <div class="card-body">
-                      <h5 class="card-title">Service package List</h5>
+                      <h5 class="card-title">Product Package List</h5>
 
                       <!-- Table with stripped rows -->
                       <table class="table datatable text-nowrap">
@@ -138,10 +138,10 @@
                                   </button>
                                 </td>
                                 <td>
-                                  <a href="/add-new-package?id=<%= data._id%>" class="btn btn-info"
+                                  <a href="/add-product-package?id=<%= data._id%>" class="btn btn-info"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit"><i
                                       class="ri-edit-box-line"></i></a>
-                                  <a href="/delete_package?id=<%= data._id%>" class="btn btn-danger"
+                                  <a href="/delete-product-package?id=<%= data._id%>" class="btn btn-danger"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete">
                                     <i class="ri-delete-bin-5-line"></i>
                                   </a>
@@ -187,7 +187,7 @@
             $.ajax({
               type: 'get',
               data: { "id": num },
-              url: '/Find-Package-Services',
+              url: '/find-product-package-services',
               success: function (data) {
                 if (data.length > 0) {
                   $('#moduleDataAppend').empty()

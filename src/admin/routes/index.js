@@ -15,7 +15,7 @@ module.exports = (app) => {
     app.use(require("../Vacancy/routes"));
     app.use(require("../Refer-And-point/routes"));
     app.use(require("../Contact-us/route"));
-    app.use(require("../servicePackage/route"));
+    app.use(require("./productPackageRouter"));
     app.use(require("../newLetter/routes"));
     //   app.use(`${apiV1Prefix}/user`, require('./userRoutes'));
 };

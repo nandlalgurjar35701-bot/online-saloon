@@ -196,7 +196,7 @@
                                 </td>
                                 <td>
                                   <%if(NumberOfservice>1){%>
-                                    <a href="/add-new-package?saloonId=<%= store._id%>"
+                                    <a href="/add-product-package?saloonId=<%= store._id%>"
                                       class="btn btn-success text-warning" data-bs-toggle="tooltip"
                                       data-bs-placement="top" data-bs-title="Add New Package">
                                       <i class="ri-file-add-line"></i></a>
@@ -205,7 +205,7 @@
                                       <%if(store.ccc.length>1){%>
                                         <%store.ccc.forEach(element=> {%>
                                           <%if( element._id==1){%>
-                                            <a href="/view-package?id=<%= store._id%>" class="btn btn-success"
+                                            <a href="/view-product-package?id=<%= store._id%>" class="btn btn-success"
                                               data-bs-toggle="tooltip" data-bs-placement="top"
                                               data-bs-title="view Package">
                                               <%= element.count %>

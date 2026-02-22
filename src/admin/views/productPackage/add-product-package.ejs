@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>package</title>
+  <title>Product Package</title>
 
   <%- include('../../partials/headlink.ejs') %>
 </head>
@@ -34,14 +34,14 @@
                   <div class="card">
                     <div class="card-body">
 
-                      <h5 class="card-title">Add Service package </h5>
+                      <h5 class="card-title">Add Product Package</h5>
                       
                           <% if(data){ %>
-                            <form class="needs-validation" action="/add-new-package?id=<%= data._id%>" method="post"
+                            <form class="needs-validation" action="/add-product-package?id=<%= data._id%>" method="post"
                               enctype="multipart/form-data" novalidate>
                               <% }else{ %>
 
-                                <form class="needs-validation" action="/add-new-package" method="post"
+                                <form class="needs-validation" action="/add-product-package" method="post"
                                   enctype="multipart/form-data" novalidate>
                                   <% } %>
                                     <div class="row g-3">
@@ -83,7 +83,7 @@
                                             <% } %>
                                               <div class="valid-feedback">Looks good!</div>
                                               <div class="invalid-feedback">Please select Image.</div>
-                                              <img src="/uploads/<%=data?.image[0] %>"
+                                              <img src="/uploads/<%= data?.image?.[0] || 'default.png' %>"
                                                 style="max-width: 200px; max-height: 68px;" alt="img">
                                       </div>
                                     </div><br>
@@ -192,7 +192,7 @@
                   $.ajax({
                     type: 'get',
                     data: { "saloonId": category, },
-                    url: '/Find-Service-for-Packages',// nandlal
+                    url: '/find-services-for-product-package',
                     success: function (data) {
                       if (data.length > 0) {
                         let abc = `<div id="subcategory-${num + 1}"><label for="inputAddress" class="form-label">choice Service</label>`

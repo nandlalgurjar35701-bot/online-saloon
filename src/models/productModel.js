@@ -46,9 +46,8 @@ const productSchema = new mongoose.Schema(
   },
   {
     versionKey: false,
-    timestamps: true,
-    collection: "saloonservices",
+    timestamps: true
   }
 );
 
-module.exports = mongoose.models.product || mongoose.model("product", productSchema);
+module.exports = mongoose.model("product", productSchema);
