@@ -1,4 +1,4 @@
-const faqService = require("./services");
+const faqService = require("../service/faqService");
 
 exports.renderFaqForm = async (req, res) => {
   try {
@@ -70,10 +70,3 @@ exports.viewFaqAnswer = async (req, res) => {
     return res.send([]);
   }
 };
-
-// Backward-compatible aliases
-exports.ADD_FREQUENT = exports.renderFaqForm;
-exports.ADD_FREQUENT_DATA = exports.saveFaq;
-exports.VIEW_FREQUENT = exports.renderFaqList;
-exports.DELETE_FREQUENT = exports.deleteFaq;
-exports.ViwesFindQustion = exports.viewFaqAnswer;

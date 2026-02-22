@@ -8,7 +8,7 @@ const {
   renderBlogList,
   deleteBlog,
   viewBlogDescription,
-} = require("./controllers");
+} = require("../controller/blogController");
 
 app.get("/add-blog", auth, renderBlogForm);
 app.post("/add-blog-store", auth, Upload.single("image"), saveBlog);

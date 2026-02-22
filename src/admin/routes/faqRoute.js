@@ -7,7 +7,7 @@ const {
   renderFaqList,
   deleteFaq,
   viewFaqAnswer,
-} = require("./controller");
+} = require("../controller/faqController");
 
 app.get("/add-frequent", auth, renderFaqForm);
 app.post("/add-frequent-data", auth, saveFaq);

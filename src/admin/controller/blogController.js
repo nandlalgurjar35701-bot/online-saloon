@@ -1,4 +1,4 @@
-const blogService = require("./services");
+const blogService = require("../service/blogService");
 
 exports.renderBlogForm = async (req, res) => {
   try {
@@ -82,10 +82,3 @@ exports.viewBlogDescription = async (req, res) => {
     return res.send([]);
   }
 };
-
-// Backward-compatible aliases
-exports.ADD_BLOG = exports.renderBlogForm;
-exports.ADD_BLOG_STORE = exports.saveBlog;
-exports.VIEW_BLOG = exports.renderBlogList;
-exports.DELETE_BLOG = exports.deleteBlog;
-exports.ViwesFindBlog = exports.viewBlogDescription;
