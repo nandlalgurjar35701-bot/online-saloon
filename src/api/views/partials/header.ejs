@@ -69,6 +69,25 @@
                                 3
                             </span>
                         </button>
+                        <button id="guestAuthBtn" type="button"
+                            class="btn btn-primary btn-primary-outline-0 rounded-circle btn-lg-square ms-2"
+                            data-bs-toggle="modal" data-bs-target="#authModal" title="Login / Sign Up">
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <div id="userMenuWrapper" class="dropdown ms-2" style="display: none;">
+                            <button class="btn btn-primary btn-primary-outline-0 rounded-circle btn-lg-square dropdown-toggle"
+                                type="button" id="userMenuBtn" data-bs-toggle="dropdown" aria-expanded="false"
+                                title="My Account">
+                                <i class="fas fa-user"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuBtn">
+                                <li><button class="dropdown-item" type="button" id="menuEditProfile">Edit Profile</button></li>
+                                <li><button class="dropdown-item" type="button" id="menuWishlist">Wishlist</button></li>
+                                <li><button class="dropdown-item" type="button" id="menuOrders">Orders</button></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><button class="dropdown-item text-danger" type="button" id="menuLogout">Logout</button></li>
+                            </ul>
+                        </div>
                         <a href="/appointment"
                             class="btn btn-primary btn-primary-outline-0 rounded-pill py-3 px-4 ms-4">Book
                             Appointment</a>
@@ -96,3 +115,268 @@
     <% }) %>
 </div>
 <% } %>
+
+<div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="authModalLabel">User Access</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs mb-3" id="authTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="login-tab" data-bs-toggle="tab"
+                            data-bs-target="#login-pane" type="button" role="tab">Login</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="signup-tab" data-bs-toggle="tab"
+                            data-bs-target="#signup-pane" type="button" role="tab">Sign Up</button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="login-pane" role="tabpanel" aria-labelledby="login-tab">
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Login</button>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="signup-pane" role="tabpanel" aria-labelledby="signup-tab">
+                        <form id="signupForm">
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" name="phone" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const readToken = () => localStorage.getItem("auth") || localStorage.getItem("token") || localStorage.getItem("accessToken") || "";
+        const clearToken = () => {
+            localStorage.removeItem("auth");
+            localStorage.removeItem("token");
+            localStorage.removeItem("accessToken");
+        };
+        const show = (message) => {
+            if (message) alert(message);
+        };
+        const guestAuthBtn = document.getElementById("guestAuthBtn");
+        const userMenuWrapper = document.getElementById("userMenuWrapper");
+        const authModalEl = document.getElementById("authModal");
+        const applyAuthUi = () => {
+            const token = readToken();
+            if (token) {
+                if (guestAuthBtn) guestAuthBtn.style.display = "none";
+                if (userMenuWrapper) userMenuWrapper.style.display = "block";
+            } else {
+                if (guestAuthBtn) guestAuthBtn.style.display = "inline-flex";
+                if (userMenuWrapper) userMenuWrapper.style.display = "none";
+            }
+        };
+        const closeAuthModal = () => {
+            if (!authModalEl || typeof bootstrap === "undefined") return;
+            const instance = bootstrap.Modal.getInstance(authModalEl);
+            if (instance) instance.hide();
+        };
+        const authedFetch = async (url, options = {}) => {
+            const token = readToken();
+            return fetch(url, {
+                ...options,
+                headers: {
+                    ...(options.headers || {}),
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+        };
+
+        applyAuthUi();
+
+        const loginForm = document.getElementById("loginForm");
+        if (loginForm) {
+            loginForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const formData = new FormData(loginForm);
+                const payload = {
+                    email: String(formData.get("email") || "").trim(),
+                    password: String(formData.get("password") || "").trim(),
+                };
+                try {
+                    const response = await fetch("/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload),
+                    });
+                    const result = await response.json();
+                    if (response.ok && result?.status) {
+                        const token = result?.data?.[1]?.auth;
+                        if (token) {
+                            localStorage.setItem("auth", token);
+                            localStorage.setItem("token", token);
+                        }
+                        closeAuthModal();
+                        applyAuthUi();
+                        show(result.message || "Login successful.");
+                        window.location.reload();
+                        return;
+                    }
+                    show(result?.message || "Login failed.");
+                } catch (error) {
+                    show("Unable to login right now.");
+                }
+            });
+        }
+
+        const signupForm = document.getElementById("signupForm");
+        if (signupForm) {
+            signupForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const formData = new FormData(signupForm);
+                const payload = {
+                    name: String(formData.get("name") || "").trim(),
+                    phone: String(formData.get("phone") || "").trim(),
+                    email: String(formData.get("email") || "").trim(),
+                    password: String(formData.get("password") || "").trim(),
+                };
+
+                try {
+                    const otpSent = await fetch("/otp-sent", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ phone: payload.phone }),
+                    });
+                    const otpSentResult = await otpSent.json();
+                    if (!(otpSent.ok && otpSentResult?.status)) {
+                        show(otpSentResult?.message || "Unable to send OTP.");
+                        return;
+                    }
+
+                    const otpVerify = await fetch("/otp-verify", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ phone: payload.phone, otp: "1234" }),
+                    });
+                    const otpVerifyResult = await otpVerify.json();
+                    if (!(otpVerify.ok && otpVerifyResult?.status)) {
+                        show(otpVerifyResult?.message || "OTP verification failed.");
+                        return;
+                    }
+
+                    const registerRes = await fetch("/register", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload),
+                    });
+                    const registerResult = await registerRes.json();
+                    if (registerRes.ok && registerResult?.status) {
+                        const token = registerResult?.data?.auth;
+                        if (token) {
+                            localStorage.setItem("auth", token);
+                            localStorage.setItem("token", token);
+                        }
+                        closeAuthModal();
+                        applyAuthUi();
+                        show(registerResult.message || "Registration successful.");
+                        window.location.reload();
+                        return;
+                    }
+                    show(registerResult?.message || "Sign up failed.");
+                } catch (error) {
+                    show("Unable to sign up right now.");
+                }
+            });
+        }
+
+        const menuEditProfile = document.getElementById("menuEditProfile");
+        if (menuEditProfile) {
+            menuEditProfile.addEventListener("click", async () => {
+                try {
+                    const response = await authedFetch("/user-Profile");
+                    const result = await response.json();
+                    if (response.ok && result?.status) {
+                        const userData = Array.isArray(result.data) ? result.data[0] : null;
+                        show(`Profile: ${userData?.name || "-"} | ${userData?.email || "-"}`);
+                    } else {
+                        show(result?.message || "Unable to load profile.");
+                    }
+                } catch (error) {
+                    show("Unable to load profile.");
+                }
+            });
+        }
+
+        const menuWishlist = document.getElementById("menuWishlist");
+        if (menuWishlist) {
+            menuWishlist.addEventListener("click", async () => {
+                try {
+                    const response = await authedFetch("/get-wishlist");
+                    const result = await response.json();
+                    if (response.ok && result?.status) {
+                        const count = Array.isArray(result.data) ? result.data.length : 0;
+                        show(`Wishlist items: ${count}`);
+                    } else {
+                        show(result?.message || "Unable to load wishlist.");
+                    }
+                } catch (error) {
+                    show("Unable to load wishlist.");
+                }
+            });
+        }
+
+        const menuOrders = document.getElementById("menuOrders");
+        if (menuOrders) {
+            menuOrders.addEventListener("click", async () => {
+                try {
+                    const response = await authedFetch("/get-user-order");
+                    const result = await response.json();
+                    if (response.ok && result?.status) {
+                        const count = Array.isArray(result.data) ? result.data.length : 0;
+                        show(`Orders: ${count}`);
+                    } else {
+                        show(result?.message || "Unable to load orders.");
+                    }
+                } catch (error) {
+                    show("Unable to load orders.");
+                }
+            });
+        }
+
+        const menuLogout = document.getElementById("menuLogout");
+        if (menuLogout) {
+            menuLogout.addEventListener("click", async () => {
+                try {
+                    await fetch("/log-Out");
+                } catch (error) {
+                }
+                clearToken();
+                applyAuthUi();
+                window.location.reload();
+            });
+        }
+    })();
+</script>

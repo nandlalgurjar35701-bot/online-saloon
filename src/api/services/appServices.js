@@ -5,6 +5,7 @@ const testimonialModel = require("../../models/testimonialModel");
 const galleryModel = require("../../models/galleryModel");
 const pricePlanModel = require("../../models/pricePlanModel");
 const siteSettingModel = require("../../models/siteSettingModel");
+const productModel = require("../../models/productModel");
 
 const fallbackTeam = [
     { name: "Olivia Mia", role: "Hair Stylist", image: "team-1.png" },
@@ -63,6 +64,10 @@ exports.index = async () => {
         data.gallery = await galleryModel.find({ status: true }).sort({ sortOrder: 1, createdAt: -1 }).lean()
         data.pricingPlans = await pricePlanModel.find({ status: true }).sort({ sortOrder: 1, createdAt: -1 }).lean()
         data.siteSetting = await siteSettingModel.findOne({ status: true }).sort({ createdAt: -1 }).lean()
+        data.products = await productModel
+            .find({ saloonStore: { $ne: null } })
+            .sort({ createdAt: -1 })
+            .lean()
 
         if (!data.teamMembers.length) data.teamMembers = fallbackTeam
         if (!data.testimonials.length) data.testimonials = fallbackTestimonials

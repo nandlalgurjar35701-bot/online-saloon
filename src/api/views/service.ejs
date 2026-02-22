@@ -33,77 +33,131 @@
                         <p class="fs-4 text-uppercase text-center text-primary">Our Service</p>
                         <h1 class="display-3">Spa & Beauty Services</h1>
                     </div>
+                    <div class="row mb-5">
+                        <div class="col-12">
+                            <div class="owl-carousel service-category-carousel">
+                                <% if (data?.category?.length) { %>
+                                    <% data.category.forEach((cat) => { %>
+                                        <div class="text-center p-2">
+                                            <div class="mx-auto mb-2 rounded-circle overflow-hidden border border-2 border-primary"
+                                                style="width: 96px; height: 96px;">
+                                                <img src="<%= cat.image ? '/uploads/' + cat.image : '/web/img/services-1.jpg' %>"
+                                                    class="img-fluid w-100 h-100" style="object-fit: cover;"
+                                                    alt="<%= cat.Name || 'Category' %>">
+                                            </div>
+                                            <h6 class="mb-0"><%= cat.Name %></h6>
+                                        </div>
+                                    <% }) %>
+                                <% } else { %>
+                                    <div class="text-center p-2">
+                                        <div class="mx-auto mb-2 rounded-circle overflow-hidden border border-2 border-primary"
+                                            style="width: 96px; height: 96px;">
+                                            <img src="/web/img/services-1.jpg" class="img-fluid w-100 h-100"
+                                                style="object-fit: cover;" alt="Category">
+                                        </div>
+                                        <h6 class="mb-0">Skin Care</h6>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row g-4">
-
-                        <% if (data?.category?.length) { %>
-                            <% data.category.forEach((cat)=> { %>
-                                <div class="col-lg-6">
-                                    <div class="services-item bg-light border-4 border-end border-primary rounded p-4">
-                                        <div class="row align-items-center">
-
-                                            <div class="col-8">
-                                                <div class="services-content text-end">
-                                                    <h3>
-                                                        <%= cat.Name %>
-                                                    </h3>
-                                                    <p>
-                                                        <%= cat.description %>
-                                                    </p>
-
-                                                    <a href="/order/<%= cat._id %>"
-                                                        class="btn btn-primary btn-primary-outline-0 rounded-pill py-2 px-4">
-                                                        Make Order
-                                                    </a>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-4">
-                                                <div
-                                                    class="services-img d-flex align-items-center justify-content-center rounded">
-                                                    <img src="/uploads/<%= cat.image %>" class="img-fluid rounded"
-                                                        alt="<%= cat.name %>">
-                                                </div>
-                                            </div>
-
+                        <% if (data?.products?.length) { %>
+                            <% data.products.forEach((product) => { %>
+                                <% const productImage = Array.isArray(product.image) ? product.image[0] : product.image; %>
+                                <% const imagePath = productImage ? (String(productImage).startsWith('http') ? productImage : '/uploads/' + productImage) : '/web/img/services-1.jpg'; %>
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="services-item bg-light border-4 border-end border-primary rounded p-4 h-100">
+                                        <div class="services-img rounded mb-3" style="height: 190px; overflow: hidden;">
+                                            <img src="<%= imagePath %>" class="img-fluid w-100 h-100" style="object-fit: cover;"
+                                                alt="<%= product.ServiceName || 'Product' %>">
+                                        </div>
+                                        <h4 class="mb-2"><%= product.ServiceName || 'Service' %></h4>
+                                        <p class="mb-2 text-muted"><%= product.description || '' %></p>
+                                        <div class="d-flex align-items-center justify-content-between mt-3">
+                                            <h5 class="text-primary mb-0">Rs. <%= Number(product.ServicePrice || 0) %></h5>
+                                            <button
+                                                type="button"
+                                                class="btn btn-primary btn-sm add-to-cart-btn"
+                                                data-service-id="<%= product._id %>"
+                                                data-saloon-id="<%= product.saloonStore || '' %>"
+                                                <%= product.saloonStore ? '' : 'disabled' %>>
+                                                Add to Cart
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                <% }) %>
-                                    <%}else {%>
-                                        <div class="col-lg-6">
-                                            <div
-                                                class="services-item bg-light border-4 border-end border-primary rounded p-4">
-                                                <div class="row align-items-center">
-                                                    <div class="col-8">
-                                                        <div class="services-content text-end">
-                                                            <h3>Skin Care</h3>
-                                                            <p>Lorem Ipsum is simply dummy text of the printing and
-                                                                typesetting
-                                                                industry.
-                                                                Lorem
-                                                                Ipsum has been the industry's standard dummy</p>
-                                                            <a href="#"
-                                                                class="btn btn-primary btn-primary-outline-0 rounded-pill py-2 px-4">Make
-                                                                Order</a>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <div
-                                                            class="services-img d-flex align-items-center justify-content-center rounded">
-                                                            <img src="/web/img/services-1.jpg"
-                                                                class="img-fluid rounded" alt="">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <%}%>
-
-
-
+                            <% }) %>
+                        <% } else { %>
+                            <div class="col-12 text-center">
+                                <p class="mb-0">No products found.</p>
+                            </div>
+                        <% } %>
                     </div>
                 </div>
             </div>
+
+            <script>
+                (function () {
+                    const getAuthToken = () => {
+                        const keys = ["auth", "token", "accessToken"];
+                        for (const key of keys) {
+                            const value = localStorage.getItem(key);
+                            if (value) return value;
+                        }
+                        return "";
+                    };
+
+                    const showMessage = (message) => {
+                        if (!message) return;
+                        alert(message);
+                    };
+
+                    const buttons = document.querySelectorAll(".add-to-cart-btn");
+                    buttons.forEach((button) => {
+                        button.addEventListener("click", async () => {
+                            const serviceId = button.getAttribute("data-service-id");
+                            const saloonId = button.getAttribute("data-saloon-id");
+                            const token = getAuthToken();
+
+                            if (!token) {
+                                showMessage("Please login first to add product to cart.");
+                                return;
+                            }
+                            if (!serviceId || !saloonId) {
+                                showMessage("Invalid service details.");
+                                return;
+                            }
+
+                            const originalText = button.textContent;
+                            button.disabled = true;
+                            button.textContent = "Adding...";
+
+                            try {
+                                const response = await fetch(`/add-cart?serviceId=${serviceId}&saloonId=${saloonId}`, {
+                                    method: "GET",
+                                    headers: {
+                                        Authorization: `Bearer ${token}`,
+                                    },
+                                });
+
+                                const result = await response.json();
+                                if (response.ok && result?.status) {
+                                    showMessage(result.message || "Added to cart.");
+                                } else {
+                                    showMessage(result?.message || "Unable to add to cart.");
+                                }
+                            } catch (error) {
+                                showMessage("Unable to add to cart right now.");
+                            } finally {
+                                button.disabled = false;
+                                button.textContent = originalText;
+                            }
+                        });
+                    });
+                })();
+            </script>
 
 
 

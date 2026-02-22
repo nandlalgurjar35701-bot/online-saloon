@@ -106,6 +106,35 @@
         }
     });
 
+    // Service category carousel
+    $(".service-category-carousel").owlCarousel({
+        autoplay: true,
+        smartSpeed: 1200,
+        center: false,
+        dots: true,
+        loop: true,
+        margin: 16,
+        nav: false,
+        responsiveClass: true,
+        responsive: {
+            0: {
+                items: 2
+            },
+            576: {
+                items: 3
+            },
+            768: {
+                items: 4
+            },
+            992: {
+                items: 5
+            },
+            1200: {
+                items: 6
+            }
+        }
+    });
+
 
 
     // Modal Video
