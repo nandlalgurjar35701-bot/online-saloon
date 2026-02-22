@@ -11,6 +11,7 @@ exports.userOrder = async ({ query, user }) => {
     try {
         let userId;
         let obj = {};
+        const paymentMode = String(query.paymentMode || "online").toLowerCase();
         if (user._id) {
             userId = user._id;
             const findcart = await cart.findOne({ _id: mongoose.Types.ObjectId(query.cartId), userId });
@@ -29,8 +30,11 @@ exports.userOrder = async ({ query, user }) => {
                     data: []
                 };
             };
-            if (query.PaymentId != undefined && query.PaymentId != "") {
+            if (paymentMode === "offline") {
+                obj.paymentStatus = "offline-store";
+            } else if (query.PaymentId != undefined && query.PaymentId != "") {
                 obj.PaymentId = query.PaymentId
+                obj.paymentStatus = "Payment successful";
             } else {
                 return {
                     statusCode: 400,

@@ -14,6 +14,7 @@ app.get("/contact", controller.contactPage);
 app.get("/my-profile", controller.profilePage);
 app.get("/my-wishlist", controller.wishlistPage);
 app.get("/my-orders", controller.ordersPage);
+app.get("/my-cart", controller.cartPage);
 app.get("/404", controller.notFoundPage);
 app.post("/appointment", controller.createAppointment);
 app.post("/contact", controller.createContact);

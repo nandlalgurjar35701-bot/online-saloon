@@ -6,5 +6,7 @@ module.exports = (app) => {
     app.use(require("../cart/route"));
     app.use(require("../order/route"));
     app.use(require("../user-wishlist/route"));
+    app.use(require("../payment/route"));
+    app.use(require("../Schedule/route"));
     app.use(serviceController.notFoundPage);
 };

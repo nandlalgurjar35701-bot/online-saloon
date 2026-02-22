@@ -98,6 +98,16 @@ exports.ordersPage = async (req, res) => {
   }
 };
 
+exports.cartPage = async (req, res) => {
+  try {
+    const data = await appServices.index();
+    return res.render("cart", { data, razorpayKey: process.env.key_id || "" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).render("404");
+  }
+};
+
 exports.createAppointment = async (req, res) => {
   try {
     const { name, email, phone, service, date, message } = req.body;
