@@ -243,3 +243,35 @@
 
 </aside><!-- End Sidebar-->
 
+<script>
+    (function () {
+        const sidebar = document.getElementById("sidebar");
+        if (!sidebar) return;
+
+        const currentPath = (window.location.pathname || "").toLowerCase();
+        const collapseSections = sidebar.querySelectorAll(".nav-content.collapse[id]");
+
+        collapseSections.forEach((section) => {
+            const links = Array.from(section.querySelectorAll("a[href]"));
+            const matchedLink = links.find((link) => {
+                const href = link.getAttribute("href");
+                if (!href || href === "#") return false;
+                const targetPath = new URL(href, window.location.origin).pathname.toLowerCase();
+                if (!targetPath) return false;
+                return currentPath === targetPath || (targetPath !== "/" && currentPath.startsWith(targetPath));
+            });
+
+            if (!matchedLink) return;
+
+            section.classList.add("show");
+            matchedLink.classList.add("active");
+
+            const toggle = sidebar.querySelector(`[data-bs-target="#${section.id}"]`);
+            if (toggle) {
+                toggle.classList.remove("collapsed");
+                toggle.setAttribute("aria-expanded", "true");
+            }
+        });
+    })();
+</script>
+
