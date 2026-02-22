@@ -1,12 +1,39 @@
 const saloon = require("../../models/saloonStoreModel");
 const mongoose = require('mongoose');
 const users = require("../../models/userModel");
+const adminUsers = require("../../models/adminModel");
+const bcrypt = require("bcrypt");
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 const findStoreRecord = async (id) => {
     if (!isValidObjectId(id)) return null;
     const objectId = mongoose.Types.ObjectId(id);
     return saloon.findOne({ _id: objectId });
+};
+
+const upsertSaloonAdminUser = async ({ ownerName, email, phone, password }) => {
+    const normalizedPhone = Number(phone);
+    const condition = {
+        $or: [{ email }, { phone: normalizedPhone }]
+    };
+    const payload = {
+        name: ownerName || "",
+        email,
+        phone: normalizedPhone,
+        type: "ADMIN",
+        verify: true,
+    };
+
+    if (password) {
+        payload.password = bcrypt.hashSync(password, 10);
+    }
+
+    const existingAdmin = await adminUsers.findOne(condition);
+    if (existingAdmin) {
+        return adminUsers.findByIdAndUpdate(existingAdmin._id, payload, { new: true });
+    }
+
+    return adminUsers.create(payload);
 };
 
 exports.businessOtpSent = async (req, res) => {
@@ -152,6 +179,10 @@ exports.addSaloonStore = async (req, res) => {
                 req.flash("error", "Please fill all required fields.");
                 return res.redirect("/add-saloon");
             }
+            if (!password) {
+                req.flash("error", "Password is required.");
+                return res.redirect("/add-saloon");
+            }
             if (password !== confromPassword) {
                 req.flash("error", "password not match");
                 return res.redirect("/add-saloon");
@@ -173,8 +204,15 @@ exports.addSaloonStore = async (req, res) => {
                 return res.redirect("/add-saloon");
             }
 
+            const createdAdmin = await upsertSaloonAdminUser({
+                ownerName,
+                email,
+                phone: Phone,
+                password,
+            });
+
             const created = await saloon.create({
-                userId: user?._id || null,
+                userId: createdAdmin?._id || user?._id || null,
                 storeName,
                 email,
                 Phone,
