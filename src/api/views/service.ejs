@@ -132,39 +132,48 @@
                     <div class="row g-4">
                         <% if (data?.products?.length) { %>
                             <% data.products.forEach((product) => { %>
+                                <% const saloonStoreId = product?.saloonStore?._id || product?.saloonStore || ''; %>
                                 <% const productImage = Array.isArray(product.image) ? product.image[0] : product.image; %>
                                 <% const imagePath = productImage ? (String(productImage).startsWith('http') ? productImage : '/uploads/' + productImage) : '/web/img/services-1.jpg'; %>
+                                <% const rawStoreImage = Array.isArray(product?.saloonStore?.image) ? product.saloonStore.image[0] : product?.saloonStore?.image; %>
+                                <% const storeImagePath = rawStoreImage ? (String(rawStoreImage).startsWith('http') ? rawStoreImage : '/uploads/' + rawStoreImage) : '/web/img/services-1.jpg'; %>
                                 <div class="col-md-6 col-lg-4">
                                     <div class="services-item bg-light border-4 border-end border-primary rounded p-4 h-100">
                                         <div class="services-img rounded mb-3 position-relative" style="height: 190px; overflow: hidden;">
                                             <button
                                                 type="button"
                                                 class="wishlist-toggle"
-                                                data-saloon-id="<%= product.saloonStore || '' %>"
+                                                data-saloon-id="<%= saloonStoreId %>"
                                                 title="Add to Wishlist"
-                                                <%= product.saloonStore ? '' : 'disabled' %>>
+                                                <%= saloonStoreId ? '' : 'disabled' %>>
                                                 <i class="fas fa-heart"></i>
                                             </button>
                                             <img src="<%= imagePath %>" class="img-fluid w-100 h-100" style="object-fit: cover;"
                                                 alt="<%= product.ServiceName || 'Product' %>">
                                         </div>
-                                        <h4 class="mb-2"><%= product.ServiceName || 'Service' %></h4>
+                                        <h4 class="mb-2">
+                                            <span class="d-inline-flex align-items-center">
+                                                <img src="<%= storeImagePath %>" alt="Store" style="width:30px;height:30px;object-fit:cover;border-radius:50%;">
+                                                <img src="<%= imagePath %>" alt="Service" class="ms-1" style="width:30px;height:30px;object-fit:cover;border-radius:50%;">
+                                                <span class="ms-2"><%= product.ServiceName || 'Service' %></span>
+                                            </span>
+                                        </h4>
                                         <p class="mb-2 text-muted"><%= product.description || '' %></p>
                                         <div class="d-flex align-items-center justify-content-between mt-3">
                                             <h5 class="text-primary mb-0">Rs. <%= Number(product.ServicePrice || 0) %></h5>
                                             <div class="cart-action"
                                                 data-service-id="<%= product._id %>"
-                                                data-saloon-id="<%= product.saloonStore || '' %>">
-                                                <button type="button" class="cart-add-btn" <%= product.saloonStore ? '' : 'disabled' %>>
+                                                data-saloon-id="<%= saloonStoreId %>">
+                                                <button type="button" class="cart-add-btn" <%= saloonStoreId ? '' : 'disabled' %>>
                                                     <i class="fas fa-shopping-cart"></i>
                                                 </button>
                                                 <div class="cart-stepper d-none">
-                                                    <button type="button" class="qty-minus" <%= product.saloonStore ? '' : 'disabled' %>>-</button>
+                                                    <button type="button" class="qty-minus" <%= saloonStoreId ? '' : 'disabled' %>>-</button>
                                                     <span class="qty">0</span>
-                                                    <button type="button" class="qty-plus" <%= product.saloonStore ? '' : 'disabled' %>>+</button>
+                                                    <button type="button" class="qty-plus" <%= saloonStoreId ? '' : 'disabled' %>>+</button>
                                                 </div>
                                                 <button type="button" class="checkout-btn" title="Checkout"
-                                                    <%= product.saloonStore ? '' : 'disabled' %>>
+                                                    <%= saloonStoreId ? '' : 'disabled' %>>
                                                     <i class="fas fa-credit-card"></i>
                                                 </button>
                                             </div>

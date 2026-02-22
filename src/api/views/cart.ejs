@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('./partials/head.ejs') %>
+<style>
+    @media (min-width: 992px) {
+        .cart-left-col {
+            width: 60%;
+        }
+
+        .cart-right-col {
+            width: 40%;
+        }
+    }
+</style>
 <body>
     <div id="spinner"
         class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center">
@@ -16,7 +27,58 @@
     </div>
 
     <div class="container py-5">
-        <div id="cartContainer" class="row g-4"></div>
+        <div class="row g-4">
+            <div class="col-12 cart-left-col" id="cartListContainer"></div>
+            <div class="col-12 cart-right-col">
+                <div class="card border-0 shadow-sm position-sticky" style="top: 110px;">
+                    <div class="card-body">
+                        <h5 class="mb-3">Cart Summary</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Select Store</label>
+                            <select class="form-select" id="summaryStoreSelect"></select>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Stores</span>
+                            <strong id="summaryStores">0</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Total Items</span>
+                            <strong id="summaryItems">0</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">Total Amount</span>
+                            <strong id="summaryAmount">Rs. 0</strong>
+                        </div>
+                        <hr>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label">Visit Date</label>
+                                <input type="date" class="form-control" id="summaryDate">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Time Slot</label>
+                                <select class="form-select" id="summarySlot"></select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label d-block">Payment Mode</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="summaryPaymentMode" id="summaryOnline" value="online" checked>
+                                <label class="form-check-label" for="summaryOnline">Online <span class="badge bg-success ms-1">Recommended</span></label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="summaryPaymentMode" id="summaryOffline" value="offline">
+                                <label class="form-check-label" for="summaryOffline">Offline (Store)</label>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary" id="summarySaveDraftBtn">Save Draft</button>
+                            <button class="btn btn-primary" id="summaryCheckoutBtn">Checkout</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <%- include('./partials/footerlink.ejs') %>
@@ -26,7 +88,18 @@
         (function () {
             const token = localStorage.getItem("auth") || localStorage.getItem("token") || localStorage.getItem("accessToken");
             const razorpayKey = "<%= razorpayKey || '' %>";
-            const container = document.getElementById("cartContainer");
+            const listContainer = document.getElementById("cartListContainer");
+            const summaryStores = document.getElementById("summaryStores");
+            const summaryItems = document.getElementById("summaryItems");
+            const summaryAmount = document.getElementById("summaryAmount");
+            const summaryStoreSelect = document.getElementById("summaryStoreSelect");
+            const summaryDate = document.getElementById("summaryDate");
+            const summarySlot = document.getElementById("summarySlot");
+            const summarySaveDraftBtn = document.getElementById("summarySaveDraftBtn");
+            const summaryCheckoutBtn = document.getElementById("summaryCheckoutBtn");
+
+            let cartData = [];
+            const scheduleDraftByStore = {};
 
             if (!token) {
                 alert("Please login first.");
@@ -49,13 +122,44 @@
                 window.dispatchEvent(new CustomEvent("cart:updated", { detail: { count: allQty } }));
             };
 
+            const setSummaryEnabled = (enabled) => {
+                if (summaryStoreSelect) summaryStoreSelect.disabled = !enabled;
+                if (summaryDate) summaryDate.disabled = !enabled;
+                if (summarySlot) summarySlot.disabled = !enabled;
+                if (summarySaveDraftBtn) summarySaveDraftBtn.disabled = !enabled;
+                if (summaryCheckoutBtn) summaryCheckoutBtn.disabled = !enabled;
+                const paymentInputs = document.querySelectorAll('input[name="summaryPaymentMode"]');
+                paymentInputs.forEach((input) => input.disabled = !enabled);
+            };
+
+            const populateSlots = () => {
+                if (!summarySlot) return;
+                summarySlot.innerHTML = `<option value="">Select Slot</option>${timeslots.map((slot) => `<option value="${slot}">${slot}</option>`).join("")}`;
+            };
+
             const renderEmpty = (message) => {
-                container.innerHTML = `<div class="col-12 text-center"><p class="mb-0">${message}</p></div>`;
+                listContainer.innerHTML = `<div class="card border-0 shadow-sm"><div class="card-body text-center"><p class="mb-0">${message}</p></div></div>`;
+                if (summaryStores) summaryStores.textContent = "0";
+                if (summaryItems) summaryItems.textContent = "0";
+                if (summaryAmount) summaryAmount.textContent = "Rs. 0";
+                if (summaryStoreSelect) summaryStoreSelect.innerHTML = `<option value="">No Store</option>`;
+                if (summaryDate) summaryDate.value = "";
+                populateSlots();
+                setSummaryEnabled(false);
                 emitCartCount([]);
             };
 
             const normalizeImage = (image) => {
                 if (Array.isArray(image) && image.length) return `/uploads/${image[0]}`;
+                if (typeof image === "string" && image) return image.startsWith("http") ? image : `/uploads/${image}`;
+                return "/web/img/services-1.jpg";
+            };
+
+            const normalizeServiceImage = (image) => {
+                if (Array.isArray(image) && image.length) {
+                    const first = image[0];
+                    return String(first).startsWith("http") ? first : `/uploads/${first}`;
+                }
                 if (typeof image === "string" && image) return image.startsWith("http") ? image : `/uploads/${image}`;
                 return "/web/img/services-1.jpg";
             };
@@ -153,18 +257,36 @@
                     }
 
                     const data = result.data;
+                    cartData = data;
                     emitCartCount(data);
 
-                    container.innerHTML = data.map((saloonEntry, idx) => {
+                    const totalStores = data.length;
+                    const totalItems = data.reduce((sum, saloonEntry) => {
                         const cartItems = Array.isArray(saloonEntry.cart) ? saloonEntry.cart : [];
-                        const cartId = cartItems?.[0]?._id || "";
-                        const saloonId = saloonEntry?._id || "";
-                        const totalAmount = Number(cartItems?.[0]?.totalamount || 0);
+                        return sum + cartItems.reduce((s, entry) => s + Number(entry?.cartdata?.quantity || 0), 0);
+                    }, 0);
+                    const totalAmountAll = data.reduce((sum, saloonEntry) => {
+                        const cartItems = Array.isArray(saloonEntry.cart) ? saloonEntry.cart : [];
+                        return sum + Number(cartItems?.[0]?.totalamount || 0);
+                    }, 0);
+
+                    if (summaryStores) summaryStores.textContent = String(totalStores);
+                    if (summaryItems) summaryItems.textContent = String(totalItems);
+                    if (summaryAmount) summaryAmount.textContent = `Rs. ${Number(totalAmountAll)}`;
+
+                    listContainer.innerHTML = data.map((saloonEntry, idx) => {
+                        const cartItems = Array.isArray(saloonEntry.cart) ? saloonEntry.cart : [];
                         const rows = cartItems.map((entry) => {
                             const c = entry.cartdata || {};
+                            const serviceImage = normalizeServiceImage(c.image);
                             return `
                                 <tr>
-                                    <td>${c.ServiceName || "-"}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="${serviceImage}" alt="service" style="width:44px;height:44px;object-fit:cover;border-radius:8px;">
+                                            <span class="ms-2">${c.ServiceName || "-"}</span>
+                                        </div>
+                                    </td>
                                     <td>${Number(c.quantity || 0)}</td>
                                     <td>Rs. ${Number(c.ServicePrice || 0)}</td>
                                     <td>Rs. ${Number(c.Amount || 0)}</td>
@@ -173,162 +295,174 @@
                         }).join("");
 
                         return `
-                            <div class="col-12">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center mb-3">
-                                            <img src="${normalizeImage(saloonEntry?.image)}" style="width:72px;height:72px;object-fit:cover;border-radius:8px;" alt="store">
-                                            <div class="ms-3">
-                                                <h5 class="mb-1">${saloonEntry?.storeName || "Salon"}</h5>
-                                                <p class="text-muted mb-0">${saloonEntry?.location?.city || ""} ${saloonEntry?.location?.state || ""}</p>
-                                            </div>
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <img src="${normalizeImage(saloonEntry?.image)}" style="width:72px;height:72px;object-fit:cover;border-radius:8px;" alt="store">
+                                        <div class="ms-3">
+                                            <h5 class="mb-1">${saloonEntry?.storeName || "Salon"}</h5>
+                                            <p class="text-muted mb-0">${saloonEntry?.location?.city || ""} ${saloonEntry?.location?.state || ""}</p>
                                         </div>
+                                    </div>
 
-                                        <div class="table-responsive">
-                                            <table class="table table-sm align-middle">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Service</th>
-                                                        <th>Qty</th>
-                                                        <th>Unit Price</th>
-                                                        <th>Amount</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>${rows}</tbody>
-                                            </table>
-                                        </div>
-
-                                        <div class="row g-3 mt-2">
-                                            <div class="col-md-3">
-                                                <label class="form-label">Visit Date</label>
-                                                <input type="date" class="form-control" id="date_${idx}">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Time Slot</label>
-                                                <select class="form-select" id="slot_${idx}">
-                                                    <option value="">Select Slot</option>
-                                                    ${timeslots.map((slot) => `<option value="${slot}">${slot}</option>`).join("")}
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label d-block">Payment Mode</label>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="paymentMode_${idx}" id="online_${idx}" value="online" checked>
-                                                    <label class="form-check-label" for="online_${idx}">Online</label>
-                                                </div>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="paymentMode_${idx}" id="offline_${idx}" value="offline">
-                                                    <label class="form-check-label" for="offline_${idx}">Offline (Store)</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 d-flex align-items-end justify-content-between">
-                                                <h5 class="mb-0">Total: Rs. ${totalAmount}</h5>
-                                            </div>
-                                        </div>
-
-                                        <div class="mt-3 d-flex gap-2">
-                                            <button class="btn btn-outline-primary btn-sm schedule-btn"
-                                                data-saloon-id="${saloonId}" data-date-id="date_${idx}" data-slot-id="slot_${idx}">
-                                                Save Date & Slot
-                                            </button>
-                                            <button class="btn btn-primary btn-sm checkout-btn"
-                                                data-cart-id="${cartId}" data-saloon-id="${saloonId}"
-                                                data-date-id="date_${idx}" data-slot-id="slot_${idx}"
-                                                data-payment-name="paymentMode_${idx}" data-total="${totalAmount}">
-                                                Checkout
-                                            </button>
-                                        </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm align-middle">
+                                            <thead>
+                                                <tr>
+                                                    <th>Service</th>
+                                                    <th>Qty</th>
+                                                    <th>Unit Price</th>
+                                                    <th>Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>${rows}</tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
                         `;
                     }).join("");
-
-                    bindActions();
+                    bindSummaryControls();
                 } catch (error) {
                     renderEmpty("Unable to load cart.");
                 }
             };
 
-            const bindActions = () => {
-                const scheduleButtons = Array.from(document.querySelectorAll(".schedule-btn"));
-                const checkoutButtons = Array.from(document.querySelectorAll(".checkout-btn"));
+            const getSelectedStore = () => {
+                const selectedId = summaryStoreSelect?.value || "";
+                if (!selectedId) return null;
+                return cartData.find((entry) => String(entry?._id || "") === String(selectedId)) || null;
+            };
 
-                scheduleButtons.forEach((btn) => {
-                    btn.addEventListener("click", async () => {
-                        const saloonId = btn.getAttribute("data-saloon-id");
-                        const dateValue = document.getElementById(btn.getAttribute("data-date-id"))?.value || "";
-                        const slotValue = document.getElementById(btn.getAttribute("data-slot-id"))?.value || "";
-                        if (!dateValue || !slotValue) {
-                            alert("Please select date and time slot.");
-                            return;
-                        }
-                        btn.disabled = true;
-                        try {
-                            const result = await saveSchedule(saloonId, dateValue, slotValue);
-                            alert(result?.message || "Schedule updated.");
-                        } catch (error) {
-                            alert("Unable to save schedule.");
-                        } finally {
-                            btn.disabled = false;
-                        }
-                    });
+            const updateSummaryForSelectedStore = () => {
+                const selectedStore = getSelectedStore();
+                if (!selectedStore) {
+                    if (summaryItems) summaryItems.textContent = "0";
+                    if (summaryAmount) summaryAmount.textContent = "Rs. 0";
+                    return;
+                }
+                const cartItems = Array.isArray(selectedStore.cart) ? selectedStore.cart : [];
+                const selectedItems = cartItems.reduce((sum, entry) => sum + Number(entry?.cartdata?.quantity || 0), 0);
+                const selectedAmount = Number(cartItems?.[0]?.totalamount || 0);
+                if (summaryItems) summaryItems.textContent = String(selectedItems);
+                if (summaryAmount) summaryAmount.textContent = `Rs. ${selectedAmount}`;
+            };
+
+            const bindSummaryControls = () => {
+                populateSlots();
+                if (summaryStoreSelect) {
+                    summaryStoreSelect.innerHTML = cartData.map((entry) =>
+                        `<option value="${entry?._id || ""}">${entry?.storeName || "Store"}</option>`
+                    ).join("");
+                    if (cartData.length > 0) {
+                        setSummaryEnabled(true);
+                        summaryStoreSelect.value = String(cartData[0]?._id || "");
+                    } else {
+                        setSummaryEnabled(false);
+                    }
+                }
+
+                const applyDraftToUi = () => {
+                    const selectedStore = getSelectedStore();
+                    const selectedId = String(selectedStore?._id || "");
+                    const draft = scheduleDraftByStore[selectedId] || {};
+                    if (summaryDate) summaryDate.value = draft.date || "";
+                    if (summarySlot) summarySlot.value = draft.slot || "";
+                    const mode = draft.paymentMode || "online";
+                    const paymentRadio = document.querySelector(`input[name="summaryPaymentMode"][value="${mode}"]`);
+                    if (paymentRadio) paymentRadio.checked = true;
+                    updateSummaryForSelectedStore();
+                };
+
+                summaryStoreSelect?.addEventListener("change", () => {
+                    applyDraftToUi();
                 });
 
-                checkoutButtons.forEach((btn) => {
-                    btn.addEventListener("click", async () => {
-                        const cartId = btn.getAttribute("data-cart-id");
-                        const saloonId = btn.getAttribute("data-saloon-id");
-                        const dateValue = document.getElementById(btn.getAttribute("data-date-id"))?.value || "";
-                        const slotValue = document.getElementById(btn.getAttribute("data-slot-id"))?.value || "";
-                        const paymentModeName = btn.getAttribute("data-payment-name");
-                        const selectedPayment = document.querySelector(`input[name="${paymentModeName}"]:checked`)?.value || "online";
-                        const total = Number(btn.getAttribute("data-total") || 0);
-
-                        if (!dateValue || !slotValue) {
-                            alert("Please select date and time slot before payment.");
+                summarySaveDraftBtn?.addEventListener("click", async () => {
+                    const selectedStore = getSelectedStore();
+                    const saloonId = String(selectedStore?._id || "");
+                    const dateValue = summaryDate?.value || "";
+                    const slotValue = summarySlot?.value || "";
+                    const paymentMode = document.querySelector('input[name="summaryPaymentMode"]:checked')?.value || "online";
+                    if (!saloonId || !dateValue || !slotValue) {
+                        alert("Please select store, date and time slot.");
+                        return;
+                    }
+                    summarySaveDraftBtn.disabled = true;
+                    try {
+                        const result = await saveSchedule(saloonId, dateValue, slotValue);
+                        if (!result?.status) {
+                            alert(result?.message || "Unable to save schedule.");
                             return;
                         }
-                        btn.disabled = true;
-                        try {
-                            const scheduleResult = await saveSchedule(saloonId, dateValue, slotValue);
-                            if (!scheduleResult?.status) {
-                                alert(scheduleResult?.message || "Unable to save schedule.");
-                                return;
-                            }
+                        scheduleDraftByStore[saloonId] = { date: dateValue, slot: slotValue, paymentMode };
+                        alert(result?.message || "Draft saved.");
+                    } catch (error) {
+                        alert("Unable to save draft.");
+                    } finally {
+                        summarySaveDraftBtn.disabled = false;
+                    }
+                });
 
-                            if (selectedPayment === "offline") {
-                                const offlineOrder = await placeOfflineOrder(cartId);
-                                if (!offlineOrder?.status) {
-                                    alert(offlineOrder?.message || "Unable to place offline order.");
-                                    return;
-                                }
-                                alert(offlineOrder?.message || "Order placed successfully.");
-                                await loadCart();
-                                return;
-                            }
+                summaryCheckoutBtn?.addEventListener("click", async () => {
+                    const selectedStore = getSelectedStore();
+                    const saloonId = String(selectedStore?._id || "");
+                    const cartId = selectedStore?.cart?.[0]?._id || "";
+                    const total = Number(selectedStore?.cart?.[0]?.totalamount || 0);
+                    const dateValue = summaryDate?.value || "";
+                    const slotValue = summarySlot?.value || "";
+                    const selectedPayment = document.querySelector('input[name="summaryPaymentMode"]:checked')?.value || "online";
 
-                            const paymentOrder = await createPaymentOrder(total);
-                            if (!paymentOrder?.status || !Array.isArray(paymentOrder.data) || !paymentOrder.data[0]) {
-                                alert(paymentOrder?.message || "Unable to initiate payment.");
+                    if (!saloonId || !cartId) {
+                        alert("Please select a valid store.");
+                        return;
+                    }
+                    if (!dateValue || !slotValue) {
+                        alert("Please select date and time slot before payment.");
+                        return;
+                    }
+
+                    summaryCheckoutBtn.disabled = true;
+                    try {
+                        const scheduleResult = await saveSchedule(saloonId, dateValue, slotValue);
+                        if (!scheduleResult?.status) {
+                            alert(scheduleResult?.message || "Unable to save schedule.");
+                            return;
+                        }
+
+                        if (selectedPayment === "offline") {
+                            const offlineOrder = await placeOfflineOrder(cartId);
+                            if (!offlineOrder?.status) {
+                                alert(offlineOrder?.message || "Unable to place offline order.");
                                 return;
                             }
-                            const paymentDoc = paymentOrder.data[0];
-                            await openRazorpay({
-                                amount: total,
-                                orderId: paymentDoc?.orderData?.id,
-                                paymentDocId: paymentDoc?._id,
-                                cartId,
-                            });
-                            alert("Payment successful and order placed.");
+                            alert(offlineOrder?.message || "Order placed successfully.");
                             await loadCart();
-                        } catch (error) {
-                            alert(error?.message || "Checkout failed.");
-                        } finally {
-                            btn.disabled = false;
+                            return;
                         }
-                    });
+
+                        const paymentOrder = await createPaymentOrder(total);
+                        if (!paymentOrder?.status || !Array.isArray(paymentOrder.data) || !paymentOrder.data[0]) {
+                            alert(paymentOrder?.message || "Unable to initiate payment.");
+                            return;
+                        }
+                        const paymentDoc = paymentOrder.data[0];
+                        await openRazorpay({
+                            amount: total,
+                            orderId: paymentDoc?.orderData?.id,
+                            paymentDocId: paymentDoc?._id,
+                            cartId,
+                        });
+                        alert("Payment successful and order placed.");
+                        await loadCart();
+                    } catch (error) {
+                        alert(error?.message || "Checkout failed.");
+                    } finally {
+                        summaryCheckoutBtn.disabled = false;
+                    }
                 });
+
+                applyDraftToUi();
             };
 
             loadCart();

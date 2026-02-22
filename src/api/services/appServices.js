@@ -66,6 +66,7 @@ exports.index = async () => {
         data.siteSetting = await siteSettingModel.findOne({ status: true }).sort({ createdAt: -1 }).lean()
         data.products = await productModel
             .find({ saloonStore: { $ne: null } })
+            .populate("saloonStore", "storeName image")
             .sort({ createdAt: -1 })
             .lean()
 
