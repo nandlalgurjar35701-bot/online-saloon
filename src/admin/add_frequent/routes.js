@@ -1,14 +1,25 @@
 const auth = require("../../middleware/adminauth");
-const Upload = require("../../middleware/img");
 const { Router } = require("express");
 const app = Router();
-const { ADD_FREQUENT, ADD_FREQUENT_DATA, VIEW_FREQUENT, DELETE_FREQUENT, ViwesFindQustion } = require("./controller");
+const {
+  renderFaqForm,
+  saveFaq,
+  renderFaqList,
+  deleteFaq,
+  viewFaqAnswer,
+} = require("./controller");
 
-app.get("/add_frequent", auth, ADD_FREQUENT)
-app.post("/addfrequentdata", auth, ADD_FREQUENT_DATA)
-app.get("/view_frequent", auth, VIEW_FREQUENT)
-app.get("/delete_frequent", auth, DELETE_FREQUENT)
-app.get("/Viwes-Find-Qustion", auth, ViwesFindQustion)
+app.get("/add-frequent", auth, renderFaqForm);
+app.post("/add-frequent-data", auth, saveFaq);
+app.get("/view-frequent", auth, renderFaqList);
+app.get("/delete-frequent", auth, deleteFaq);
+app.get("/view-frequent-answer", auth, viewFaqAnswer);
 
+// Backward-compatible routes
+app.get("/add_frequent", auth, renderFaqForm);
+app.post("/addfrequentdata", auth, saveFaq);
+app.get("/view_frequent", auth, renderFaqList);
+app.get("/delete_frequent", auth, deleteFaq);
+app.get("/Viwes-Find-Qustion", auth, viewFaqAnswer);
 
-module.exports = app
+module.exports = app;

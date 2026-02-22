@@ -1,104 +1,79 @@
-const faqModel = require("../../models/faqModel")
-const mongoose = require("mongoose")
-const blog = require("../../models/blogModel")
+const faqService = require("./services");
 
-exports.ADD_FREQUENT = async (req, res) => {
-    try {
-       
-        let condition = {};
-        if (req.query.id != undefined && req.query.id != "") {
-            condition._id = req.query.id
-        }
-        const Findblog = await blog.find(condition)
-        const user = req.user;
-        const _id = req.query.id;
-        const faqData = await faqModel.findOne({ _id });
-        res.render("add_frequent/add_frequent", { user, faqData, Findblog });
-    } catch (err) {
-        console.log(err);
-    };
+exports.renderFaqForm = async (req, res) => {
+  try {
+    res.locals.message = req.flash();
+    const faqData = req.query.id ? await faqService.getFaqById(req.query.id) : null;
+    const findBlog = await faqService.getBlogOptions(req.query.id);
+    const blogOptions = findBlog.length > 0 ? findBlog : await faqService.getBlogOptions();
+
+    return res.render("add_frequent/add_frequent", {
+      user: req.user,
+      faqData,
+      Findblog: blogOptions,
+    });
+  } catch (error) {
+    console.log(error);
+    req.flash("error", "Unable to load FAQ form.");
+    return res.redirect("/view-frequent");
+  }
 };
 
-exports.DELETE_FREQUENT = async (req, res) => {
-    try {
-        if (req.user.type == "admin") {
-            return res.redirect("/")
-        }
-        const id = req.query.id;
-        const data = await faqModel.findByIdAndDelete({ _id: id });
-        res.redirect("/view_frequent");
-    } catch (err) {
-        console.log(err);
-    };
+exports.saveFaq = async (req, res) => {
+  try {
+    res.locals.message = req.flash();
+    await faqService.saveFaq(req.body);
+    req.flash("success", "FAQ saved successfully.");
+    return res.send({ status: true });
+  } catch (error) {
+    console.log(error);
+    req.flash("error", error.message || "Unable to save FAQ.");
+    return res.status(400).send({ status: false, message: error.message });
+  }
 };
 
-exports.VIEW_FREQUENT = async (req, res) => {
-    try {
-        if (req.user.type == "admin") {
-            return res.redirect("/")
-        }
-        let condition = [];
-        if (req.query.id != undefined && req.query.id != "") {
-            condition.push({
-                '$match': {
-                    'blogId': mongoose.Types.ObjectId(req.query.id)
-                }
-            })
-        }
-        condition.push({
-            '$lookup': {
-                'from': 'blogs',
-                'localField': 'blogId',
-                'foreignField': '_id',
-                'as': 'blogs'
-            }
-        }, {
-            '$addFields': {
-                'blogTitel': {
-                    '$getField': {
-                        'field': 'Title',
-                        'input': {
-                            '$arrayElemAt': [
-                                '$blogs', 0
-                            ]
-                        }
-                    }
-                }
-            }
-        })
-        const data = await faqModel.aggregate(condition);
-        const user = req.user;
-        res.render("add_frequent/view_frequent", { user, data });
-    } catch (err) {
-        console.log(err);
-    };
-}
-exports.ADD_FREQUENT_DATA = async (req, res) => {
-    try {
-        res.locals.message = req.flash();
-        const { answer, question, blogId } = req.body;
-        if (req.body.faqData) {
-            req.flash("success", "Question's Answer update succesfully");
-            const faqData = req.body.faqData;
-            const model = await faqModel.findByIdAndUpdate({ _id: faqData }, { answer: answer, question: question, blogId: blogId });
-            res.send();
-        } else {
-            req.flash("success", "Question's Answer update succesfully");
-            const model = new faqModel({ answer: answer, question: question, blogId: blogId });
-            await model.save();
-            res.send();
-        }
-    } catch (err) {
-        console.log(err);
-    };
+exports.renderFaqList = async (req, res) => {
+  try {
+    res.locals.message = req.flash();
+    const data = await faqService.getFaqList(req.query);
+    return res.render("add_frequent/view_frequent", { user: req.user, data });
+  } catch (error) {
+    console.log(error);
+    req.flash("error", "Unable to load FAQs.");
+    return res.redirect("/");
+  }
 };
 
-exports.ViwesFindQustion = async (req, res) => {
-    try {
-        const data = await faqModel.find({ _id: mongoose.Types.ObjectId(req.query.id) });
-        res.send(data);
-    } catch (err) {
-        console.log(err);
-    };
+exports.deleteFaq = async (req, res) => {
+  try {
+    const deleted = await faqService.deleteFaqById(req.query.id);
+    if (!deleted) {
+      req.flash("error", "FAQ not found.");
+      return res.redirect("/view-frequent");
+    }
+
+    req.flash("success", "FAQ deleted successfully.");
+    return res.redirect("/view-frequent");
+  } catch (error) {
+    console.log(error);
+    req.flash("error", "Unable to delete FAQ.");
+    return res.redirect("/view-frequent");
+  }
 };
 
+exports.viewFaqAnswer = async (req, res) => {
+  try {
+    const data = await faqService.getFaqAnswerById(req.query.id);
+    return res.send(data ? [data] : []);
+  } catch (error) {
+    console.log(error);
+    return res.send([]);
+  }
+};
+
+// Backward-compatible aliases
+exports.ADD_FREQUENT = exports.renderFaqForm;
+exports.ADD_FREQUENT_DATA = exports.saveFaq;
+exports.VIEW_FREQUENT = exports.renderFaqList;
+exports.DELETE_FREQUENT = exports.deleteFaq;
+exports.ViwesFindQustion = exports.viewFaqAnswer;

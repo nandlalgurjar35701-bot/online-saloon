@@ -1,107 +1,91 @@
-const category = require("../../models/categoryModel");
-const blog = require("../../models/blogModel");
-const mongoose = require("mongoose")
-const service = require("./services")
+const blogService = require("./services");
 
-exports.ADD_BLOG = async (req, res) => {
-   
-    const category_data = await category.find({ parent_Name: null })
-    const _id = req.query.id
-    const user = req.user
-    const blog_data = await blog.findOne({ _id })
-    res.render("blog/add_blog", { user, category_data, _id, blog_data })
-}
+exports.renderBlogForm = async (req, res) => {
+  try {
+    res.locals.message = req.flash();
+    const categoryData = await blogService.getBlogCategoryOptions();
+    const blogData = req.query.id ? await blogService.getBlogById(req.query.id) : null;
 
-exports.ADD_BLOG_STORE = async (req, res) => {
-    try {
-        let { body, file, query } = req
-        res.locals.message = req.flash();
-        if (query.id) {
-
-            let _id = mongoose.Types.ObjectId(query.id);
-            const result = await blog.findOne({ _id });
-            if (result) {
-                let obj = {};
-                if (body.category) { obj.category = body.category };
-                if (body.Title) { obj.Title = body.Title };
-                if (body.WriteDate) { obj.WriteDate = body.WriteDate };
-                if (body.WriterName) { obj.WriterName = body.WriterName };
-                if (body.description) { obj.Description = body.description };
-                if (file) {
-                    img = []
-                    img.push(file.filename)
-                    obj.image = img
-                }
-                const result = await blog.findByIdAndUpdate({ _id }, { $set: obj }, { new: true });
-                if (result) {
-                    req.flash("success", "Blog  is  Update successfull !")
-                    res.redirect("/view_blog")
-                };
-
-            } else {
-                req.flash("error", "Blog is Not Found !")
-                res.redirect("/view_blog")
-            };
-        } else {
-            if (file) {
-                img = []
-                img.push(file.filename)
-                body.image = img
-            } else {
-                body.image = ""
-            }
-            let blog_details = new blog({
-                Title: body.Title,
-                WriterName: body.WriterName,
-                WriteDate: body.WriteDate,
-                Description: body.description,
-                image: body.image,
-                category: mongoose.Types.ObjectId(body.category)
-            });
-            const result = await blog_details.save();
-            res.send()
-        }
+    if (req.query.id && !blogData) {
+      req.flash("error", "Blog not found.");
+      return res.redirect("/view-blog");
     }
-    catch (err) {
-        console.log(err)
-    }
-}
 
-exports.VIEW_BLOG = async (req, res) => {
-    try {
-       
-        const user = req.user;
-        let query = req.query;
-        const Category = await category.find({ parent_Name: null });
-        const WriterName = await blog.distinct("WriterName");
-        const data = await service.VIEW_BLOG(req);
-        res.render("blog/view_blog", { data, user, Category, query, WriterName });
-    } catch (error) {
-        console.log(error);
-    };
+    return res.render("blog/add_blog", {
+      user: req.user,
+      category_data: categoryData,
+      _id: req.query.id,
+      blog_data: blogData,
+    });
+  } catch (error) {
+    console.log(error);
+    req.flash("error", "Unable to load blog form.");
+    return res.redirect("/view-blog");
+  }
 };
 
-exports.DELETE_BLOG = async (req, res) => {
-    try {
-        if (req.user.type == "admin") {
-            res.redirect("/")
-        }
-        const id = req.query.id
-        await blog.findByIdAndDelete({ _id: id })
-        res.redirect("/view_blog")
-    } catch (error) {
-        console.log(error)
+exports.saveBlog = async (req, res) => {
+  try {
+    await blogService.saveBlog(req);
+    req.flash("success", "Blog saved successfully.");
+    return res.redirect("/view-blog");
+  } catch (error) {
+    console.log(error);
+    req.flash("error", error.message || "Unable to save blog.");
+    return res.redirect(req.query?.id ? `/add-blog?id=${req.query.id}` : "/add-blog");
+  }
+};
+
+exports.renderBlogList = async (req, res) => {
+  try {
+    res.locals.message = req.flash();
+    const data = await blogService.getBlogList(req.query);
+    const category = await blogService.getBlogCategoryOptions();
+    const writerName = await blogService.getBlogWriterOptions();
+
+    return res.render("blog/view_blog", {
+      data,
+      user: req.user,
+      Category: category,
+      query: req.query,
+      WriterName: writerName,
+    });
+  } catch (error) {
+    console.log(error);
+    req.flash("error", "Unable to load blogs.");
+    return res.redirect("/");
+  }
+};
+
+exports.deleteBlog = async (req, res) => {
+  try {
+    const deleted = await blogService.deleteBlogById(req.query.id);
+    if (!deleted) {
+      req.flash("error", "Blog not found.");
+      return res.redirect("/view-blog");
     }
-}
+    req.flash("success", "Blog deleted successfully.");
+    return res.redirect("/view-blog");
+  } catch (error) {
+    console.log(error);
+    req.flash("error", "Unable to delete blog.");
+    return res.redirect("/view-blog");
+  }
+};
 
+exports.viewBlogDescription = async (req, res) => {
+  try {
+    const data = await blogService.getBlogDescriptionById(req.query.id);
+    return res.send(data ? [data] : []);
+  } catch (error) {
+    console.log(error);
+    return res.send([]);
+  }
+};
 
-
-
-exports.ViwesFindBlog = async (req, res) => {
-    try {
-        const data = await blog.find({ _id: mongoose.Types.ObjectId(req.query.id) });
-        res.send(data)
-    } catch (error) {
-        console.log(error)
-    }
-}
+// Backward-compatible aliases
+exports.ADD_BLOG = exports.renderBlogForm;
+exports.ADD_BLOG_STORE = exports.saveBlog;
+exports.VIEW_BLOG = exports.renderBlogList;
+exports.DELETE_BLOG = exports.deleteBlog;
+exports.ViwesFindBlog = exports.viewBlogDescription;

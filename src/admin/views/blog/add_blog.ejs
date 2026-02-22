@@ -13,6 +13,7 @@
 <body>
   <%- include('../../partials/Header.ejs') %>
     <%- include("../../partials/sidebar.ejs") %>
+      <%- include("../../partials/alertMsg.ejs") %>
       <main id="main" class="main">
         <div class="pagetitle">
           <h1>
@@ -185,11 +186,11 @@
       description.val(document.querySelector(".ql-editor").innerHTML)
       const file = new FormData(this);
       $.ajax({
-        url: "/add_blog_store",
+        url: "/add-blog-store",
         type: 'POST',
         data: file,
         success: function (data) {
-          window.location.replace("/view_blog")
+          window.location.replace("/view-blog")
         },
         cache: false,
         contentType: false,
@@ -205,11 +206,11 @@
       const blog_id = $("#hidden1").val()
       const file = new FormData(this);
       $.ajax({
-        url: `/add_blog_store?id=${blog_id}`,
+        url: `/add-blog-store?id=${blog_id}`,
         type: 'POST',
         data: file,
         success: function (data) {
-          window.location.replace("/view_blog")
+          window.location.replace("/view-blog")
         },
         cache: false,
         contentType: false,
