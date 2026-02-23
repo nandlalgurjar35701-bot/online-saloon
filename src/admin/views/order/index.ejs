@@ -239,20 +239,11 @@
             </div>
             <div class="modal-body">
               <div class="row g-3">
-                <div class="col-12">
-                  <label>Search Service</label>
-                  <div class="input-group">
-                    <input id="addServiceSearch" type="text" class="form-control" placeholder="Search service name" />
-                    <button class="btn btn-outline-secondary" type="button" onclick="searchServices(1)">Search</button>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div id="serviceSearchResults" class="table-responsive"></div>
-                  <div class="d-flex justify-content-between align-items-center mt-2">
-                    <button class="btn btn-outline-secondary btn-sm" type="button" onclick="prevServicePage()">Prev</button>
-                    <span id="servicePageInfo" class="small text-muted">Page 1</span>
-                    <button class="btn btn-outline-secondary btn-sm" type="button" onclick="nextServicePage()">Next</button>
-                  </div>
+                <div class="col-12 position-relative">
+                  <label>Service</label>
+                  <input id="addServiceSearch" type="text" class="form-control" placeholder="Search and select service" />
+                  <input type="hidden" id="addServiceId" value="" />
+                  <div id="serviceDropdownList" class="list-group position-absolute w-100" style="z-index: 1056; display: none;"></div>
                 </div>
                 <div class="col-12">
                   <label>Quantity</label>
@@ -262,6 +253,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" onclick="addItemToOrder()">Add</button>
             </div>
           </div>
         </div>
@@ -271,7 +263,7 @@
       <script>
         let editSaloonId = "";
         let servicePage = 1;
-        let serviceTotalPages = 1;
+        let searchTimer = null;
 
         function openEditCart(btn) {
           const orderId = btn.value;
@@ -329,10 +321,9 @@
 
         function openAddItemModal() {
           servicePage = 1;
-          serviceTotalPages = 1;
           $("#addServiceSearch").val("");
-          $("#serviceSearchResults").html("");
-          $("#servicePageInfo").text("Page 1");
+          $("#addServiceId").val("");
+          $("#serviceDropdownList").hide().html("");
           $("#addServiceQty").val(1);
 
           const modalEl = document.getElementById("addItemModal");
@@ -353,24 +344,25 @@
         }
 
         function renderServiceResults(items) {
-          let html = `<table class="table table-sm text-nowrap">
-            <thead>
-              <tr>
-                <th scope="col">Service</th>
-                <th scope="col">Price</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>`;
+          if (!items || items.length === 0) {
+            $("#serviceDropdownList").html(`<div class="list-group-item text-muted">No results</div>`).show();
+            return;
+          }
+          let html = "";
           items.forEach((svc) => {
-            html += `<tr>
-              <td>${svc.ServiceName || "-"}</td>
-              <td>${svc.ServicePrice || 0}</td>
-              <td><button type="button" class="btn btn-primary btn-sm" onclick="addItemToOrder('${svc._id}')">Add</button></td>
-            </tr>`;
+            const name = svc.ServiceName || "-";
+            const price = svc.ServicePrice || 0;
+            html += `<button type="button" class="list-group-item list-group-item-action" onclick="selectService('${svc._id}','${name}','${price}')">
+              ${name} (Rs ${price})
+            </button>`;
           });
-          html += `</tbody></table>`;
-          $("#serviceSearchResults").html(html);
+          $("#serviceDropdownList").html(html).show();
+        }
+
+        function selectService(id, name, price) {
+          $("#addServiceSearch").val(`${name} (Rs ${price})`);
+          $("#addServiceId").val(id);
+          $("#serviceDropdownList").hide();
         }
 
         function searchServices(page) {
@@ -380,31 +372,21 @@
           $.ajax({
             type: 'get',
             url: '/Admin-Order-Search-Services',
-            data: { saloonId: editSaloonId, q, page: pageNum, limit: 8 },
+            data: { saloonId: editSaloonId, q, page: pageNum, limit: 5 },
             success: function (resp) {
               const items = resp && resp.items ? resp.items : [];
               servicePage = resp && resp.page ? resp.page : 1;
               serviceTotalPages = resp && resp.totalPages ? resp.totalPages : 1;
               renderServiceResults(items);
-              $("#servicePageInfo").text(`Page ${servicePage} of ${serviceTotalPages || 1}`);
             }
           });
         }
 
-        function nextServicePage() {
-          if (servicePage < serviceTotalPages) {
-            searchServices(servicePage + 1);
-          }
-        }
-
-        function prevServicePage() {
-          if (servicePage > 1) {
-            searchServices(servicePage - 1);
-          }
-        }
-
         function addItemToOrder(serviceId) {
           const orderId = $("#editOrderId").val();
+          if (!serviceId) {
+            serviceId = $("#addServiceId").val();
+          }
           const qty = Number($("#addServiceQty").val() || 1);
           if (!orderId || !serviceId) return;
 
@@ -413,11 +395,28 @@
             url: '/Admin-Order-Update-Cart',
             data: { orderId, action: "add", serviceId, quantity: qty },
             success: function (resp) {
+              const addModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("addItemModal"));
+              addModal.hide();
               updateMainTotal(orderId, resp && resp.totalamount);
               openEditCart({ value: orderId });
             }
           });
         }
+
+        $("#addServiceSearch").on("input", function () {
+          $("#addServiceId").val("");
+          if (searchTimer) clearTimeout(searchTimer);
+          searchTimer = setTimeout(function () {
+            searchServices(1);
+          }, 300);
+        });
+
+        $(document).on("click", function (e) {
+          const target = $(e.target);
+          if (!target.closest("#addServiceSearch").length && !target.closest("#serviceDropdownList").length) {
+            $("#serviceDropdownList").hide();
+          }
+        });
 
         function updateQty(serviceId, action) {
           const orderId = $("#editOrderId").val();
