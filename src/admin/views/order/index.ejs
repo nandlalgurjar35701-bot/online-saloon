@@ -183,7 +183,8 @@
                                   <%}else if( data.status=="cancel" ){%>
                                     <a href="#" class="btn btn-danger">Cancel</a>
                                     <%}else{%>
-                                      <a href="/Admin-Order-Approve?id=<%= data._id%>" class="btn btn-success"
+                                      <a href="/Admin-Order-Approve?id=<%= data._id%>" class="btn btn-success js-approve-order"
+                                        data-payment-status="<%= data.paymentStatus || '' %>"
                                         data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Approve Order"><i class="bi bi-check2-circle"></i></a>
                                       <a href="/Admin-Order-Cancel?id=<%= data._id%>" class="btn btn-danger"
@@ -254,6 +255,25 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               <button type="button" class="btn btn-primary" onclick="addItemToOrder()">Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="approveConfirmModal" tabindex="-1" aria-labelledby="approveConfirmModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="approveConfirmModalLabel">Confirm Approval</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="approveConfirmMessage">
+              ...
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-success" id="approveConfirmYes">Approve</button>
             </div>
           </div>
         </div>
@@ -445,6 +465,30 @@
             }
           });
         }
+
+        $(document).on("click", ".js-approve-order", function (e) {
+          e.preventDefault();
+          const link = this.getAttribute("href");
+          const paymentStatus = String(this.getAttribute("data-payment-status") || "").toLowerCase();
+          let message = "Are you sure you want to approve this order?";
+          if (paymentStatus === "offline-store") {
+            message = "Are you sure you want to approve this offline order?";
+          } else {
+            message = "Have you received the payment for this order?";
+          }
+          $("#approveConfirmMessage").text(message);
+          $("#approveConfirmYes").data("href", link);
+          const modalEl = document.getElementById("approveConfirmModal");
+          const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+          modal.show();
+        });
+
+        $("#approveConfirmYes").on("click", function () {
+          const link = $(this).data("href");
+          if (link) {
+            window.location.href = link;
+          }
+        });
       </script>
       <%- include("../../partials/script.ejs") %>
 </body>
