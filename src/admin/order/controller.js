@@ -227,6 +227,9 @@ exports.AdminOrderUpdateCart = async (req, res) => {
         if (!orderDoc) {
             return res.status(404).send({ status: false, message: "Order not found" });
         }
+        if (String(orderDoc.status || "").toLowerCase() === "succes") {
+            return res.status(400).send({ status: false, message: "Approved order cannot be edited" });
+        }
         let cartdata = Array.isArray(orderDoc.cartdata) ? [...orderDoc.cartdata] : [];
         const targetId = String(serviceId || "");
         const idx = cartdata.findIndex((item) => String(item.serviceId) === targetId);
