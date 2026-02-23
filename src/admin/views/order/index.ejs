@@ -118,7 +118,9 @@
                 </div>
                 <div class="card">
                   <div class="card-body">
-                    <h5 class="card-title">Order List</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h5 class="card-title mb-0">Order List</h5>
+                    </div>
 
                     <!-- Table with stripped rows -->
                     <table class="table datatable text-nowrap">
@@ -141,7 +143,7 @@
                       <tbody>
                         <% let i=0 %>
                           <% for( data of data) { %>
-                            <tr>
+                            <tr data-order-id="<%=data._id%>">
                               <th scope="row">
                                 <%= ++i %>
                               </th>
@@ -152,10 +154,9 @@
                                 <%= data.users?.name %>
                               </td>
                               <td>
-                                <button type="button" value="<%=data._id%>" onclick="cartData(this)"
+                                <button type="button" value="<%=data._id%>" onclick="openEditCart(this)"
                                   class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top"
-                                  data-bs-title="View Cart Data"><i class="bi bi-eye"></i></button>
-
+                                  data-bs-title="Edit Cart"><i class="bi bi-eye"></i></button>
                               </td>
                               <td>
                                 <% if(typeof data.Schedule !=="undefined" && data.Schedule){%>
@@ -166,7 +167,7 @@
                                         timeslot :
                                         <%}%>
                               </td>
-                              <td>
+                              <td class="js-total-amount">
                                 <%= data.totalamount %>
                               </td>
                               <td>
@@ -207,19 +208,60 @@
 
 
       </main>
-      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade" id="editCartModal" tabindex="-1" aria-labelledby="editCartModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editCartModalLabel">Edit Cart Items</h5>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary btn-sm" onclick="openAddItemModal()">Add Item</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="editOrderId" value="" />
+              <div id="editCartBody">
+                ...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">User Service Data</h5>
+              <h5 class="modal-title" id="addItemModalLabel">Add Item</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="moduleDataAppend">
-              ...
+            <div class="modal-body">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label>Search Service</label>
+                  <div class="input-group">
+                    <input id="addServiceSearch" type="text" class="form-control" placeholder="Search service name" />
+                    <button class="btn btn-outline-secondary" type="button" onclick="searchServices(1)">Search</button>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div id="serviceSearchResults" class="table-responsive"></div>
+                  <div class="d-flex justify-content-between align-items-center mt-2">
+                    <button class="btn btn-outline-secondary btn-sm" type="button" onclick="prevServicePage()">Prev</button>
+                    <span id="servicePageInfo" class="small text-muted">Page 1</span>
+                    <button class="btn btn-outline-secondary btn-sm" type="button" onclick="nextServicePage()">Next</button>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <label>Quantity</label>
+                  <input id="addServiceQty" type="number" class="form-control" value="1" min="1" />
+                </div>
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
             </div>
           </div>
         </div>
@@ -227,48 +269,182 @@
 
 
       <script>
-        function cartData(data) {
-          let num = data.value
+        let editSaloonId = "";
+        let servicePage = 1;
+        let serviceTotalPages = 1;
+
+        function openEditCart(btn) {
+          const orderId = btn.value;
+          $("#editOrderId").val(orderId);
 
           $.ajax({
             type: 'get',
-            data: { "id": num },
-            url: '/Find-date-for-admin-module',
-            success: function (data) {
-              if (data.length > 0) {
-                $('#moduleDataAppend').empty()
+            data: { "id": orderId },
+            url: '/Admin-Order-Cart-Data',
+            success: function (resp) {
+              const items = resp && resp.items ? resp.items : [];
+              editSaloonId = resp && resp.saloonId ? resp.saloonId : "";
 
-                let abc = ` <table class="table datatable">
-                          <thead>
-                            <tr>
-                              <th scope="col">#</th>
-                              <th scope="col">serviceId</th>
-                              <th scope="col">quantity</th>
-                              <th scope="col">Amount</th>
-                              <th scope="col">timePeriod </th>
-                            </tr>
-                          </thead>
-                          <tbody>`
-                let i = 1;
-                data.forEach((item) => {
-                  abc += `<tr>
-                            <th scope="col">${i}.</th>
-                            <td scope="row">${item.service.ServiceName}</td>
-                            <td>${item.cartdata.quantity}</td>
-                            <td>${item.cartdata.Amount}</td>
-                            <td>${item.cartdata.timePeriod_in_minits}</td>
-                          </tr>`
-                  i++
-                })
-                abc += `</tbody> </table >`
+              let html = `<table class="table text-nowrap">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Service</th>
+                    <th scope="col">Qty</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>`;
 
-                $('#moduleDataAppend').append(abc)
-                $("#exampleModal").modal("toggle");
-              } else {
-                alert("data not Found")
-              }
+              let i = 1;
+              items.forEach((item) => {
+                html += `<tr data-service-id="${item.serviceId}">
+                  <th scope="row">${i}.</th>
+                  <td>${item.ServiceName || "-"}</td>
+                  <td>
+                    <div class="btn-group" role="group">
+                      <button class="btn btn-outline-secondary btn-sm" onclick="updateQty('${item.serviceId}','dec')">-</button>
+                      <span class="btn btn-light btn-sm">${item.quantity || 0}</span>
+                      <button class="btn btn-outline-secondary btn-sm" onclick="updateQty('${item.serviceId}','inc')">+</button>
+                    </div>
+                  </td>
+                  <td>${item.Amount || 0}</td>
+                  <td>
+                    <button class="btn btn-danger btn-sm" onclick="removeItem('${item.serviceId}')">Remove</button>
+                  </td>
+                </tr>`;
+                i++;
+              });
+
+              html += `</tbody></table>`;
+              $("#editCartBody").html(html);
+
+              const modalEl = document.getElementById("editCartModal");
+              const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+              modal.show();
             }
-          })
+          });
+        }
+
+        function openAddItemModal() {
+          servicePage = 1;
+          serviceTotalPages = 1;
+          $("#addServiceSearch").val("");
+          $("#serviceSearchResults").html("");
+          $("#servicePageInfo").text("Page 1");
+          $("#addServiceQty").val(1);
+
+          const modalEl = document.getElementById("addItemModal");
+          const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+          modal.show();
+
+          searchServices(1);
+        }
+
+        function updateMainTotal(orderId, totalamount) {
+          if (!orderId) return;
+          const row = document.querySelector(`tr[data-order-id="${orderId}"]`);
+          if (!row) return;
+          const cell = row.querySelector(".js-total-amount");
+          if (cell && totalamount != null) {
+            cell.textContent = totalamount;
+          }
+        }
+
+        function renderServiceResults(items) {
+          let html = `<table class="table table-sm text-nowrap">
+            <thead>
+              <tr>
+                <th scope="col">Service</th>
+                <th scope="col">Price</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>`;
+          items.forEach((svc) => {
+            html += `<tr>
+              <td>${svc.ServiceName || "-"}</td>
+              <td>${svc.ServicePrice || 0}</td>
+              <td><button type="button" class="btn btn-primary btn-sm" onclick="addItemToOrder('${svc._id}')">Add</button></td>
+            </tr>`;
+          });
+          html += `</tbody></table>`;
+          $("#serviceSearchResults").html(html);
+        }
+
+        function searchServices(page) {
+          if (!editSaloonId) return;
+          const q = $("#addServiceSearch").val() || "";
+          const pageNum = page || 1;
+          $.ajax({
+            type: 'get',
+            url: '/Admin-Order-Search-Services',
+            data: { saloonId: editSaloonId, q, page: pageNum, limit: 8 },
+            success: function (resp) {
+              const items = resp && resp.items ? resp.items : [];
+              servicePage = resp && resp.page ? resp.page : 1;
+              serviceTotalPages = resp && resp.totalPages ? resp.totalPages : 1;
+              renderServiceResults(items);
+              $("#servicePageInfo").text(`Page ${servicePage} of ${serviceTotalPages || 1}`);
+            }
+          });
+        }
+
+        function nextServicePage() {
+          if (servicePage < serviceTotalPages) {
+            searchServices(servicePage + 1);
+          }
+        }
+
+        function prevServicePage() {
+          if (servicePage > 1) {
+            searchServices(servicePage - 1);
+          }
+        }
+
+        function addItemToOrder(serviceId) {
+          const orderId = $("#editOrderId").val();
+          const qty = Number($("#addServiceQty").val() || 1);
+          if (!orderId || !serviceId) return;
+
+          $.ajax({
+            type: 'post',
+            url: '/Admin-Order-Update-Cart',
+            data: { orderId, action: "add", serviceId, quantity: qty },
+            success: function (resp) {
+              updateMainTotal(orderId, resp && resp.totalamount);
+              openEditCart({ value: orderId });
+            }
+          });
+        }
+
+        function updateQty(serviceId, action) {
+          const orderId = $("#editOrderId").val();
+          if (!orderId || !serviceId) return;
+          $.ajax({
+            type: 'post',
+            url: '/Admin-Order-Update-Cart',
+            data: { orderId, action, serviceId },
+            success: function (resp) {
+              updateMainTotal(orderId, resp && resp.totalamount);
+              openEditCart({ value: orderId });
+            }
+          });
+        }
+
+        function removeItem(serviceId) {
+          const orderId = $("#editOrderId").val();
+          if (!orderId || !serviceId) return;
+          $.ajax({
+            type: 'post',
+            url: '/Admin-Order-Update-Cart',
+            data: { orderId, action: "remove", serviceId },
+            success: function (resp) {
+              updateMainTotal(orderId, resp && resp.totalamount);
+              openEditCart({ value: orderId });
+            }
+          });
         }
       </script>
       <%- include("../../partials/script.ejs") %>
