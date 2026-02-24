@@ -32,6 +32,7 @@ app.use(express.json());
 app.use((req, res, next) => {
   res.locals.successMessages = req.flash("success");
   res.locals.errorMessages = req.flash("error");
+  res.locals.currentPath = req.path || "/";
   next();
 });
 
