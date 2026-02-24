@@ -33,6 +33,13 @@
                             </div>
                             <div class="col-8">
                                 <h4 class="text-primary"><%= item.name %></h4>
+                                <p class="text-white mb-2"><%= item.role %></p>
+                                <div class="d-flex mb-2">
+                                    <% const stars = Math.min(Math.max(Number(item.rating || 5), 1), 5); %>
+                                    <% for (let i = 1; i <= 5; i++) { %>
+                                        <i class="fas fa-star <%= i <= stars ? 'text-primary' : '' %>"></i>
+                                    <% } %>
+                                </div>
                                 <p class="fs-6 mb-0 text-white"><%= item.message %></p>
                             </div>
                         </div>
