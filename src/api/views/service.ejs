@@ -411,38 +411,6 @@
 
 
 
-            <!-- Pricing Start -->
-            <div class="container-fluid pricing py-5" style="background: var(--bs-primary);">
-                <div class="container py-5">
-                    <div class="owl-carousel pricing-carousel">
-                        <% (data?.pricingPlans || []).forEach(function(plan) { %>
-                        <div class="pricing-item">
-                            <div class="pricing-content rounded">
-                                <div
-                                    class="d-flex align-items-center justify-content-between bg-light rounded-top border-3 border-bottom border-primary p-4">
-                                    <h1 class="display-4 mb-0">
-                                        <small class="align-top text-muted"
-                                            style="font-size: 22px; line-height: 45px;">$</small><%= plan.price %><small
-                                            class="text-muted" style="font-size: 16px; line-height: 40px;"><%= plan.durationLabel || "/Session" %></small>
-                                    </h1>
-                                    <h5 class="text-primary text-uppercase m-0"><%= plan.name %></h5>
-                                </div>
-                                <div class="p-4">
-                                    <% (plan.features || []).forEach(function(feature) { %>
-                                        <p><i class="fa fa-check text-primary me-2"></i><%= feature %></p>
-                                    <% }) %>
-                                    <a href="/appointment"
-                                        class="btn btn-primary btn-primary-outline-0 rounded-pill my-2 px-4"><%= plan.ctaLabel || "Book Now" %>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <% }) %>
-                    </div>
-                </div>
-            </div>
-            <!-- Pricing End -->
-
             <%- include('./partials/footerlink.ejs') %>
     </body>
 
