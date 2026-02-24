@@ -187,6 +187,52 @@
                             </div>
                         <% } %>
                     </div>
+
+                    <% if ((data?.pagination?.totalPages || 0) > 1) { %>
+                        <% const currentPage = Number(data.pagination.currentPage || 1); %>
+                        <% const totalPages = Number(data.pagination.totalPages || 1); %>
+                        <% const startPage = Math.max(1, currentPage - 2); %>
+                        <% const endPage = Math.min(totalPages, currentPage + 2); %>
+                        <div class="row mt-5">
+                            <div class="col-12 d-flex justify-content-center">
+                                <nav aria-label="Services pagination">
+                                    <ul class="pagination mb-0">
+                                        <li class="page-item <%= data.pagination.hasPrev ? '' : 'disabled' %>">
+                                            <a class="page-link" href="/service?page=<%= currentPage - 1 %>">Previous</a>
+                                        </li>
+
+                                        <% if (startPage > 1) { %>
+                                            <li class="page-item">
+                                                <a class="page-link" href="/service?page=1">1</a>
+                                            </li>
+                                            <% if (startPage > 2) { %>
+                                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                                            <% } %>
+                                        <% } %>
+
+                                        <% for (let pageNo = startPage; pageNo <= endPage; pageNo++) { %>
+                                            <li class="page-item <%= pageNo === currentPage ? 'active' : '' %>">
+                                                <a class="page-link" href="/service?page=<%= pageNo %>"><%= pageNo %></a>
+                                            </li>
+                                        <% } %>
+
+                                        <% if (endPage < totalPages) { %>
+                                            <% if (endPage < totalPages - 1) { %>
+                                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                                            <% } %>
+                                            <li class="page-item">
+                                                <a class="page-link" href="/service?page=<%= totalPages %>"><%= totalPages %></a>
+                                            </li>
+                                        <% } %>
+
+                                        <li class="page-item <%= data.pagination.hasNext ? '' : 'disabled' %>">
+                                            <a class="page-link" href="/service?page=<%= currentPage + 1 %>">Next</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    <% } %>
                 </div>
             </div>
 

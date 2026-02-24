@@ -10,7 +10,22 @@ const renderWithData = async (res, viewName, statusCode = 200) => {
 
 exports.servicePage = async (req, res) => {
   try {
-    return await renderWithData(res, "service");
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const limit = 9;
+    const data = await appServices.index({ includeProducts: false });
+    const paginatedProducts = await appServices.getPaginatedProducts({ page, limit });
+
+    data.products = paginatedProducts.items;
+    data.pagination = {
+      currentPage: paginatedProducts.currentPage,
+      totalPages: paginatedProducts.totalPages,
+      totalItems: paginatedProducts.totalItems,
+      limit: paginatedProducts.limit,
+      hasPrev: paginatedProducts.hasPrev,
+      hasNext: paginatedProducts.hasNext,
+    };
+
+    return res.status(200).render("service", { data });
   } catch (error) {
     console.log(error);
     return res.status(500).render("404");

@@ -54,8 +54,9 @@ const fallbackSiteSetting = {
     },
 };
 
-exports.index = async () => {
+exports.index = async (options = {}) => {
     try {
+        const { includeProducts = true } = options;
         let data = {}
         data.banners = await homeBannerModel.find().sort({ createdAt: -1 }).lean()
         data.category = await categoryModel.find().sort({ createdAt: -1 }).lean()
@@ -64,11 +65,14 @@ exports.index = async () => {
         data.gallery = await galleryModel.find({ status: true }).sort({ sortOrder: 1, createdAt: -1 }).lean()
         data.pricingPlans = await pricePlanModel.find({ status: true }).sort({ sortOrder: 1, createdAt: -1 }).lean()
         data.siteSetting = await siteSettingModel.findOne({ status: true }).sort({ createdAt: -1 }).lean()
-        data.products = await productModel
-            .find({ saloonStore: { $ne: null } })
-            .populate("saloonStore", "storeName image")
-            .sort({ createdAt: -1 })
-            .lean()
+        data.products = []
+        if (includeProducts) {
+            data.products = await productModel
+                .find({ saloonStore: { $ne: null } })
+                .populate("saloonStore", "storeName image")
+                .sort({ createdAt: -1 })
+                .lean()
+        }
 
         if (!data.teamMembers.length) data.teamMembers = fallbackTeam
         if (!data.testimonials.length) data.testimonials = fallbackTestimonials
@@ -79,5 +83,33 @@ exports.index = async () => {
         return data
     } catch (error) {
         console.log(error);
+    };
+};
+
+exports.getPaginatedProducts = async (options = {}) => {
+    const page = Math.max(parseInt(options.page, 10) || 1, 1);
+    const limit = Math.max(parseInt(options.limit, 10) || 9, 1);
+    const query = { saloonStore: { $ne: null } };
+    const totalItems = await productModel.countDocuments(query);
+
+    const totalPages = Math.max(Math.ceil(totalItems / limit), 1);
+    const currentPage = Math.min(page, totalPages);
+    const skip = (currentPage - 1) * limit;
+    const items = await productModel
+        .find(query)
+        .populate("saloonStore", "storeName image")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+
+    return {
+        items,
+        totalItems,
+        totalPages,
+        currentPage,
+        limit,
+        hasPrev: currentPage > 1,
+        hasNext: currentPage < totalPages,
     };
 };
