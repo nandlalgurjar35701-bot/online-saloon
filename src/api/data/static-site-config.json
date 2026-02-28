@@ -1,7 +1,7 @@
 {
   "siteSetting": {
     "brandName": "nk",
-    "phone": "+01234567890",
+    "phone": "+00000000000",
     "email": "info@example.com",
     "address": "123 Salon Street, New Delhi",
     "openingHours": {
@@ -41,5 +41,5 @@
     { "title": "Gallery 5", "image": "gallery-5.jpg" },
     { "title": "Gallery 6", "image": "gallery-6.jpg" }
   ],
-  "pageTitle": "Sparlex - Spa Website Template"
+  "pageTitle": "nk - Spa Website Template"
 }
