@@ -37,7 +37,7 @@ const fallbackGallery = [
 ];
 
 const fallbackSiteSetting = {
-    brandName: "Sparlex",
+    brandName: "nk",
     phone: "+01234567890",
     email: "info@example.com",
     address: "123 Salon Street, New Delhi",

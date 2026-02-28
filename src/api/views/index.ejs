@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title><%= data?.siteSetting?.brandName || "Site" %> - Spa Website Template</title>
+    <title><%= data?.pageTitle || ((data?.siteSetting?.brandName || "Site") + " - Spa Website Template") %></title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -312,32 +312,20 @@
                         <div class="appointment-time p-5">
                             <h1 class="display-5 mb-4">Opening Hours</h1>
                             <div class="d-flex justify-content-between fs-5 text-white">
+                                <p>Mon - Fri:</p>
+                                <p><%= data?.siteSetting?.openingHours?.monFri || "09:00 AM - 09:00 PM" %></p>
+                            </div>
+                            <div class="d-flex justify-content-between fs-5 text-white">
                                 <p>Saturday:</p>
-                                <p>09:00 am – 10:00 pm</p>
+                                <p><%= data?.siteSetting?.openingHours?.saturday || "09:00 AM - 08:00 PM" %></p>
                             </div>
-                            <div class="d-flex justify-content-between fs-5 text-white">
+                            <div class="d-flex justify-content-between fs-5 text-white mb-4">
                                 <p>Sunday:</p>
-                                <p>09:00 am – 10:00 pm</p>
+                                <p><%= data?.siteSetting?.openingHours?.sunday || "10:00 AM - 06:00 PM" %></p>
                             </div>
                             <div class="d-flex justify-content-between fs-5 text-white">
-                                <p>Monday:</p>
-                                <p>09:00 am – 10:00 pm</p>
-                            </div>
-                            <div class="d-flex justify-content-between fs-5 text-white">
-                                <p>Tuesday:</p>
-                                <p>09:00 am – 10:00 pm</p>
-                            </div>
-                            <div class="d-flex justify-content-between fs-5 text-white">
-                                <p>Wednes:</p>
-                                <p>09:00 am – 08:00 pm</p>
-                            </div>
-                            <div class="d-flex justify-content-between fs-5 text-white mb-4">
-                                <p>Thursday:</p>
-                                <p>09:00 am – 05:00 pm</p>
-                            </div>
-                            <div class="d-flex justify-content-between fs-5 text-white mb-4">
-                                <p>Friday:</p>
-                                <p>CLOSED</p>
+                                <p>Call Us:</p>
+                                <p><%= data?.siteSetting?.phone || "+01234567890" %></p>
                             </div>
                             <p class="text-dark">Check out seasonal discounts for best offers.</p>
                         </div>
@@ -955,7 +943,7 @@
                                     <i class="fas fa-map-marker-alt fa-2x text-primary me-4"></i>
                                     <div>
                                         <h4>Address</h4>
-                                        <p class="mb-0">123 North tower New York, USA</p>
+                                        <p class="mb-0"><%= data?.siteSetting?.address || "123 Salon Street, New Delhi" %></p>
                                     </div>
                                 </div>
                             </div>
@@ -964,7 +952,7 @@
                                     <i class="fas fa-envelope fa-2x text-primary me-4"></i>
                                     <div>
                                         <h4>Mail Us</h4>
-                                        <p class="mb-0">info@example.com</p>
+                                        <p class="mb-0"><%= data?.siteSetting?.email || "info@example.com" %></p>
                                     </div>
                                 </div>
                             </div>
@@ -973,7 +961,7 @@
                                     <i class="fa fa-phone-alt fa-2x text-primary me-4"></i>
                                     <div>
                                         <h4>Telephone</h4>
-                                        <p class="mb-0">(+012) 3456 7890 123</p>
+                                        <p class="mb-0"><%= data?.siteSetting?.phone || "+01234567890" %></p>
                                     </div>
                                 </div>
                             </div>
@@ -988,13 +976,13 @@
                         <div class=" text-center p-4 rounded-bottom bg-primary">
                             <h4 class="text-white fw-bold">Follow Us</h4>
                             <div class="d-flex align-items-center justify-content-center">
-                                <a href="#" class="btn btn-light btn-light-outline-0 btn-square rounded-circle me-3"><i
+                                <a href="<%= data?.siteSetting?.socialLinks?.facebook || '#' %>" class="btn btn-light btn-light-outline-0 btn-square rounded-circle me-3"><i
                                         class="fab fa-facebook-f"></i></a>
-                                <a href="#" class="btn btn-light btn-light-outline-0 btn-square rounded-circle me-3"><i
+                                <a href="<%= data?.siteSetting?.socialLinks?.twitter || '#' %>" class="btn btn-light btn-light-outline-0 btn-square rounded-circle me-3"><i
                                         class="fab fa-twitter"></i></a>
-                                <a href="#" class="btn btn-light btn-light-outline-0 btn-square rounded-circle me-3"><i
+                                <a href="<%= data?.siteSetting?.socialLinks?.instagram || '#' %>" class="btn btn-light btn-light-outline-0 btn-square rounded-circle me-3"><i
                                         class="fab fa-instagram"></i></a>
-                                <a href="#" class="btn btn-light btn-light-outline-0 btn-square rounded-circle"><i
+                                <a href="<%= data?.siteSetting?.socialLinks?.linkedin || '#' %>" class="btn btn-light btn-light-outline-0 btn-square rounded-circle"><i
                                         class="fab fa-linkedin-in"></i></a>
                             </div>
                         </div>

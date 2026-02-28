@@ -4,7 +4,7 @@ const siteSettingSchema = new mongoose.Schema(
   {
     brandName: {
       type: String,
-      default: "Sparlex",
+      default: "",
     },
     phone: {
       type: String,
