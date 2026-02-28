@@ -72,3 +72,35 @@
 
 <!-- Template Javascript -->
 <script src="/web/js/main.js"></script>
+<script>
+(function () {
+    const STORAGE_KEY = 'siteConfig';
+    fetch('/get-site-config')
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+            if (res && res.status && res.data) {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(res.data));
+                    applySiteConfig(res.data);
+                } catch (e) {}
+            }
+        })
+        .catch(function () {});
+    var cached = null;
+    try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) cached = JSON.parse(raw);
+    } catch (e) {}
+    if (cached) applySiteConfig(cached);
+    function applySiteConfig(config) {
+        if (!config) return;
+        var brand = config.siteSetting && config.siteSetting.brandName;
+        if (brand) {
+            var el = document.getElementById('siteBrandName');
+            if (el) el.textContent = brand;
+        }
+        var title = config.pageTitle;
+        if (title) document.title = title;
+    }
+})();
+</script>

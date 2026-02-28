@@ -1,10 +1,23 @@
 const { Router } = require("express");
+const path = require("path");
+const fs = require("fs");
 const responseHandler = require("../../utils/responseHandlers");
 const auth = require("../../middleware/auth");
 const Upload = require("../../middleware/img");
 const controller = require('../controller/controller');
 const { register, otpSent, otpVerify, login, loginOtpVerify, userEditProfile, user_Profile, logOut, EditUserProfile } = require('../controller/controller');
 const app = Router();
+
+app.get("/get-site-config", (req, res) => {
+    try {
+        const configPath = path.join(__dirname, "../data/static-site-config.json");
+        const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+        res.json({ status: true, data: config });
+    } catch (err) {
+        res.status(500).json({ status: false, message: "Config not found" });
+    }
+});
+
 app.get("/", controller.index);
 
 app.post("/otp-sent", responseHandler(otpSent));

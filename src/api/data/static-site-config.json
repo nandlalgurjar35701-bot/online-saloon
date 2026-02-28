@@ -1,0 +1,45 @@
+{
+  "siteSetting": {
+    "brandName": "nk",
+    "phone": "+01234567890",
+    "email": "info@example.com",
+    "address": "123 Salon Street, New Delhi",
+    "openingHours": {
+      "monFri": "09:00 AM - 09:00 PM",
+      "saturday": "09:00 AM - 08:00 PM",
+      "sunday": "10:00 AM - 06:00 PM"
+    },
+    "socialLinks": {
+      "facebook": "#",
+      "instagram": "#",
+      "twitter": "#",
+      "linkedin": "#"
+    }
+  },
+  "pricingPlans": [
+    { "name": "Basic Plan", "price": 49, "durationLabel": "/Session", "features": ["Hair Wash", "Basic Cleanup", "Head Massage"] },
+    { "name": "Family Plan", "price": 99, "durationLabel": "/Session", "features": ["Hair Spa", "Facial", "Manicure"] },
+    { "name": "VIP Plan", "price": 149, "durationLabel": "/Session", "features": ["Premium Facial", "Body Polish", "Hair Styling"] },
+    { "name": "Most Plan", "price": 199, "durationLabel": "/Session", "features": ["Complete Grooming", "Spa Therapy", "Nail Care"] }
+  ],
+  "team": [
+    { "name": "Olivia Mia", "role": "Hair Stylist", "image": "team-1.png" },
+    { "name": "Charlotte Ross", "role": "Skin Expert", "image": "team-2.png" },
+    { "name": "Amelia Luna", "role": "Nail Artist", "image": "team-3.png" },
+    { "name": "Isabella Eva", "role": "Makeup Artist", "image": "team-4.png" }
+  ],
+  "testimonials": [
+    { "name": "Priya S.", "role": "Client", "message": "Amazing service quality and very professional staff.", "image": "testimonial-1.jpg", "rating": 5 },
+    { "name": "Neha R.", "role": "Client", "message": "Loved the ambience. Booking and service were smooth.", "image": "testimonial-2.jpg", "rating": 5 },
+    { "name": "Anita K.", "role": "Client", "message": "Great hygiene and excellent results every time.", "image": "testimonial-3.jpg", "rating": 5 }
+  ],
+  "gallery": [
+    { "title": "Gallery 1", "image": "gallery-1.jpg" },
+    { "title": "Gallery 2", "image": "gallery-2.jpg" },
+    { "title": "Gallery 3", "image": "gallery-3.jpg" },
+    { "title": "Gallery 4", "image": "gallery-4.jpg" },
+    { "title": "Gallery 5", "image": "gallery-5.jpg" },
+    { "title": "Gallery 6", "image": "gallery-6.jpg" }
+  ],
+  "pageTitle": "Sparlex - Spa Website Template"
+}
