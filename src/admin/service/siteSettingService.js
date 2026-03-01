@@ -39,6 +39,7 @@ exports.saveSiteSetting = async (body = {}) => {
     email: String(body.email || "").trim(),
     address: String(body.address || "").trim(),
     mapEmbedUrl: String(body.mapEmbedUrl || "").trim(),
+    newsletterDescription: String(body.newsletterDescription || "").trim(),
     openingHours: {
       monFri: String(body.openingHoursMonFri || "").trim(),
       saturday: String(body.openingHoursSaturday || "").trim(),

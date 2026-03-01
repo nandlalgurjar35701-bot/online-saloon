@@ -41,6 +41,7 @@ const fallbackSiteSetting = {
     phone: "+01234567890",
     email: "info@example.com",
     address: "123 Salon Street, New Delhi",
+    newsletterDescription: "Get salon updates, offers and grooming tips straight to your inbox.",
     openingHours: {
         monFri: "09:00 AM - 09:00 PM",
         saturday: "09:00 AM - 08:00 PM",

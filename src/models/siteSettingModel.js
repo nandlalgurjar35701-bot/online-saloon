@@ -22,6 +22,10 @@ const siteSettingSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    newsletterDescription: {
+      type: String,
+      default: "Get salon updates, offers and grooming tips straight to your inbox.",
+    },
     openingHours: {
       monFri: {
         type: String,
