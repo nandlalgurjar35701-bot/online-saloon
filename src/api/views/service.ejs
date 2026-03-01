@@ -171,9 +171,9 @@
                                             <button
                                                 type="button"
                                                 class="wishlist-toggle"
-                                                data-saloon-id="<%= saloonStoreId %>"
+                                                data-product-id="<%= product._id %>"
                                                 title="Add to Wishlist"
-                                                <%= saloonStoreId ? '' : 'disabled' %>>
+                                                <%= product?._id ? '' : 'disabled' %>>
                                                 <i class="fas fa-heart"></i>
                                             </button>
                                             <img src="<%= imagePath %>" class="img-fluid w-100 h-100" style="object-fit: cover;"
@@ -308,8 +308,8 @@
 
                     const updateWishlistUi = () => {
                         wishlistButtons.forEach((btn) => {
-                            const saloonId = btn.getAttribute("data-saloon-id");
-                            btn.classList.toggle("active", Boolean(wishlistState[saloonId]));
+                            const productId = btn.getAttribute("data-product-id");
+                            btn.classList.toggle("active", Boolean(wishlistState[productId]));
                         });
                     };
 
@@ -347,13 +347,13 @@
                     const syncWishlistState = async () => {
                         if (!getAuthToken()) return;
                         try {
-                            const response = await fetch("/get-wishlist", { headers: getHeaders() });
+                            const response = await fetch("/get-wishlist?type=product", { headers: getHeaders() });
                             const result = await response.json();
                             Object.keys(wishlistState).forEach((key) => delete wishlistState[key]);
                             if (response.ok && result?.status && Array.isArray(result.data)) {
                                 result.data.forEach((item) => {
-                                    const saloonId = item?.result?._id || item?.saloonId;
-                                    if (saloonId) wishlistState[String(saloonId)] = true;
+                                    const productId = item?.result?._id || item?.productId;
+                                    if (productId) wishlistState[String(productId)] = true;
                                 });
                             }
                             updateWishlistUi();
@@ -450,18 +450,18 @@
                     wishlistButtons.forEach((button) => {
                         button.addEventListener("click", async () => {
                             const token = getAuthToken();
-                            const saloonId = button.getAttribute("data-saloon-id");
+                            const productId = button.getAttribute("data-product-id");
                             if (!token) {
                                 showMessage("Please login first to update wishlist.");
                                 return;
                             }
-                            if (!saloonId) {
+                            if (!productId) {
                                 showMessage("Invalid wishlist item.");
                                 return;
                             }
                             button.disabled = true;
                             try {
-                                const response = await fetch(`/wishlist?id=${saloonId}`, {
+                                const response = await fetch(`/wishlist?id=${productId}&type=product`, {
                                     method: "GET",
                                     headers: getHeaders(),
                                 });

@@ -1,186 +1,186 @@
-const cart = require("../../models/cartModel");
-const order = require("../../models/wishlistModel");
-const Schedule = require("../../models/scheduleModel");
-const saloon = require("../../models/saloonStoreModel")
-const wishlist = require("../../models/wishlistModel");
 const mongoose = require("mongoose");
+const saloon = require("../../models/saloonStoreModel");
+const product = require("../../models/productModel");
+const wishlist = require("../../models/wishlistModel");
+
+const toObjectId = (id) => {
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) return null;
+    return mongoose.Types.ObjectId(id);
+};
+
+const getTypeMeta = (type) => {
+    if (String(type || "").toLowerCase() === "saloon") {
+        return { field: "saloonId", model: saloon, lookupCollection: "saloons" };
+    }
+    return { field: "productId", model: product, lookupCollection: "products" };
+};
 
 exports.userWishlist = async ({ user, query }) => {
     try {
-        if (query.id) {
-            let _id = mongoose.Types.ObjectId(query.id);
-            const findSaloon = await saloon.findOne({ _id });
-            let arr = []
-            let sss = []
-            if (findSaloon) {
-                const findWishlist = await wishlist.findOne({ userId: user._id });
-
-                if (!findWishlist) {
-                    arr.push(findSaloon._id)
-                    const wishlistDitail = new wishlist({
-                        userId: user._id,
-                        saloonId: arr
-                    });
-                    const result = await wishlistDitail.save();
-                    if (result) {
-                        return {
-                            statusCode: 200,
-                            status: true,
-                            message: "wishlist created Succesfuuly !",
-                            data: [result],
-                        };
-                    };
-                } else {
-                    findWishlist.saloonId.forEach(element => {
-                        arr.push(element.toString())
-                    });
-                    if (arr.includes(findSaloon._id.toString()) == false) {
-                        arr.push(findSaloon._id.toString())
-                    } else {
-                        let index = arr.indexOf(findSaloon._id.toString())
-                        arr.splice(index, 1);
-                    }
-                    const result = await wishlist.findByIdAndUpdate({ _id: findWishlist._id }, { saloonId: arr }, { new: true })
-                    if (result) {
-                        return {
-                            statusCode: 200,
-                            status: true,
-                            message: "This-wishlist-update !",
-                            data: [result]
-                        };
-                    }
-                }
-            } else {
-                return {
-                    statusCode: 400,
-                    status: false,
-                    message: "please Enter A valide saloon store id !",
-                    data: []
-                };
-            };
-        } else {
+        const id = String(query.id || "").trim();
+        const targetId = toObjectId(id);
+        if (!targetId) {
             return {
                 statusCode: 400,
                 status: false,
-                message: "please Enter A saloon store id !",
+                message: "please Enter A valid id !",
                 data: []
             };
+        }
+
+        const typeMeta = getTypeMeta(query.type);
+        const exists = await typeMeta.model.findOne({ _id: targetId }).lean();
+        if (!exists) {
+            return {
+                statusCode: 400,
+                status: false,
+                message: "Item not found !",
+                data: []
+            };
+        }
+
+        let doc = await wishlist.findOne({ userId: user._id });
+        if (!doc) {
+            doc = await wishlist.create({ userId: user._id, saloonId: [], productId: [] });
+        }
+
+        const existing = Array.isArray(doc[typeMeta.field]) ? doc[typeMeta.field].map((v) => String(v)) : [];
+        const key = String(targetId);
+        const currentIndex = existing.indexOf(key);
+        let added = false;
+
+        if (currentIndex === -1) {
+            existing.push(key);
+            added = true;
+        } else {
+            existing.splice(currentIndex, 1);
+        }
+
+        doc[typeMeta.field] = existing;
+        await doc.save();
+
+        return {
+            statusCode: 200,
+            status: true,
+            message: added ? "Added to wishlist." : "Removed from wishlist.",
+            data: [doc],
+            wishlist: added
         };
     } catch (error) {
         console.log(error);
-    };
+        return {
+            statusCode: 500,
+            status: false,
+            message: "Unable to update wishlist.",
+            data: []
+        };
+    }
 };
-
 
 exports.getWishlist = async ({ user, query }) => {
     try {
-        let condition = [];
-        if (query.id) {
+        const typeMeta = getTypeMeta(query.type);
+        const condition = [{ $match: { userId: user._id } }];
+
+        const field = typeMeta.field;
+        const queryId = toObjectId(String(query.id || "").trim());
+        if (queryId) {
             condition.push({
-                '$match': {
-                    '$and': [
-                        {
-                            'saloonId': mongoose.Types.ObjectId(query.id)
-                        },
-                        {
-                            'userId': user._id
-                        },
-                    ]
+                $match: {
+                    [field]: queryId
                 }
             });
-        } else {
+        }
+
+        condition.push({
+            $lookup: {
+                from: typeMeta.lookupCollection,
+                localField: field,
+                foreignField: "_id",
+                as: "result"
+            }
+        });
+        condition.push({ $unwind: "$result" });
+
+        if (field === "productId") {
             condition.push({
-                '$match': {
-                    'userId': user._id
+                $lookup: {
+                    from: "saloons",
+                    localField: "result.saloonStore",
+                    foreignField: "_id",
+                    as: "store"
                 }
             });
-        };
-
-        condition.push({
-            '$lookup': {
-                'from': 'saloons',
-                'localField': 'saloonId',
-                'foreignField': '_id',
-                'as': 'result'
-            }
-        });
-
-        condition.push({
-            '$unwind': {
-                'path': '$result'
-            }
-        });
-
-        // condition.push({
-        //     '$project': {
-        //         'userId': 1,
-        //         'saloonId': 1,
-        //         'saloonOwn': '$result.userId',
-        //         'storeName': '$result.storeName',
-        //         'Email': '$result.Email',
-        //         'PhoneNumber': '$result.PhoneNumber',
-        //         'image': '$result.image',
-        //         'location': '$result.location',
-        //         'description': '$result.description'
-        //     }
-        // });
+            condition.push({
+                $unwind: {
+                    path: "$store",
+                    preserveNullAndEmptyArrays: true
+                }
+            });
+        }
 
         const finddata = await wishlist.aggregate(condition);
-        if (finddata.length > 0) {
-            return {
-                statusCode: 200,
-                status: true,
-                message: "your wish list is hare !",
-                data: finddata
-            };
-        } else {
-            return {
-                statusCode: 400,
-                status: false,
-                message: "no data Found !",
-                data: []
-            };
+        return {
+            statusCode: 200,
+            status: true,
+            message: "Wishlist fetched.",
+            data: finddata
         };
     } catch (error) {
         console.log(error);
-    };
+        return {
+            statusCode: 500,
+            status: false,
+            message: "Unable to fetch wishlist.",
+            data: []
+        };
+    }
 };
 
 exports.removeStoreFromWishlist = async ({ user, query }) => {
     try {
-        if (query.id) {
-            let saloonId = mongoose.Types.ObjectId(query.id);
-            const findSaloon = await wishlist.findOne({ saloonId, userId: user._id });
-            if (findSaloon) {
-                const result = await wishlist.findByIdAndRemove({ _id: findSaloon._id });
-                if (result) {
-                    return {
-                        statusCode: 200,
-                        status: true,
-                        message: "remove Succesfuuly  !",
-                        data: [result],
-                        wishlist: false
-                    };
-                };
-            } else {
-                return {
-                    statusCode: 400,
-                    status: false,
-                    message: "please Enter valid store id  !",
-                    data: []
-                };
-            };
-        } else {
+        const id = String(query.id || "").trim();
+        const targetId = toObjectId(id);
+        if (!targetId) {
             return {
                 statusCode: 400,
                 status: false,
-                message: "please Enter store id  !",
+                message: "please Enter valid store id  !",
                 data: []
             };
+        }
+
+        const typeMeta = getTypeMeta(query.type);
+        const doc = await wishlist.findOne({ userId: user._id });
+        if (!doc) {
+            return {
+                statusCode: 400,
+                status: false,
+                message: "wishlist not found !",
+                data: []
+            };
+        }
+
+        const field = typeMeta.field;
+        const list = Array.isArray(doc[field]) ? doc[field].map((v) => String(v)) : [];
+        const next = list.filter((idVal) => idVal !== String(targetId));
+        doc[field] = next;
+        await doc.save();
+
+        return {
+            statusCode: 200,
+            status: true,
+            message: "remove Succesfuuly  !",
+            data: [doc],
+            wishlist: false
         };
     } catch (error) {
         console.log(error);
-    };
+        return {
+            statusCode: 500,
+            status: false,
+            message: "Unable to update wishlist.",
+            data: []
+        };
+    }
 };
-
-

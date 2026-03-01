@@ -44,7 +44,7 @@
 
             const loadWishlist = async () => {
                 try {
-                    const response = await fetch("/get-wishlist", {
+                    const response = await fetch("/get-wishlist?type=product", {
                         headers: { Authorization: `Bearer ${token}` },
                     });
                     const result = await response.json();
@@ -58,9 +58,10 @@
                             <div class="card border-0 shadow-sm h-100">
                                 <img src="${imageUrl(item)}" class="card-img-top" style="height: 220px; object-fit: cover;" alt="Salon">
                                 <div class="card-body">
-                                    <h5 class="card-title mb-2">${item?.result?.storeName || "Salon"}</h5>
-                                    <p class="card-text text-muted mb-1">${item?.result?.location?.city || ""}</p>
-                                    <p class="card-text text-muted mb-0">${item?.result?.location?.state || ""}</p>
+                                    <h5 class="card-title mb-2">${item?.result?.ServiceName || "Service"}</h5>
+                                    <p class="card-text text-muted mb-2">${item?.result?.description || ""}</p>
+                                    <p class="card-text mb-1"><strong>Price:</strong> Rs. ${Number(item?.result?.ServicePrice || 0)}</p>
+                                    <p class="card-text text-muted mb-0">${item?.store?.storeName || ""}</p>
                                 </div>
                             </div>
                         </div>

@@ -5,7 +5,12 @@ const userWishlist = new mongoose.Schema({
         type: mongoose.Types.ObjectId
     },
     saloonId: {
-        type: [mongoose.Types.ObjectId]
+        type: [mongoose.Types.ObjectId],
+        default: []
+    },
+    productId: {
+        type: [mongoose.Types.ObjectId],
+        default: []
     },
 
 }, { timestamps: true });
