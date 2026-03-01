@@ -8,5 +8,5 @@ module.exports = (app) => {
     app.use(require("../user-wishlist/route"));
     app.use(require("../payment/route"));
     app.use(require("../Schedule/route"));
-    app.use(serviceController.notFoundPage);
+    app.all("*", serviceController.notFoundPage);
 };
