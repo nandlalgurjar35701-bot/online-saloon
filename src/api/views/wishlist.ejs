@@ -31,10 +31,17 @@
             }
 
             const container = document.getElementById("wishlistContainer");
+            const getHeaders = () => ({ Authorization: `Bearer ${token}` });
             const imageUrl = (item) => {
                 const image = item?.result?.image;
-                if (Array.isArray(image) && image.length) return `/uploads/${image[0]}`;
-                if (typeof image === "string" && image) return image.startsWith("http") ? image : `/uploads/${image}`;
+                if (Array.isArray(image) && image.length) {
+                    const first = String(image[0] || "");
+                    if (!first) return "/web/img/services-1.jpg";
+                    return first.startsWith("http") || first.startsWith("/") ? first : `/uploads/${first}`;
+                }
+                if (typeof image === "string" && image) {
+                    return image.startsWith("http") || image.startsWith("/") ? image : `/uploads/${image}`;
+                }
                 return "/web/img/services-1.jpg";
             };
 
@@ -42,10 +49,83 @@
                 container.innerHTML = `<div class="col-12 text-center"><p class="mb-0">${message}</p></div>`;
             };
 
+            const showMessage = (message) => {
+                if (!message) return;
+                alert(message);
+            };
+
+            const getSaloonId = (item) => {
+                const fromProduct = item?.result?.saloonStore;
+                if (typeof fromProduct === "string") return fromProduct;
+                if (fromProduct && typeof fromProduct === "object" && fromProduct._id) return String(fromProduct._id);
+                if (item?.store?._id) return String(item.store._id);
+                return "";
+            };
+
+            const bindActions = () => {
+                const addCartButtons = Array.from(container.querySelectorAll(".wishlist-add-cart"));
+                const wishlistButtons = Array.from(container.querySelectorAll(".wishlist-toggle"));
+
+                addCartButtons.forEach((button) => {
+                    button.addEventListener("click", async () => {
+                        const serviceId = button.getAttribute("data-product-id");
+                        const saloonId = button.getAttribute("data-saloon-id");
+                        if (!serviceId || !saloonId) {
+                            showMessage("Invalid item details.");
+                            return;
+                        }
+                        button.disabled = true;
+                        try {
+                            const response = await fetch(`/add-cart?serviceId=${serviceId}&saloonId=${saloonId}`, {
+                                method: "GET",
+                                headers: getHeaders(),
+                            });
+                            const result = await response.json();
+                            if (response.ok && result?.status) {
+                                showMessage("Added to cart.");
+                            } else {
+                                showMessage(result?.message || "Unable to add to cart.");
+                            }
+                        } catch (error) {
+                            showMessage("Unable to add to cart right now.");
+                        } finally {
+                            button.disabled = false;
+                        }
+                    });
+                });
+
+                wishlistButtons.forEach((button) => {
+                    button.addEventListener("click", async () => {
+                        const productId = button.getAttribute("data-product-id");
+                        if (!productId) {
+                            showMessage("Invalid wishlist item.");
+                            return;
+                        }
+                        button.disabled = true;
+                        try {
+                            const response = await fetch(`/wishlist?id=${productId}&type=product`, {
+                                method: "GET",
+                                headers: getHeaders(),
+                            });
+                            const result = await response.json();
+                            if (response.ok && result?.status) {
+                                await loadWishlist();
+                            } else {
+                                showMessage(result?.message || "Unable to update wishlist.");
+                            }
+                        } catch (error) {
+                            showMessage("Unable to update wishlist right now.");
+                        } finally {
+                            button.disabled = false;
+                        }
+                    });
+                });
+            };
+
             const loadWishlist = async () => {
                 try {
                     const response = await fetch("/get-wishlist?type=product", {
-                        headers: { Authorization: `Bearer ${token}` },
+                        headers: getHeaders(),
                     });
                     const result = await response.json();
                     if (!(response.ok && result?.status) || !Array.isArray(result.data) || result.data.length === 0) {
@@ -62,10 +142,28 @@
                                     <p class="card-text text-muted mb-2">${item?.result?.description || ""}</p>
                                     <p class="card-text mb-1"><strong>Price:</strong> Rs. ${Number(item?.result?.ServicePrice || 0)}</p>
                                     <p class="card-text text-muted mb-0">${item?.store?.storeName || ""}</p>
+                                    <div class="d-flex align-items-center justify-content-between mt-3">
+                                        <button
+                                            type="button"
+                                            class="btn btn-primary btn-sm wishlist-add-cart"
+                                            data-product-id="${item?.result?._id || ""}"
+                                            data-saloon-id="${getSaloonId(item)}"
+                                            ${(item?.result?._id && getSaloonId(item)) ? "" : "disabled"}>
+                                            Add to Cart
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-danger btn-sm wishlist-toggle active"
+                                            data-product-id="${item?.result?._id || ""}"
+                                            ${(item?.result?._id) ? "" : "disabled"}>
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     `).join("");
+                    bindActions();
                 } catch (error) {
                     renderEmpty("Unable to load wishlist.");
                 }
