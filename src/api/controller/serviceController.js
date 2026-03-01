@@ -11,11 +11,13 @@ const renderWithData = async (res, viewName, statusCode = 200) => {
 exports.servicePage = async (req, res) => {
   try {
     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const q = String(req.query.q || "").trim();
     const limit = 9;
     const data = await appServices.index({ includeProducts: false });
-    const paginatedProducts = await appServices.getPaginatedProducts({ page, limit });
+    const paginatedProducts = await appServices.getPaginatedProducts({ page, limit, q });
 
     data.products = paginatedProducts.items;
+    data.filters = { q };
     data.pagination = {
       currentPage: paginatedProducts.currentPage,
       totalPages: paginatedProducts.totalPages,

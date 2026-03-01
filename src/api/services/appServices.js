@@ -91,6 +91,17 @@ exports.getPaginatedProducts = async (options = {}) => {
     const page = Math.max(parseInt(options.page, 10) || 1, 1);
     const limit = Math.max(parseInt(options.limit, 10) || 9, 1);
     const query = { saloonStore: { $ne: null } };
+    const searchText = String(options.q || "").trim();
+
+    if (searchText) {
+        const escaped = searchText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        query.$or = [
+            { ServiceName: { $regex: escaped, $options: "i" } },
+            { description: { $regex: escaped, $options: "i" } },
+            { type: { $regex: escaped, $options: "i" } },
+        ];
+    }
+
     const totalItems = await productModel.countDocuments(query);
 
     const totalPages = Math.max(Math.ceil(totalItems / limit), 1);

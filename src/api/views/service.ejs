@@ -100,6 +100,19 @@
                         <p class="fs-4 text-uppercase text-center text-primary">Our Service</p>
                         <h1 class="display-3">Spa & Beauty Services</h1>
                     </div>
+                    <div class="row mb-4">
+                        <div class="col-lg-8 mx-auto">
+                            <form action="/service" method="get" class="input-group">
+                                <input type="text" name="q" class="form-control"
+                                    value="<%= data?.filters?.q || '' %>"
+                                    placeholder="Search services by name or description">
+                                <button class="btn btn-primary" type="submit">Search</button>
+                                <% if (data?.filters?.q) { %>
+                                    <a href="/service" class="btn btn-outline-secondary">Clear</a>
+                                <% } %>
+                            </form>
+                        </div>
+                    </div>
                     <div class="row mb-5">
                         <div class="col-12">
                             <div class="owl-carousel service-category-carousel">
@@ -193,17 +206,18 @@
                         <% const totalPages = Number(data.pagination.totalPages || 1); %>
                         <% const startPage = Math.max(1, currentPage - 2); %>
                         <% const endPage = Math.min(totalPages, currentPage + 2); %>
+                        <% const qParam = data?.filters?.q ? ('&q=' + encodeURIComponent(data.filters.q)) : ''; %>
                         <div class="row mt-5">
                             <div class="col-12 d-flex justify-content-center">
                                 <nav aria-label="Services pagination">
                                     <ul class="pagination mb-0">
                                         <li class="page-item <%= data.pagination.hasPrev ? '' : 'disabled' %>">
-                                            <a class="page-link" href="/service?page=<%= currentPage - 1 %>">Previous</a>
+                                            <a class="page-link" href="/service?page=<%= currentPage - 1 %><%= qParam %>">Previous</a>
                                         </li>
 
                                         <% if (startPage > 1) { %>
                                             <li class="page-item">
-                                                <a class="page-link" href="/service?page=1">1</a>
+                                                <a class="page-link" href="/service?page=1<%= qParam %>">1</a>
                                             </li>
                                             <% if (startPage > 2) { %>
                                                 <li class="page-item disabled"><span class="page-link">...</span></li>
@@ -212,7 +226,7 @@
 
                                         <% for (let pageNo = startPage; pageNo <= endPage; pageNo++) { %>
                                             <li class="page-item <%= pageNo === currentPage ? 'active' : '' %>">
-                                                <a class="page-link" href="/service?page=<%= pageNo %>"><%= pageNo %></a>
+                                                <a class="page-link" href="/service?page=<%= pageNo %><%= qParam %>"><%= pageNo %></a>
                                             </li>
                                         <% } %>
 
@@ -221,12 +235,12 @@
                                                 <li class="page-item disabled"><span class="page-link">...</span></li>
                                             <% } %>
                                             <li class="page-item">
-                                                <a class="page-link" href="/service?page=<%= totalPages %>"><%= totalPages %></a>
+                                                <a class="page-link" href="/service?page=<%= totalPages %><%= qParam %>"><%= totalPages %></a>
                                             </li>
                                         <% } %>
 
                                         <li class="page-item <%= data.pagination.hasNext ? '' : 'disabled' %>">
-                                            <a class="page-link" href="/service?page=<%= currentPage + 1 %>">Next</a>
+                                            <a class="page-link" href="/service?page=<%= currentPage + 1 %><%= qParam %>">Next</a>
                                         </li>
                                     </ul>
                                 </nav>
