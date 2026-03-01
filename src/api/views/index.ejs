@@ -45,12 +45,18 @@
         <div class="container-fluid carousel-header px-0">
             <div id="carouselId" class="carousel slide" data-bs-ride="carousel">
                 <ol class="carousel-indicators">
-                    <li data-bs-target="#carouselId" data-bs-slide-to="0" class="active"></li>
-                    <li data-bs-target="#carouselId" data-bs-slide-to="1"></li>
-                    <li data-bs-target="#carouselId" data-bs-slide-to="2"></li>
+                    <% if (data?.banners?.length) { %>
+                        <% data.banners.forEach((banner, index) => { %>
+                            <li data-bs-target="#carouselId" data-bs-slide-to="<%= index %>"
+                                class="<%= index === 0 ? 'active' : '' %>"></li>
+                        <% }) %>
+                    <% } else { %>
+                        <li data-bs-target="#carouselId" data-bs-slide-to="0" class="active"></li>
+                        <li data-bs-target="#carouselId" data-bs-slide-to="1"></li>
+                        <li data-bs-target="#carouselId" data-bs-slide-to="2"></li>
+                    <% } %>
                 </ol>
                 <div class="carousel-inner" role="listbox">
-                    <div class="carousel-inner" role="listbox">
 
                         <% if (data?.banners?.length) { %>
 
@@ -158,8 +164,6 @@
                                         </div>
                                         <% } %>
 
-                    </div>
-
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselId" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -211,7 +215,7 @@
 
                 <div class="row g-4">
                     <% if (data?.products?.length) { %>
-                        <% data.products.slice(0, 6).forEach((product) => { %>
+                        <% data.products.forEach((product) => { %>
                             <% const productImage = Array.isArray(product.image) ? product.image[0] : product.image; %>
                             <% const imagePath = productImage ? (String(productImage).startsWith('http') ? productImage : '/uploads/' + productImage) : '/web/img/services-1.jpg'; %>
                             <% const rawStoreImage = Array.isArray(product?.saloonStore?.image) ? product.saloonStore.image[0] : product?.saloonStore?.image; %>
