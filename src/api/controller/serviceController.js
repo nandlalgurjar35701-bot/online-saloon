@@ -12,12 +12,13 @@ exports.servicePage = async (req, res) => {
   try {
     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
     const q = String(req.query.q || "").trim();
+    const categoryId = String(req.query.categoryId || "").trim();
     const limit = 9;
     const data = await appServices.index({ includeProducts: false });
-    const paginatedProducts = await appServices.getPaginatedProducts({ page, limit, q });
+    const paginatedProducts = await appServices.getPaginatedProducts({ page, limit, q, categoryId });
 
     data.products = paginatedProducts.items;
-    data.filters = { q };
+    data.filters = { q, categoryId };
     data.pagination = {
       currentPage: paginatedProducts.currentPage,
       totalPages: paginatedProducts.totalPages,

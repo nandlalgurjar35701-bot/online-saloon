@@ -6,6 +6,7 @@ const galleryModel = require("../../models/galleryModel");
 const pricePlanModel = require("../../models/pricePlanModel");
 const siteSettingModel = require("../../models/siteSettingModel");
 const productModel = require("../../models/productModel");
+const mongoose = require("mongoose");
 
 const fallbackTeam = [
     { name: "Olivia Mia", role: "Hair Stylist", image: "team-1.png" },
@@ -92,6 +93,7 @@ exports.getPaginatedProducts = async (options = {}) => {
     const limit = Math.max(parseInt(options.limit, 10) || 9, 1);
     const query = { saloonStore: { $ne: null } };
     const searchText = String(options.q || "").trim();
+    const categoryId = String(options.categoryId || "").trim();
 
     if (searchText) {
         const escaped = searchText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -100,6 +102,10 @@ exports.getPaginatedProducts = async (options = {}) => {
             { description: { $regex: escaped, $options: "i" } },
             { type: { $regex: escaped, $options: "i" } },
         ];
+    }
+
+    if (categoryId && mongoose.Types.ObjectId.isValid(categoryId)) {
+        query.category = categoryId;
     }
 
     const totalItems = await productModel.countDocuments(query);
