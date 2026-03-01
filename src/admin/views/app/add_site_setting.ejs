@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= data ? "Edit Site Setting" : "Add Site Setting" %></title>
+  <%- include('../../partials/headlink.ejs') %>
+</head>
+
+<body>
+  <%- include('../../partials/Header.ejs') %>
+    <%- include("../../partials/sidebar.ejs") %>
+      <%- include("../../partials/alertMsg.ejs") %>
+
+      <main id="main" class="main">
+        <div class="pagetitle">
+          <h1><%- user.type %></h1>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/view-site-setting-config">Site Setting Config</a></li>
+              <li class="breadcrumb-item active"><%= data ? "Edit" : "Add" %></li>
+            </ol>
+          </nav>
+        </div>
+
+        <section class="section dashboard">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title"><%= data ? "Edit Site Setting" : "Add Site Setting" %></h5>
+
+                  <form action="/site-setting-config-save" method="POST">
+                    <% if (data && data._id) { %>
+                      <input type="hidden" name="id" value="<%= data._id %>">
+                    <% } %>
+
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label">Brand Name</label>
+                      <div class="col-sm-10">
+                        <input type="text" name="brandName" class="form-control" placeholder="Enter brand name"
+                          value="<%= data?.brandName || '' %>" required>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label">Phone</label>
+                      <div class="col-sm-4">
+                        <input type="text" name="phone" class="form-control" placeholder="Enter phone"
+                          value="<%= data?.phone || '' %>">
+                      </div>
+                      <label class="col-sm-2 col-form-label">Email</label>
+                      <div class="col-sm-4">
+                        <input type="email" name="email" class="form-control" placeholder="Enter email"
+                          value="<%= data?.email || '' %>">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label">Address</label>
+                      <div class="col-sm-10">
+                        <input type="text" name="address" class="form-control" placeholder="Enter address"
+                          value="<%= data?.address || '' %>">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label">Map Embed URL</label>
+                      <div class="col-sm-10">
+                        <input type="text" name="mapEmbedUrl" class="form-control" placeholder="Enter map embed URL"
+                          value="<%= data?.mapEmbedUrl || '' %>">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label">Mon - Fri</label>
+                      <div class="col-sm-4">
+                        <input type="text" name="openingHoursMonFri" class="form-control"
+                          value="<%= data?.openingHours?.monFri || '' %>">
+                      </div>
+                      <label class="col-sm-2 col-form-label">Saturday</label>
+                      <div class="col-sm-4">
+                        <input type="text" name="openingHoursSaturday" class="form-control"
+                          value="<%= data?.openingHours?.saturday || '' %>">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label">Sunday</label>
+                      <div class="col-sm-4">
+                        <input type="text" name="openingHoursSunday" class="form-control"
+                          value="<%= data?.openingHours?.sunday || '' %>">
+                      </div>
+                      <label class="col-sm-2 col-form-label">Status</label>
+                      <div class="col-sm-4">
+                        <select name="status" class="form-select">
+                          <option value="true" <%= data ? (data.status ? 'selected' : '') : 'selected' %>>Active</option>
+                          <option value="false" <%= data && !data.status ? 'selected' : '' %>>Inactive</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label">Facebook</label>
+                      <div class="col-sm-4">
+                        <input type="text" name="socialFacebook" class="form-control"
+                          value="<%= data?.socialLinks?.facebook || '' %>">
+                      </div>
+                      <label class="col-sm-2 col-form-label">Instagram</label>
+                      <div class="col-sm-4">
+                        <input type="text" name="socialInstagram" class="form-control"
+                          value="<%= data?.socialLinks?.instagram || '' %>">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label">Twitter</label>
+                      <div class="col-sm-4">
+                        <input type="text" name="socialTwitter" class="form-control"
+                          value="<%= data?.socialLinks?.twitter || '' %>">
+                      </div>
+                      <label class="col-sm-2 col-form-label">LinkedIn</label>
+                      <div class="col-sm-4">
+                        <input type="text" name="socialLinkedin" class="form-control"
+                          value="<%= data?.socialLinks?.linkedin || '' %>">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-sm-10 offset-sm-2">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <a href="/view-site-setting-config" class="btn btn-secondary">Cancel</a>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <%- include("../../partials/script.ejs") %>
+</body>
+
+</html>

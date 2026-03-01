@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= data ? "Edit Gallery" : "Add Gallery" %></title>
+  <%- include('../../partials/headlink.ejs') %>
+</head>
+
+<body>
+  <%- include('../../partials/Header.ejs') %>
+    <%- include("../../partials/sidebar.ejs") %>
+      <%- include("../../partials/alertMsg.ejs") %>
+
+      <main id="main" class="main">
+        <div class="pagetitle">
+          <h1><%- user.type %></h1>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/view-gallery-config">Gallery Config</a></li>
+              <li class="breadcrumb-item active"><%= data ? "Edit" : "Add" %></li>
+            </ol>
+          </nav>
+        </div>
+
+        <section class="section dashboard">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title"><%= data ? "Edit Gallery" : "Add Gallery" %></h5>
+
+                  <form action="/gallery-config-save" method="POST" enctype="multipart/form-data">
+                    <% if (data && data._id) { %>
+                      <input type="hidden" name="id" value="<%= data._id %>">
+                    <% } %>
+
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label">Title</label>
+                      <div class="col-sm-10">
+                        <input type="text" name="title" class="form-control" placeholder="Enter gallery title"
+                          value="<%= data?.title || '' %>" required>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label">Category</label>
+                      <div class="col-sm-10">
+                        <input type="text" name="category" class="form-control" placeholder="Enter category"
+                          value="<%= data?.category || '' %>">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label">Sort Order</label>
+                      <div class="col-sm-4">
+                        <input type="number" name="sortOrder" class="form-control" min="0"
+                          value="<%= Number(data?.sortOrder || 0) %>">
+                      </div>
+
+                      <label class="col-sm-2 col-form-label">Status</label>
+                      <div class="col-sm-4">
+                        <select name="status" class="form-select">
+                          <option value="true" <%= data ? (data.status ? 'selected' : '') : 'selected' %>>Active</option>
+                          <option value="false" <%= data && !data.status ? 'selected' : '' %>>Inactive</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label">Image</label>
+                      <div class="col-sm-10">
+                        <input type="file" name="image" class="form-control" accept="image/*" <%= data ? '' : 'required' %>>
+                      </div>
+                    </div>
+
+                    <% if (data?.image) { %>
+                      <% const imageSrc = data.image.startsWith('http') || data.image.startsWith('/') ? data.image : (data.image.startsWith('gallery-') ? '/web/img/' + data.image : '/uploads/' + data.image); %>
+                      <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">Current Image</label>
+                        <div class="col-sm-10">
+                          <img src="<%= imageSrc %>" alt="gallery" width="90" height="90"
+                            style="object-fit:cover;border-radius:10px;">
+                        </div>
+                      </div>
+                    <% } %>
+
+                    <div class="row mb-3">
+                      <div class="col-sm-10 offset-sm-2">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <a href="/view-gallery-config" class="btn btn-secondary">Cancel</a>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <%- include("../../partials/script.ejs") %>
+</body>
+
+</html>

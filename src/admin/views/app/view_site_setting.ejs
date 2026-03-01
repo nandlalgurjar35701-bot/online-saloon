@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Site Setting Config</title>
+  <%- include('../../partials/headlink.ejs') %>
+</head>
+
+<body>
+  <%- include('../../partials/Header.ejs') %>
+    <%- include("../../partials/sidebar.ejs") %>
+      <%- include("../../partials/alertMsg.ejs") %>
+
+      <main id="main" class="main">
+        <div class="pagetitle">
+          <h1><%- user.type %></h1>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active">Site Setting Config</li>
+            </ol>
+          </nav>
+        </div>
+
+        <section class="section dashboard">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Filter Site Setting</h5>
+                  <form class="row g-3" action="/view-site-setting-config">
+                    <div class="col-md-4">
+                      <label>Brand Name</label>
+                      <input type="text" name="brandName" class="form-control" value="<%= query.brandName || '' %>"
+                        placeholder="Enter brand name">
+                    </div>
+                    <div class="col-md-4">
+                      <label>Email</label>
+                      <input type="text" name="email" class="form-control" value="<%= query.email || '' %>"
+                        placeholder="Enter email">
+                    </div>
+                    <div class="col-md-2">
+                      <label>Status</label>
+                      <select name="status" class="form-select">
+                        <option value="" <%= query.status === '' || typeof query.status === 'undefined' ? 'selected' : '' %>>All</option>
+                        <option value="true" <%= query.status === 'true' ? 'selected' : '' %>>Active</option>
+                        <option value="false" <%= query.status === 'false' ? 'selected' : '' %>>Inactive</option>
+                      </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                      <div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <a href="/view-site-setting-config" class="btn btn-secondary">Reset</a>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Site Setting Records</h5>
+                    <a href="/site-setting-config" class="btn btn-primary btn-sm">Add Site Setting</a>
+                  </div>
+                  <div style="border-top: 1px solid #e9ecef; margin: 12px 0 14px 0;"></div>
+
+                  <table class="table datatable">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Brand Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% let i = 0; %>
+                        <% for (const item of data) { %>
+                          <tr>
+                            <td><%= ++i %></td>
+                            <td><%= item.brandName %></td>
+                            <td><%= item.email || '-' %></td>
+                            <td><%= item.phone || '-' %></td>
+                            <td><%= item.address || '-' %></td>
+                            <td>
+                              <% if (item.status) { %>
+                                <span class="badge bg-success">Active</span>
+                              <% } else { %>
+                                <span class="badge bg-secondary">Inactive</span>
+                              <% } %>
+                            </td>
+                            <td>
+                              <a href="/site-setting-config?id=<%= item._id %>" class="btn btn-info" data-bs-toggle="tooltip"
+                                data-bs-placement="top" data-bs-title="Edit">
+                                <i class="ri-edit-box-line"></i>
+                              </a>
+                              <a href="/delete-site-setting-config?id=<%= item._id %>" class="btn btn-danger" data-bs-toggle="tooltip"
+                                data-bs-placement="top" data-bs-title="Delete">
+                                <i class="ri-delete-bin-5-line"></i>
+                              </a>
+                            </td>
+                          </tr>
+                        <% } %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <%- include("../../partials/script.ejs") %>
+</body>
+
+</html>

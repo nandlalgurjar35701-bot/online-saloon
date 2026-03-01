@@ -19,5 +19,7 @@ module.exports = (app) => {
     app.use(require("../Contact-us/route"));
     app.use(require("./productPackageRouter"));
     app.use(require("../newLetter/routes"));
+    app.use(require("./galleryRouter"));
+    app.use(require("./siteSettingRouter"));
     //   app.use(`${apiV1Prefix}/user`, require('./userRoutes'));
 };
