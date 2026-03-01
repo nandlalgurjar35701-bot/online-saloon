@@ -9,7 +9,10 @@ const appServices = require("../services/appServices");
 
 exports.index = async (req, res) => {
     try {
-        const data = await appServices.index()
+        const q = String(req.query.q || "").trim();
+        const categoryId = String(req.query.categoryId || "").trim();
+        const data = await appServices.index({ q, categoryId })
+        data.filters = { q, categoryId };
         res.render('index', { data })
     } catch (error) {
         console.log(error);

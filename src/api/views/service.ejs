@@ -108,8 +108,8 @@
                                     placeholder="Search services by name or description">
                                 <input type="hidden" name="categoryId" value="<%= data?.filters?.categoryId || '' %>">
                                 <button class="btn btn-primary" type="submit">Search</button>
-                                <% if (data?.filters?.q) { %>
-                                    <a href="/service<%= data?.filters?.categoryId ? ('?categoryId=' + encodeURIComponent(data.filters.categoryId)) : '' %>" class="btn btn-outline-secondary">Clear</a>
+                                <% if (data?.filters?.q || data?.filters?.categoryId) { %>
+                                    <a href="/service" class="btn btn-outline-secondary">Clear</a>
                                 <% } %>
                             </form>
                         </div>

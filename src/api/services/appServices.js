@@ -58,7 +58,7 @@ const fallbackSiteSetting = {
 
 exports.index = async (options = {}) => {
     try {
-        const { includeProducts = true } = options;
+        const { includeProducts = true, q = "", categoryId = "" } = options;
         let data = {}
         data.banners = await homeBannerModel.find().sort({ createdAt: -1 }).lean()
         data.category = await categoryModel.find().sort({ createdAt: -1 }).lean()
@@ -69,8 +69,25 @@ exports.index = async (options = {}) => {
         data.siteSetting = await siteSettingModel.findOne({ status: true }).sort({ createdAt: -1 }).lean()
         data.products = []
         if (includeProducts) {
+            const searchText = String(q || "").trim();
+            const selectedCategoryId = String(categoryId || "").trim();
+            const productQuery = { saloonStore: { $ne: null } };
+
+            if (searchText) {
+                const escaped = searchText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                productQuery.$or = [
+                    { ServiceName: { $regex: escaped, $options: "i" } },
+                    { description: { $regex: escaped, $options: "i" } },
+                    { type: { $regex: escaped, $options: "i" } },
+                ];
+            }
+
+            if (selectedCategoryId && mongoose.Types.ObjectId.isValid(selectedCategoryId)) {
+                productQuery.category = selectedCategoryId;
+            }
+
             data.products = await productModel
-                .find({ saloonStore: { $ne: null } })
+                .find(productQuery)
                 .populate("saloonStore", "storeName image")
                 .sort({ createdAt: -1 })
                 .lean()
