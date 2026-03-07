@@ -1,4 +1,5 @@
 const express = require('express');
+const http = require("http");
 const app = express();
 const cors = require("cors");
 const path = require("path");
@@ -58,11 +59,16 @@ app.use((req, res, next) => {
 
 require('./src/datasources/connection');
 const port = process.env.adminPORT || 7171;
+const host = "0.0.0.0";
 // const routes = require("./src/api");
 // const adminroutes = require("./src/admin");
 app.use(cors());
 require("./src/admin/routes")(app)
 
-app.listen(port, () => {
-    console.log(`server is running http://localhost:${port}`);
+const server = http.createServer(app);
+server.keepAliveTimeout = 120000;
+server.headersTimeout = 125000;
+
+server.listen(port, host, () => {
+    console.log(`server is running http://${host}:${port}`);
 });

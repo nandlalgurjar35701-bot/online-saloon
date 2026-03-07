@@ -1,4 +1,5 @@
 const express = require('express');
+const http = require('http');
 const cors = require('cors');
 const path = require('path');
 const flash = require('connect-flash');
@@ -11,6 +12,7 @@ require('./src/datasources/connection');
 
 const app = express();
 const port = process.env.PORT || 7070;
+const host = '0.0.0.0';
 const isProduction = process.env.NODE_ENV === 'production';
 const mongoUrl =
   process.env.mongourl ||
@@ -72,6 +74,10 @@ app.use((req, res, next) => {
 
 require('./src/api/routes')(app);
 
-app.listen(port, () => {
-  console.log(`server is running http://localhost:${port}`);
+const server = http.createServer(app);
+server.keepAliveTimeout = 120000;
+server.headersTimeout = 125000;
+
+server.listen(port, host, () => {
+  console.log(`server is running http://${host}:${port}`);
 });
