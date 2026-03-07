@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: online-salon-app
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: mongourl
+        sync: false
+      - key: SECRET
+        sync: false
+      - key: refreshToken
+        sync: false
+      - key: accessToken
+        sync: false
+      - key: key_secret
+        sync: false
+      - key: key_id
+        sync: false
+      - key: email
+        sync: false
+      - key: pass
+        sync: false
+      - key: url
+        sync: false
