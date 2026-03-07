@@ -59,6 +59,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.json());
 
+app.get('/healthz', (req, res) => {
+  res.status(200).json({ ok: true, uptime: process.uptime() });
+});
+
 app.use((req, res, next) => {
   res.locals.successMessages = req.flash("success");
   res.locals.errorMessages = req.flash("error");

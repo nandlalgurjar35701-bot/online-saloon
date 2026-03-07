@@ -16,6 +16,7 @@ exports.index = async (req, res) => {
         res.render('index', { data })
     } catch (error) {
         console.log(error);
+        return res.status(500).render("404");
     };
 };
 
@@ -451,5 +452,6 @@ exports.about = async (req, res) => {
         res.render('about', { data })
     } catch (error) {
         console.log(error);
+        return res.status(500).render("404");
     };
 };
