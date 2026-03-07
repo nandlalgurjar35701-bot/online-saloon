@@ -5,24 +5,12 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: npm start
-    healthCheckPath: /healthz
+    healthCheckPath: /
     envVars:
       - key: NODE_VERSION
         value: 20
       - key: mongourl
         sync: false
-      - key: MONGO_URL
-        sync: false
-      - key: MONGODB_URI
-        sync: false
-      - key: DATABASE_URL
-        sync: false
-      - key: SESSION_SECRET
-        sync: false
-      - key: COOKIE_SECRET
-        sync: false
-      - key: NODE_ENV
-        value: production
       - key: SECRET
         sync: false
       - key: refreshToken

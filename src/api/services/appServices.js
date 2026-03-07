@@ -102,16 +102,6 @@ exports.index = async (options = {}) => {
         return data
     } catch (error) {
         console.log(error);
-        return {
-            banners: [],
-            category: [],
-            teamMembers: fallbackTeam,
-            testimonials: fallbackTestimonials,
-            gallery: fallbackGallery,
-            pricingPlans: fallbackPricingPlans,
-            siteSetting: fallbackSiteSetting,
-            products: []
-        };
     };
 };
 
