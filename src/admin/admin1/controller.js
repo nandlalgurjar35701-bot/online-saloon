@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const userModel = require("../../models/adminModel.js");
-const { findByIdAndUpdate } = require('./model');
+// const { findByIdAndUpdate } = require('./model');
 const path = require("path")
 const saloon = require("../../models/saloonStoreModel")
 
