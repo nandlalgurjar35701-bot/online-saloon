@@ -1,0 +1,271 @@
+<style>
+    .wishlist-toggle {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.92);
+        color: #444;
+    }
+    .wishlist-toggle.active {
+        color: #dc3545;
+    }
+    .cart-stepper {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid #e5e5e5;
+        border-radius: 999px;
+        overflow: hidden;
+        background: #fff;
+    }
+    .cart-stepper.d-none {
+        display: none !important;
+    }
+    .cart-add-btn {
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #0d6efd;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .cart-add-btn.d-none {
+        display: none !important;
+    }
+    .cart-stepper button {
+        border: none;
+        width: 34px;
+        height: 34px;
+        background: #f5f5f5;
+        font-weight: 700;
+    }
+    .cart-stepper .qty {
+        width: 38px;
+        text-align: center;
+        font-weight: 700;
+        color: #0d6efd;
+    }
+    .checkout-btn {
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #198754;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 8px;
+    }
+</style>
+
+<%
+const listBasePath = typeof basePath === 'string' ? basePath : '/service';
+const formActionPath = typeof searchPath === 'string' ? searchPath : listBasePath;
+const clearPath = typeof clearActionPath === 'string' ? clearActionPath : formActionPath;
+const canPaginate = Boolean(showPagination);
+const showMoreCta = Boolean(showServiceMore);
+const enableCartFlow = enableCart !== false;
+const includeInteractions = includeCartScript !== false;
+const qValue = data?.filters?.q || '';
+const categoryValue = data?.filters?.categoryId || '';
+%>
+
+<div class="container-fluid services py-5">
+    <div class="container py-5">
+        <div class="mx-auto text-center mb-5" style="max-width: 800px;">
+            <p class="fs-4 text-uppercase text-center text-primary">Our Service</p>
+            <h1 class="display-3">Spa & Beauty Services</h1>
+        </div>
+        <div class="row mb-4">
+            <div class="col-lg-8 mx-auto">
+                <form action="<%= formActionPath %>" method="get" class="input-group">
+                    <input type="text" name="q" class="form-control" value="<%= qValue %>"
+                        placeholder="Search services by name or description">
+                    <input type="hidden" name="categoryId" value="<%= categoryValue %>">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                    <% if (qValue || categoryValue) { %>
+                        <a href="<%= clearPath %>" class="btn btn-outline-secondary">Clear</a>
+                    <% } %>
+                </form>
+            </div>
+        </div>
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="owl-carousel service-category-carousel">
+                    <div class="text-center p-2">
+                        <a href="<%= listBasePath %><%= qValue ? ('?q=' + encodeURIComponent(qValue)) : '' %>"
+                            class="text-decoration-none text-reset d-block">
+                            <div class="mx-auto mb-2 rounded-circle overflow-hidden border border-2 <%= !categoryValue ? 'border-primary' : 'border-light' %>"
+                                style="width: 96px; height: 96px; background-color: <%= !categoryValue ? '#e7f1ff' : '#fff' %>;">
+                                <div class="w-100 h-100 d-flex align-items-center justify-content-center fw-bold text-primary">All</div>
+                            </div>
+                            <h6 class="mb-0 <%= !categoryValue ? 'text-primary' : '' %>">All</h6>
+                        </a>
+                    </div>
+                    <% if (data?.category?.length) { %>
+                        <% data.category.forEach((cat) => { %>
+                            <% const selectedCategory = String(categoryValue) === String(cat._id || ''); %>
+                            <div class="text-center p-2">
+                                <a href="<%= listBasePath %>?categoryId=<%= cat._id %><%= qValue ? ('&q=' + encodeURIComponent(qValue)) : '' %>"
+                                    class="text-decoration-none text-reset d-block">
+                                    <div class="mx-auto mb-2 rounded-circle overflow-hidden border border-2 <%= selectedCategory ? 'border-primary' : 'border-light' %>"
+                                        style="width: 96px; height: 96px; box-shadow: <%= selectedCategory ? '0 0 0 3px rgba(13, 110, 253, 0.15)' : 'none' %>;">
+                                        <img src="<%= cat.image ? '/uploads/' + cat.image : '/web/img/services-1.jpg' %>"
+                                            class="img-fluid w-100 h-100" style="object-fit: cover;"
+                                            alt="<%= cat.Name || 'Category' %>">
+                                    </div>
+                                    <h6 class="mb-0 <%= selectedCategory ? 'text-primary' : '' %>"><%= cat.Name %></h6>
+                                </a>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="text-center p-2">
+                            <div class="mx-auto mb-2 rounded-circle overflow-hidden border border-2 border-primary"
+                                style="width: 96px; height: 96px;">
+                                <img src="/web/img/services-1.jpg" class="img-fluid w-100 h-100"
+                                    style="object-fit: cover;" alt="Category">
+                            </div>
+                            <h6 class="mb-0">Skin Care</h6>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <% if (data?.products?.length) { %>
+                <% data.products.forEach((product) => { %>
+                    <% const saloonStoreId = product?.saloonStore?._id || product?.saloonStore || ''; %>
+                    <% const productImage = Array.isArray(product.image) ? product.image[0] : product.image; %>
+                    <% const imagePath = productImage ? (String(productImage).startsWith('http') ? productImage : '/uploads/' + productImage) : '/web/img/services-1.jpg'; %>
+                    <% const rawStoreImage = Array.isArray(product?.saloonStore?.image) ? product.saloonStore.image[0] : product?.saloonStore?.image; %>
+                    <% const storeImagePath = rawStoreImage ? (String(rawStoreImage).startsWith('http') ? rawStoreImage : '/uploads/' + rawStoreImage) : '/web/img/services-1.jpg'; %>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="services-item bg-light border-4 border-end border-primary rounded p-4 h-100">
+                            <div class="services-img rounded mb-3 position-relative" style="height: 190px; overflow: hidden;">
+                                <% if (enableCartFlow) { %>
+                                    <button
+                                        type="button"
+                                        class="wishlist-toggle"
+                                        data-product-id="<%= product._id %>"
+                                        title="Add to Wishlist"
+                                        <%= product?._id ? '' : 'disabled' %>>
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                <% } %>
+                                <img src="<%= imagePath %>" class="img-fluid w-100 h-100" style="object-fit: cover;"
+                                    alt="<%= product.ServiceName || 'Product' %>">
+                            </div>
+                            <h4 class="mb-2">
+                                <span class="d-inline-flex align-items-center">
+                                    <img src="<%= storeImagePath %>" alt="Store" style="width:30px;height:30px;object-fit:cover;border-radius:50%;">
+                                    <img src="<%= imagePath %>" alt="Service" class="ms-1" style="width:30px;height:30px;object-fit:cover;border-radius:50%;">
+                                    <span class="ms-2"><%= product.ServiceName || 'Service' %></span>
+                                </span>
+                            </h4>
+                            <p class="mb-2 text-muted"><%= product.description || '' %></p>
+                            <div class="d-flex align-items-center justify-content-between mt-3">
+                                <h5 class="text-primary mb-0">Rs. <%= Number(product.ServicePrice || 0) %></h5>
+                                <% if (enableCartFlow) { %>
+                                    <div class="cart-action"
+                                        data-service-id="<%= product._id %>"
+                                        data-saloon-id="<%= saloonStoreId %>">
+                                        <button type="button" class="cart-add-btn" <%= saloonStoreId ? '' : 'disabled' %>>
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </button>
+                                        <div class="cart-stepper d-none">
+                                            <button type="button" class="qty-minus" <%= saloonStoreId ? '' : 'disabled' %>>-</button>
+                                            <span class="qty">0</span>
+                                            <button type="button" class="qty-plus" <%= saloonStoreId ? '' : 'disabled' %>>+</button>
+                                        </div>
+                                        <button type="button" class="checkout-btn" title="Checkout"
+                                            <%= saloonStoreId ? '' : 'disabled' %>>
+                                            <i class="fas fa-credit-card"></i>
+                                        </button>
+                                    </div>
+                                <% } else { %>
+                                    <a href="/service" class="btn btn-primary btn-primary-outline-0 rounded-pill py-2 px-4">View More</a>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="col-12 text-center">
+                    <p class="mb-0">No products found.</p>
+                </div>
+            <% } %>
+        </div>
+
+        <% if (canPaginate && (data?.pagination?.totalPages || 0) > 1) { %>
+            <% const currentPage = Number(data.pagination.currentPage || 1); %>
+            <% const totalPages = Number(data.pagination.totalPages || 1); %>
+            <% const startPage = Math.max(1, currentPage - 2); %>
+            <% const endPage = Math.min(totalPages, currentPage + 2); %>
+            <% const qParam = qValue ? ('&q=' + encodeURIComponent(qValue)) : ''; %>
+            <% const categoryParam = categoryValue ? ('&categoryId=' + encodeURIComponent(categoryValue)) : ''; %>
+            <div class="row mt-5">
+                <div class="col-12 d-flex justify-content-center">
+                    <nav aria-label="Services pagination">
+                        <ul class="pagination mb-0">
+                            <li class="page-item <%= data.pagination.hasPrev ? '' : 'disabled' %>">
+                                <a class="page-link" href="<%= listBasePath %>?page=<%= currentPage - 1 %><%= qParam %><%= categoryParam %>">Previous</a>
+                            </li>
+
+                            <% if (startPage > 1) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="<%= listBasePath %>?page=1<%= qParam %><%= categoryParam %>">1</a>
+                                </li>
+                                <% if (startPage > 2) { %>
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                <% } %>
+                            <% } %>
+
+                            <% for (let pageNo = startPage; pageNo <= endPage; pageNo++) { %>
+                                <li class="page-item <%= pageNo === currentPage ? 'active' : '' %>">
+                                    <a class="page-link" href="<%= listBasePath %>?page=<%= pageNo %><%= qParam %><%= categoryParam %>"><%= pageNo %></a>
+                                </li>
+                            <% } %>
+
+                            <% if (endPage < totalPages) { %>
+                                <% if (endPage < totalPages - 1) { %>
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                <% } %>
+                                <li class="page-item">
+                                    <a class="page-link" href="<%= listBasePath %>?page=<%= totalPages %><%= qParam %><%= categoryParam %>"><%= totalPages %></a>
+                                </li>
+                            <% } %>
+
+                            <li class="page-item <%= data.pagination.hasNext ? '' : 'disabled' %>">
+                                <a class="page-link" href="<%= listBasePath %>?page=<%= currentPage + 1 %><%= qParam %><%= categoryParam %>">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        <% } %>
+
+        <% if (showMoreCta) { %>
+            <div class="row g-4 mt-0">
+                <div class="col-12">
+                    <div class="services-btn text-center">
+                        <a href="/service<%= qValue || categoryValue ? '?' : '' %><%= qValue ? ('q=' + encodeURIComponent(qValue)) : '' %><%= qValue && categoryValue ? '&' : '' %><%= categoryValue ? ('categoryId=' + encodeURIComponent(categoryValue)) : '' %>"
+                            class="btn btn-primary btn-primary-outline-0 rounded-pill py-3 px-5">Service More</a>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<% if (enableCartFlow && includeInteractions) { %>
+    <%- include('./service-interactions.ejs') %>
+<% } %>

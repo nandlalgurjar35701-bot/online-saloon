@@ -178,113 +178,16 @@
         <!-- Carousel End -->
 
         <!-- Services Start -->
-        <div class="container-fluid services py-5">
-            <div class="container py-5">
-                <div class="mx-auto text-center mb-5" style="max-width: 800px;">
-                    <p class="fs-4 text-uppercase text-center text-primary">Our Service</p>
-                    <h1 class="display-3">Spa & Beauty Services</h1>
-                </div>
-                <div class="row mb-4">
-                    <div class="col-lg-8 mx-auto">
-                        <form action="/" method="get" class="input-group">
-                            <input type="text" name="q" class="form-control"
-                                value="<%= data?.filters?.q || '' %>"
-                                placeholder="Search services by name or description">
-                            <input type="hidden" name="categoryId" value="<%= data?.filters?.categoryId || '' %>">
-                            <button class="btn btn-primary" type="submit">Search</button>
-                            <% if (data?.filters?.q || data?.filters?.categoryId) { %>
-                                <a href="/" class="btn btn-outline-secondary">Clear</a>
-                            <% } %>
-                        </form>
-                    </div>
-                </div>
-                <div class="row mb-5">
-                    <div class="col-12">
-                        <div class="owl-carousel service-category-carousel">
-                            <div class="text-center p-2">
-                                <a href="/<%= data?.filters?.q ? ('?q=' + encodeURIComponent(data.filters.q)) : '' %>"
-                                    class="text-decoration-none text-reset d-block">
-                                    <div class="mx-auto mb-2 rounded-circle overflow-hidden border border-2 <%= !data?.filters?.categoryId ? 'border-primary' : 'border-light' %>"
-                                        style="width: 96px; height: 96px; background-color: <%= !data?.filters?.categoryId ? '#e7f1ff' : '#fff' %>;">
-                                        <div class="w-100 h-100 d-flex align-items-center justify-content-center fw-bold text-primary">All</div>
-                                    </div>
-                                    <h6 class="mb-0 <%= !data?.filters?.categoryId ? 'text-primary' : '' %>">All</h6>
-                                </a>
-                            </div>
-                            <% if (data?.category?.length) { %>
-                                <% data.category.forEach((cat) => { %>
-                                    <% const selectedCategory = String(data?.filters?.categoryId || '') === String(cat._id || ''); %>
-                                    <div class="text-center p-2">
-                                        <a href="/?categoryId=<%= cat._id %><%= data?.filters?.q ? ('&q=' + encodeURIComponent(data.filters.q)) : '' %>"
-                                            class="text-decoration-none text-reset d-block">
-                                            <div class="mx-auto mb-2 rounded-circle overflow-hidden border border-2 <%= selectedCategory ? 'border-primary' : 'border-light' %>"
-                                                style="width: 96px; height: 96px; box-shadow: <%= selectedCategory ? '0 0 0 3px rgba(13, 110, 253, 0.15)' : 'none' %>;">
-                                                <img src="<%= cat.image ? '/uploads/' + cat.image : '/web/img/services-1.jpg' %>"
-                                                    class="img-fluid w-100 h-100" style="object-fit: cover;"
-                                                    alt="<%= cat.Name || 'Category' %>">
-                                            </div>
-                                            <h6 class="mb-0 <%= selectedCategory ? 'text-primary' : '' %>"><%= cat.Name %></h6>
-                                        </a>
-                                    </div>
-                                <% }) %>
-                            <% } else { %>
-                                <div class="text-center p-2">
-                                    <div class="mx-auto mb-2 rounded-circle overflow-hidden border border-2 border-primary"
-                                        style="width: 96px; height: 96px;">
-                                        <img src="/web/img/services-1.jpg" class="img-fluid w-100 h-100"
-                                            style="object-fit: cover;" alt="Category">
-                                    </div>
-                                    <h6 class="mb-0">Skin Care</h6>
-                                </div>
-                            <% } %>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-4">
-                    <% if (data?.products?.length) { %>
-                        <% data.products.forEach((product) => { %>
-                            <% const productImage = Array.isArray(product.image) ? product.image[0] : product.image; %>
-                            <% const imagePath = productImage ? (String(productImage).startsWith('http') ? productImage : '/uploads/' + productImage) : '/web/img/services-1.jpg'; %>
-                            <% const rawStoreImage = Array.isArray(product?.saloonStore?.image) ? product.saloonStore.image[0] : product?.saloonStore?.image; %>
-                            <% const storeImagePath = rawStoreImage ? (String(rawStoreImage).startsWith('http') ? rawStoreImage : '/uploads/' + rawStoreImage) : '/web/img/services-1.jpg'; %>
-                            <div class="col-md-6 col-lg-4">
-                                <div class="services-item bg-light border-4 border-end border-primary rounded p-4 h-100">
-                                    <div class="services-img rounded mb-3" style="height: 190px; overflow: hidden;">
-                                        <img src="<%= imagePath %>" class="img-fluid w-100 h-100" style="object-fit: cover;"
-                                            alt="<%= product.ServiceName || 'Product' %>">
-                                    </div>
-                                    <h4 class="mb-2">
-                                        <span class="d-inline-flex align-items-center">
-                                            <img src="<%= storeImagePath %>" alt="Store" style="width:30px;height:30px;object-fit:cover;border-radius:50%;">
-                                            <img src="<%= imagePath %>" alt="Service" class="ms-1" style="width:30px;height:30px;object-fit:cover;border-radius:50%;">
-                                            <span class="ms-2"><%= product.ServiceName || 'Service' %></span>
-                                        </span>
-                                    </h4>
-                                    <p class="mb-2 text-muted"><%= product.description || '' %></p>
-                                    <div class="d-flex align-items-center justify-content-between mt-3">
-                                        <h5 class="text-primary mb-0">Rs. <%= Number(product.ServicePrice || 0) %></h5>
-                                        <a href="/service" class="btn btn-primary btn-primary-outline-0 rounded-pill py-2 px-4">View More</a>
-                                    </div>
-                                </div>
-                            </div>
-                        <% }) %>
-                    <% } else { %>
-                        <div class="col-12 text-center">
-                            <p class="mb-0">No products found.</p>
-                        </div>
-                    <% } %>
-
-                    <div class="col-12">
-                        <div class="services-btn text-center">
-                            <a href="/service<%= data?.filters?.q || data?.filters?.categoryId ? '?' : '' %><%= data?.filters?.q ? ('q=' + encodeURIComponent(data.filters.q)) : '' %><%= data?.filters?.q && data?.filters?.categoryId ? '&' : '' %><%= data?.filters?.categoryId ? ('categoryId=' + encodeURIComponent(data.filters.categoryId)) : '' %>"
-                                class="btn btn-primary btn-primary-outline-0 rounded-pill py-3 px-5">Service
-                                More</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <%- include('./partials/service-section.ejs', {
+            data,
+            basePath: '/',
+            searchPath: '/',
+            clearActionPath: '/',
+            showPagination: false,
+            showServiceMore: true,
+            enableCart: true,
+            includeCartScript: true
+        }) %>
         <!-- Services End -->
 
         <!-- Appointment Start -->
