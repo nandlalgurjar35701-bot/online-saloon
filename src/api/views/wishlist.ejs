@@ -136,12 +136,11 @@
                     container.innerHTML = result.data.map((item) => `
                         <div class="col-md-6 col-lg-4">
                             <div class="card border-0 shadow-sm h-100">
-                                <img src="${imageUrl(item)}" class="card-img-top" style="height: 220px; object-fit: cover;" alt="Salon">
+                                <img src="${imageUrl(item)}" class="card-img-top" style="height: 220px; object-fit: cover;" alt="Service">
                                 <div class="card-body">
                                     <h5 class="card-title mb-2">${item?.result?.ServiceName || "Service"}</h5>
                                     <p class="card-text text-muted mb-2">${item?.result?.description || ""}</p>
                                     <p class="card-text mb-1"><strong>Price:</strong> Rs. ${Number(item?.result?.ServicePrice || 0)}</p>
-                                    <p class="card-text text-muted mb-0">${item?.store?.storeName || ""}</p>
                                     <div class="d-flex align-items-center justify-content-between mt-3">
                                         <button
                                             type="button"

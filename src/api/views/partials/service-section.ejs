@@ -146,8 +146,6 @@ const categoryValue = data?.filters?.categoryId || '';
                     <% const saloonStoreId = product?.saloonStore?._id || product?.saloonStore || ''; %>
                     <% const productImage = Array.isArray(product.image) ? product.image[0] : product.image; %>
                     <% const imagePath = productImage ? (String(productImage).startsWith('http') ? productImage : '/uploads/' + productImage) : '/web/img/services-1.jpg'; %>
-                    <% const rawStoreImage = Array.isArray(product?.saloonStore?.image) ? product.saloonStore.image[0] : product?.saloonStore?.image; %>
-                    <% const storeImagePath = rawStoreImage ? (String(rawStoreImage).startsWith('http') ? rawStoreImage : '/uploads/' + rawStoreImage) : '/web/img/services-1.jpg'; %>
                     <div class="col-md-6 col-lg-4">
                         <div class="services-item bg-light border-4 border-end border-primary rounded p-4 h-100">
                             <div class="services-img rounded mb-3 position-relative" style="height: 190px; overflow: hidden;">
@@ -164,12 +162,9 @@ const categoryValue = data?.filters?.categoryId || '';
                                 <img src="<%= imagePath %>" class="img-fluid w-100 h-100" style="object-fit: cover;"
                                     alt="<%= product.ServiceName || 'Product' %>">
                             </div>
-                            <h4 class="mb-2">
-                                <span class="d-inline-flex align-items-center">
-                                    <img src="<%= storeImagePath %>" alt="Store" style="width:30px;height:30px;object-fit:cover;border-radius:50%;">
-                                    <img src="<%= imagePath %>" alt="Service" class="ms-1" style="width:30px;height:30px;object-fit:cover;border-radius:50%;">
-                                    <span class="ms-2"><%= product.ServiceName || 'Service' %></span>
-                                </span>
+                            <h4 class="mb-2 d-flex align-items-center">
+                                <img src="<%= imagePath %>" alt="Service" style="width:30px;height:30px;object-fit:cover;border-radius:50%;">
+                                <span class="ms-2"><%= product.ServiceName || 'Service' %></span>
                             </h4>
                             <p class="mb-2 text-muted"><%= product.description || '' %></p>
                             <div class="d-flex align-items-center justify-content-between mt-3">

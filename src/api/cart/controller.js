@@ -218,178 +218,78 @@ exports.addcart = async ({ user, query }) => {
     try {
         let obj = {};
         let serviceArr = [];
-        let findService;
-        let newCart;
-        let i;
-        const findData = await cart.find({ userId: user._id });
-        if (findData.length == 0) {
-            //cart create 
+        let findData = await cart.findOne({ userId: user._id });
+
+        if (!findData) {
             obj.userId = user._id;
-            if (query.saloonId) {
-                let _id = mongoose.Types.ObjectId(query.saloonId);
-                const findSaloon = await saloon.findOne({ _id });
-                if (findSaloon) {
-                    obj.saloonId = query.saloonId;
-                } else {
-                    return {
-                        statusCode: 400,
-                        status: false,
-                        message: "Enter Valid saloon Id !",
-                        data: []
-                    };
-                };
-            };
-            let cart_detail = new cart(obj);
-            const result = await cart_detail.save();
-            if (result) {
-                console.log("cart !", 1)
-            };
-        } else if (findData.length > 0) {
-            const findccc = await cart.findOne({ userId: user._id, saloonId: mongoose.Types.ObjectId(query.saloonId) })
-            i = 1
-            if (!findccc) {
-                for await (const element of findData) {
-                    if (query.saloonId != element.saloonId.toString() && i === 1) {
-                        obj.userId = user._id;
-                        obj.saloonId = query.saloonId;
-                        let cart_detail = new cart(obj);
-                        newCart = await cart_detail.save();
-                        i++
-                    }
-                }
-            }
+            findData = await cart.create(obj);
         }
-        console.log("cart !", 2)
 
 
-        if (query.serviceId) {
-            let _id = mongoose.Types.ObjectId(query.serviceId);
-            if (newCart) {
-                findService = await service.findOne({ _id, saloonStore: newCart.saloonId });
-                if (!findService) {
-                    return {
-                        statusCode: 400,
-                        status: false,
-                        message: "service is  not Found this Saloon store  !",
-                        data: []
-                    };
-                } const FindCart = await cart.findOne({ userId: user._id, saloonId: mongoose.Types.ObjectId(query.saloonId) });
-                if (FindCart) {
-                    let isMerged = false;
-                    if (FindCart.cartdata.length > 0) {
-                        for (const item of FindCart.cartdata) {
-                            if (item.serviceId.toString() === findService._id.toString()) {
-                                const currentQty = Number(item.quantity || 1);
-                                const updatedQty = currentQty + 1;
-                                const updatedAmount = Number(findService.ServicePrice || 0) * updatedQty;
-                                serviceArr.push({
-                                    serviceId: item.serviceId,
-                                    Amount: updatedAmount,
-                                    quantity: updatedQty,
-                                    timePeriod_in_minits: item.timePeriod_in_minits || findService.timePeriod_in_minits,
-                                });
-                                isMerged = true;
-                            } else {
-                                serviceArr.push(item)
-                            }
-                        };
-                    };
-                    if (!isMerged) {
-                        serviceArr.push({
-                            serviceId: findService._id,
-                            Amount: Number(findService.ServicePrice || 0),
-                            quantity: 1,
-                            timePeriod_in_minits: findService.timePeriod_in_minits,
-                        });
-                    }
-                }
-                let totalamount = [];
-                serviceArr.forEach(element => {
-                    totalamount.push(Number(element.Amount))
-                });
-                let sum = totalamount.reduce(function (x, y) {
-                    return x + y;
-                }, 0);
+        // if (query.serviceId) {
+        let _id = mongoose.Types.ObjectId(query.serviceId);
 
-                const result = await cart.findByIdAndUpdate({ _id: FindCart._id }, { $set: { cartdata: serviceArr, totalamount: sum } }, { new: true });
-                if (result) {
-                    return {
-                        statusCode: 200,
-                        status: true,
-                        message: "service added in new new cart Succesfuuly ! ",
-                        data: [result]
-                    };
-                };
+        let findService = await service.findById(query.serviceId);
 
-            } else {
-                const findService = await service.findOne({ _id, saloonStore: mongoose.Types.ObjectId(query.saloonId) });
-                if (!findService) {
-                    return {
-                        statusCode: 400,
-                        status: false,
-                        message: "not Found servce in your selected store !",
-                        data: []
-                    };
-                }
+        if (!findService) {
+            return {
+                statusCode: 400,
+                status: false,
+                message: "service is  not Found !",
+                data: []
+            };
+        }
 
-                const FindCart = await cart.findOne({ userId: user._id, saloonId: mongoose.Types.ObjectId(query.saloonId) });
-                if (FindCart) {
-                    let isMerged = false;
-                    if (FindCart.cartdata.length > 0) {
-                        for (const item of FindCart.cartdata) {
-                            if (item.serviceId.toString() === findService._id.toString()) {
-                                const currentQty = Number(item.quantity || 1);
-                                const updatedQty = currentQty + 1;
-                                const updatedAmount = Number(findService.ServicePrice || 0) * updatedQty;
-                                serviceArr.push({
-                                    serviceId: item.serviceId,
-                                    Amount: updatedAmount,
-                                    quantity: updatedQty,
-                                    timePeriod_in_minits: item.timePeriod_in_minits || findService.timePeriod_in_minits,
-                                });
-                                isMerged = true;
-                            } else {
-                                serviceArr.push(item)
-                            }
-                        };
-                    };
+        const FindCart = await cart.findOne({ userId: user._id, });
 
-                    if (!isMerged) {
-                        serviceArr.push({
-                            serviceId: findService._id,
-                            Amount: Number(findService.ServicePrice || 0),
-                            quantity: 1,
-                            timePeriod_in_minits: findService.timePeriod_in_minits,
-                        });
-                    }
-                    let totalamount = [];
-                    serviceArr.forEach(element => {
-                        totalamount.push(Number(element.Amount))
+        let isMerged = false;
+        if (FindCart.cartdata.length > 0) {
+            for (const item of FindCart.cartdata) {
+                console.log(item, '---item', findService._id)
+                if (item.serviceId.toString() === findService._id.toString()) {
+                    const currentQty = Number(item.quantity || 1);
+                    const updatedQty = currentQty + 1;
+                    const updatedAmount = Number(findService.ServicePrice || 0) * updatedQty;
+                    serviceArr.push({
+                        serviceId: item.serviceId,
+                        Amount: updatedAmount,
+                        quantity: updatedQty,
+                        timePeriod_in_minits: item.timePeriod_in_minits || findService.timePeriod_in_minits,
                     });
-                    let sum = totalamount.reduce(function (x, y) {
-                        return x + y;
-                    }, 0);
-
-                    const result = await cart.findByIdAndUpdate({ _id: FindCart._id }, { $set: { cartdata: serviceArr, totalamount: sum } }, { new: true });
-                    if (result) {
-                        return {
-                            statusCode: 200,
-                            status: true,
-                            message: "service added in cart Succesfuuly !",
-                            data: [result]
-                        };
-                    };
+                    isMerged = true;
                 } else {
-                    return {
-                        statusCode: 400,
-                        status: false,
-                        message: "cart not Found register karwao !",
-                        data: [FindCart]
-                    };
+                    serviceArr.push(item)
                 }
-            }
+            };
         };
 
+        if (!isMerged) {
+            serviceArr.push({
+                serviceId: findService._id,
+                Amount: Number(findService.ServicePrice || 0),
+                quantity: 1,
+                timePeriod_in_minits: findService.timePeriod_in_minits,
+            });
+        }
+
+
+        let totalamount = [];
+        serviceArr.forEach(element => {
+            totalamount.push(Number(element.Amount))
+        });
+        let sum = totalamount.reduce(function (x, y) {
+            return x + y;
+        }, 0);
+
+        const result = await cart.findByIdAndUpdate(FindCart._id, { cartdata: serviceArr, totalamount: sum }, { new: true });
+
+
+        return {
+            statusCode: 200,
+            status: true,
+            message: "service added in new new cart Succesfuuly ! ",
+            data: result
+        };
     } catch (error) {
         console.log(error);
     };

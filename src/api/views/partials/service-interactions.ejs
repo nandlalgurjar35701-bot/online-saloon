@@ -105,7 +105,7 @@
             }
             if (triggerBtn) triggerBtn.disabled = true;
             try {
-                const response = await fetch(`/add-cart?serviceId=${serviceId}&saloonId=${saloonId}`, {
+                const response = await fetch(`/add-cart?serviceId=${serviceId}`, {
                     method: "GET",
                     headers: getHeaders(),
                 });

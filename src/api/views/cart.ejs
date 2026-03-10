@@ -147,14 +147,7 @@
                 populateSlots();
                 setSummaryEnabled(false);
                 emitCartCount([]);
-            };
-
-            const normalizeImage = (image) => {
-                if (Array.isArray(image) && image.length) return `/uploads/${image[0]}`;
-                if (typeof image === "string" && image) return image.startsWith("http") ? image : `/uploads/${image}`;
-                return "/web/img/services-1.jpg";
-            };
-
+            };\r\n
             const normalizeServiceImage = (image) => {
                 if (Array.isArray(image) && image.length) {
                     const first = image[0];
@@ -297,13 +290,7 @@
                         return `
                             <div class="card border-0 shadow-sm mb-4">
                                 <div class="card-body">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <img src="${normalizeImage(saloonEntry?.image)}" style="width:72px;height:72px;object-fit:cover;border-radius:8px;" alt="store">
-                                        <div class="ms-3">
-                                            <h5 class="mb-1">${saloonEntry?.storeName || "Salon"}</h5>
-                                            <p class="text-muted mb-0">${saloonEntry?.location?.city || ""} ${saloonEntry?.location?.state || ""}</p>
-                                        </div>
-                                    </div>
+                                    <h5 class="mb-3">Store ${idx + 1}</h5>
 
                                     <div class="table-responsive">
                                         <table class="table table-sm align-middle">
@@ -351,8 +338,8 @@
             const bindSummaryControls = () => {
                 populateSlots();
                 if (summaryStoreSelect) {
-                    summaryStoreSelect.innerHTML = cartData.map((entry) =>
-                        `<option value="${entry?._id || ""}">${entry?.storeName || "Store"}</option>`
+                    summaryStoreSelect.innerHTML = cartData.map((entry, index) =>
+                        `<option value="${entry?._id || ""}">Store ${index + 1}</option>`
                     ).join("");
                     if (cartData.length > 0) {
                         setSummaryEnabled(true);
