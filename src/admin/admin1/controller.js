@@ -86,7 +86,7 @@ exports.loginData = async (req, res) => {
             if (user) {
                 if (typeof user.password === 'undefined') {
                     req.flash("error", "Detail is Not Found ");
-                    return res.redirect("/admin/admin");
+                    return res.redirect("/admin/");
                 };
                 const match = await bcrypt.compare(password, user.password);
                 if (match) {
@@ -103,10 +103,10 @@ exports.loginData = async (req, res) => {
                         overwrite: true
                     });
                     req.flash("success", "login successfully");
-                    return res.redirect("/admin/admin");
+                    return res.redirect("/admin/");
                 } else {
                     req.flash("error", "invalid login details");
-                    return res.redirect("/admin/admin");
+                    return res.redirect("/admin/");
                 };
             } else {
                 req.flash("error", "invalid login details");
@@ -137,7 +137,7 @@ exports.ForgetPassword = async (req, res) => {
                 const result = await userModel.findByIdAndUpdate({ _id: req.user._id }, { password: pp });
                 if (result) {
                     req.flash("success", "Password Change Successfully !");
-                    res.redirect("/admin/admin");
+                    res.redirect("/admin/");
                 };
             } else {
                 req.flash("error", "Old Password Is Wrong !");
@@ -189,7 +189,7 @@ exports.add_profile_data = async (req, res) => {
         const updatedata = await userModel.findByIdAndUpdate({ _id: id }, obj, { new: true });
         req.flash("success", "profile updated successfully")
 
-        res.redirect("/admin/admin")
+        res.redirect("/admin/")
     } catch (error) {
         console.log(error);
 
