@@ -8,7 +8,7 @@ exports.renderBlogForm = async (req, res) => {
 
     if (req.query.id && !blogData) {
       req.flash("error", "Blog not found.");
-      return res.redirect("/view-blog");
+      return res.redirect("/admin/view-blog");
     }
 
     return res.render("blog/add_blog", {
@@ -20,7 +20,7 @@ exports.renderBlogForm = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to load blog form.");
-    return res.redirect("/view-blog");
+    return res.redirect("/admin/view-blog");
   }
 };
 
@@ -28,7 +28,7 @@ exports.saveBlog = async (req, res) => {
   try {
     await blogService.saveBlog(req);
     req.flash("success", "Blog saved successfully.");
-    return res.redirect("/view-blog");
+    return res.redirect("/admin/view-blog");
   } catch (error) {
     console.log(error);
     req.flash("error", error.message || "Unable to save blog.");
@@ -53,7 +53,7 @@ exports.renderBlogList = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to load blogs.");
-    return res.redirect("/");
+    return res.redirect("/admin/");
   }
 };
 
@@ -62,14 +62,14 @@ exports.deleteBlog = async (req, res) => {
     const deleted = await blogService.deleteBlogById(req.query.id);
     if (!deleted) {
       req.flash("error", "Blog not found.");
-      return res.redirect("/view-blog");
+      return res.redirect("/admin/view-blog");
     }
     req.flash("success", "Blog deleted successfully.");
-    return res.redirect("/view-blog");
+    return res.redirect("/admin/view-blog");
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to delete blog.");
-    return res.redirect("/view-blog");
+    return res.redirect("/admin/view-blog");
   }
 };
 

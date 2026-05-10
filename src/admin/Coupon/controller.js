@@ -27,7 +27,7 @@ exports.createCoupon = async (req, res) => {
             const updateData = await coupon.findByIdAndUpdate({ _id }, req.body, { new: true });
             if (updateData) {
                 req.flash("success", "Coupon Update Successfully !");
-                res.redirect("/View-All-Coupon");
+                res.redirect("/admin/View-All-Coupon");
             };
         } else {
             if (req.body.CouponCode != undefined && req.body.CouponCode != "") {
@@ -35,14 +35,14 @@ exports.createCoupon = async (req, res) => {
                 if (!findData) {
                     req.body.CouponCode = req.body.CouponCode;
                 } else {
-                    res.redirect("/Coupon");
+                    res.redirect("/admin/Coupon");
                 };
             };
             const couponditail = new coupon(req.body);
             const result = await couponditail.save();
             if (result) {
                 req.flash("success", "Coupon Added Successfully !");
-                res.redirect("/View-All-Coupon");
+                res.redirect("/admin/View-All-Coupon");
             };
         };
     } catch (error) {
@@ -89,10 +89,10 @@ exports.DeleteCoupon = async (req, res) => {
             const updateData = await coupon.findByIdAndDelete({ _id: mongoose.Types.ObjectId(req.query.id) })
             if (updateData) {
                 req.flash("success", "Coupon Delete Successfully !");
-                res.redirect("/View-All-Coupon");
+                res.redirect("/admin/View-All-Coupon");
             };
         } else {
-            res.redirect("/");
+            res.redirect("/admin/");
         }
     } catch (error) {
         console.log(error);

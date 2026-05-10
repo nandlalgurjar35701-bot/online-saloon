@@ -22,7 +22,7 @@
           </h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
               <li class="breadcrumb-item active">Dashboard</li>
             </ol>
           </nav>
@@ -35,7 +35,7 @@
                 <div class="card">
                   <div class="card-body">
                     <h5 class="card-title">business-profile gh</h5>
-                    <form action="/business-bank-information-admin?id=<%=saloon_data._id%>" method="post">
+                    <form action="/admin/business-bank-information-admin?id=<%=saloon_data._id%>" method="post">
 
                       <div class="row g-3">
                         <div class="col">
@@ -113,7 +113,7 @@
 
                     </form>
                     <%else{%>
-                      <form action="/business-bank-information-admin?id=<%=saloon_data._id%>" method="post">
+                      <form action="/admin/business-bank-information-admin?id=<%=saloon_data._id%>" method="post">
 
                         <div class="row g-3">
                           <div class="col">

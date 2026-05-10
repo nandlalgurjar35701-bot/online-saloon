@@ -19,7 +19,7 @@
           <h1><%-user.type %></h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
               <li class="breadcrumb-item active">Dashboard</li>
             </ol>
           </nav>
@@ -35,13 +35,13 @@
 
                     <!-- No Labels Form -->
                     <% if(typeof query.userId !=="undefined" && query.userId){%>
-                      <form class="row g-3" action="/get-All-order?userId=<%=query.userId%>">
+                      <form class="row g-3" action="/admin/get-All-order?userId=<%=query.userId%>">
                         <input type="hidden" name="userId" value="<%=query.userId%>">
                         <%}else{%>
-                          <form class="row g-3" action="/get-All-order">
+                          <form class="row g-3" action="/admin/get-All-order">
                             <%}%>
 
-                              <!-- <form class="row g-3" action="/get-All-order"> -->
+                              <!-- <form class="row g-3" action="/admin/get-All-order"> -->
                               <div class="col-md-3">
                                 <label>Choose City</label> <br>
                                 <select id="inputState" name="city" class="form-select">
@@ -103,10 +103,10 @@
                                 <div class="text-center">
                                   <button type="submit" class="btn btn-primary">Submit</button>
                                   <% if(typeof query.userId !=="undefined" && query.userId){%>
-                                    <a href="/get-All-order?userId=<%=query.userId%>""> <button type=" button"
+                                    <a href="/admin/get-All-order?userId=<%=query.userId%>""> <button type=" button"
                                       class="btn btn-secondary">Reset</button></a>
                                     <%}else{%>
-                                      <a href="/get-All-order"> <button type="button"
+                                      <a href="/admin/get-All-order"> <button type="button"
                                           class="btn btn-secondary">Reset</button></a>
                                       <%}%>
                                 </div>
@@ -189,11 +189,11 @@
                                   <%}else if( data.status=="cancel" ){%>
                                     <a href="#" class="btn btn-danger">Cancel</a>
                                     <%}else{%>
-                                      <a href="/Admin-Order-Approve?id=<%= data._id%>" class="btn btn-success js-approve-order"
+                                      <a href="/admin/Admin-Order-Approve?id=<%= data._id%>" class="btn btn-success js-approve-order"
                                         data-payment-status="<%= data.paymentStatus || '' %>"
                                         data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Approve Order"><i class="bi bi-check2-circle"></i></a>
-                                      <a href="/Admin-Order-Cancel?id=<%= data._id%>" class="btn btn-danger js-cancel-order"
+                                      <a href="/admin/Admin-Order-Cancel?id=<%= data._id%>" class="btn btn-danger js-cancel-order"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Decline Order">
                                         <span aria-hidden="true">&times;</span></a>
                                       <%}%>
@@ -317,7 +317,7 @@
           $.ajax({
             type: 'get',
             data: { "id": orderId },
-            url: '/Admin-Order-Cart-Data',
+            url: '/admin/Admin-Order-Cart-Data',
             success: function (resp) {
               const items = resp && resp.items ? resp.items : [];
               editSaloonId = resp && resp.saloonId ? resp.saloonId : "";
@@ -426,7 +426,7 @@
           const pageNum = page || 1;
           $.ajax({
             type: 'get',
-            url: '/Admin-Order-Search-Services',
+            url: '/admin/Admin-Order-Search-Services',
             data: { saloonId: editSaloonId, q, page: pageNum, limit: 5 },
             success: function (resp) {
               const items = resp && resp.items ? resp.items : [];
@@ -447,7 +447,7 @@
 
           $.ajax({
             type: 'post',
-            url: '/Admin-Order-Update-Cart',
+            url: '/admin/Admin-Order-Update-Cart',
             data: { orderId, action: "add", serviceId, quantity: qty },
             success: function (resp) {
               const addModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("addItemModal"));
@@ -478,7 +478,7 @@
           if (!orderId || !serviceId) return;
           $.ajax({
             type: 'post',
-            url: '/Admin-Order-Update-Cart',
+            url: '/admin/Admin-Order-Update-Cart',
             data: { orderId, action, serviceId },
             success: function (resp) {
               updateMainTotal(orderId, resp && resp.totalamount);
@@ -492,7 +492,7 @@
           if (!orderId || !serviceId) return;
           $.ajax({
             type: 'post',
-            url: '/Admin-Order-Update-Cart',
+            url: '/admin/Admin-Order-Update-Cart',
             data: { orderId, action: "remove", serviceId },
             success: function (resp) {
               updateMainTotal(orderId, resp && resp.totalamount);

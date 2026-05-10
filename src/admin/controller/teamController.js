@@ -9,7 +9,7 @@ exports.renderTeamForm = async (req, res) => {
 
     if (req.query.id && !data) {
       req.flash("error", "Team member not found.");
-      return res.redirect("/view-team-member");
+      return res.redirect("/admin/view-team-member");
     }
 
     return res.render("app/add_team", {
@@ -20,7 +20,7 @@ exports.renderTeamForm = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to open team form.");
-    return res.redirect("/view-team-member");
+    return res.redirect("/admin/view-team-member");
   }
 };
 
@@ -36,7 +36,7 @@ exports.renderTeamList = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to load team list.");
-    return res.redirect("/");
+    return res.redirect("/admin/");
   }
 };
 
@@ -44,7 +44,7 @@ exports.saveTeamMember = async (req, res) => {
   try {
     await teamService.saveTeamMember({ body: req.body, file: req.file });
     req.flash("success", "Team member saved successfully.");
-    return res.redirect("/view-team-member");
+    return res.redirect("/admin/view-team-member");
   } catch (error) {
     console.log(error);
     req.flash("error", error.message || "Unable to save team member.");
@@ -57,15 +57,15 @@ exports.deleteTeamMember = async (req, res) => {
     const deleted = await teamService.deleteTeamMemberById(req.query.id);
     if (!deleted) {
       req.flash("error", "Team member not found.");
-      return res.redirect("/view-team-member");
+      return res.redirect("/admin/view-team-member");
     }
 
     req.flash("success", "Team member deleted successfully.");
-    return res.redirect("/view-team-member");
+    return res.redirect("/admin/view-team-member");
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to delete team member.");
-    return res.redirect("/view-team-member");
+    return res.redirect("/admin/view-team-member");
   }
 };
 

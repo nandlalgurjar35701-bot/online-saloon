@@ -19,7 +19,7 @@
           <h1><%-user.type %></h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
               <li class="breadcrumb-item active">Dashboard</li>
             </ol>
           </nav>
@@ -34,7 +34,7 @@
                     <h5 class="card-title">Filter</h5>
 
                     <!-- No Labels Form -->
-                    <form class="row g-3" action="/view-blog">
+                    <form class="row g-3" action="/admin/view-blog">
                       <div class="col-md-3">
                         <label>Choose Category</label> <br>
                         <select id="inputState" name="Category" class="form-select">
@@ -66,7 +66,7 @@
                         <div class="text-center">
                           <label></label> <br>
                           <button type="submit" class="btn btn-primary">Submit</button>
-                          <a href="/view-blog"> <button type="button" class="btn btn-secondary">Reset</button></a>
+                          <a href="/admin/view-blog"> <button type="button" class="btn btn-secondary">Reset</button></a>
                         </div>
                       </div>
                     </form>
@@ -79,7 +79,7 @@
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                       <h5 class="card-title mb-0">Blog List</h5>
-                      <a href="/add-blog" class="btn btn-primary btn-sm">Add Blog</a>
+                      <a href="/admin/add-blog" class="btn btn-primary btn-sm">Add Blog</a>
                     </div>
                     <div style="border-top: 1px solid #e9ecef; margin: 12px 0 14px 0;"></div>
 
@@ -123,12 +123,12 @@
                                 </button>
                               </td>
                               <td>
-                                <a href="/add-frequent?id=<%= singleData._id %>" class="btn btn-info"
+                                <a href="/admin/add-frequent?id=<%= singleData._id %>" class="btn btn-info"
                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Add New F&Q">
                                   +
                                 </a>
                                 <% if(singleData.faq[0]?.count>0){ %>
-                                  <a href="/view-frequent?id=<%= singleData._id %>" class="btn btn-info"
+                                  <a href="/admin/view-frequent?id=<%= singleData._id %>" class="btn btn-info"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="View F&Q">
                                     <%= singleData.faq[0]?.count %>
                                       <i class="bi bi-eye"></i>
@@ -136,10 +136,10 @@
                                   <%}%>
                               </td>
                               <td>
-                                <a href="/add-blog?id=<%= singleData._id%>" class="btn btn-info"><i
+                                <a href="/admin/add-blog?id=<%= singleData._id%>" class="btn btn-info"><i
                                     class="ri-edit-box-line" data-bs-toggle="tooltip" data-bs-placement="top"
                                     data-bs-title="Edit"></i></a>
-                                <a href="/delete-blog?id=<%= singleData._id%>" class="btn btn-danger"><i
+                                <a href="/admin/delete-blog?id=<%= singleData._id%>" class="btn btn-danger"><i
                                     class="ri-delete-bin-5-line" data-bs-toggle="tooltip" data-bs-placement="top"
                                     data-bs-title="Delete"></i></a>
                               </td>
@@ -218,7 +218,7 @@
           $.ajax({
             type: 'get',
             data: { "id": num },
-            url: '/view-blog-description',
+            url: '/admin/view-blog-description',
             success: function (data) {
               if (data.length > 0) {
                 $('#moduleDataAppend').empty()

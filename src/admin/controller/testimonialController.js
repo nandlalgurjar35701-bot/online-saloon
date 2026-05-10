@@ -9,7 +9,7 @@ exports.renderTestimonialForm = async (req, res) => {
 
     if (req.query.id && !data) {
       req.flash("error", "Testimonial not found.");
-      return res.redirect("/view-testimonial");
+      return res.redirect("/admin/view-testimonial");
     }
 
     return res.render("app/add_testimonial", {
@@ -20,7 +20,7 @@ exports.renderTestimonialForm = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to open testimonial form.");
-    return res.redirect("/view-testimonial");
+    return res.redirect("/admin/view-testimonial");
   }
 };
 
@@ -36,7 +36,7 @@ exports.renderTestimonialList = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to load testimonials.");
-    return res.redirect("/");
+    return res.redirect("/admin/");
   }
 };
 
@@ -44,7 +44,7 @@ exports.saveTestimonial = async (req, res) => {
   try {
     await testimonialService.saveTestimonial({ body: req.body, file: req.file });
     req.flash("success", "Testimonial saved successfully.");
-    return res.redirect("/view-testimonial");
+    return res.redirect("/admin/view-testimonial");
   } catch (error) {
     console.log(error);
     req.flash("error", error.message || "Unable to save testimonial.");
@@ -57,15 +57,15 @@ exports.deleteTestimonial = async (req, res) => {
     const deleted = await testimonialService.deleteTestimonialById(req.query.id);
     if (!deleted) {
       req.flash("error", "Testimonial not found.");
-      return res.redirect("/view-testimonial");
+      return res.redirect("/admin/view-testimonial");
     }
 
     req.flash("success", "Testimonial deleted successfully.");
-    return res.redirect("/view-testimonial");
+    return res.redirect("/admin/view-testimonial");
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to delete testimonial.");
-    return res.redirect("/view-testimonial");
+    return res.redirect("/admin/view-testimonial");
   }
 };
 

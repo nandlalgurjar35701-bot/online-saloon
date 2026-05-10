@@ -22,7 +22,7 @@
             <h1>admin</h1>
             <nav>
               <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
                 <li class="breadcrumb-item active">Dashboard</li>
               </ol>
             </nav>
@@ -41,7 +41,7 @@
                         <% if(typeof id !=="undefined" && id){%>
                           <!-- <div class="dataTable-container"> -->
                           <h5 class="card-title">Add Sub Category</h5>
-                          <form class="needs-validation row g-3" action="/Add-New-Category?id=<%= id %>" method="post"
+                          <form class="needs-validation row g-3" action="/admin/Add-New-Category?id=<%= id %>" method="post"
                             enctype="multipart/form-data" novalidate>
 
                             <div class="col-10">
@@ -74,7 +74,7 @@
                           <%}else if(typeof data !="undefined" && data !="" ){%>
                             <h5 class=" card-title">Edit Category</h5>
                             <form class="needs-validation row g-3"
-                              action="/Add-New-Category?EditId=<%= data._id%><% if (data.parent_Name) { %>&id=<%= data.parent_Name %><% } %>"
+                              action="/admin/Add-New-Category?EditId=<%= data._id%><% if (data.parent_Name) { %>&id=<%= data.parent_Name %><% } %>"
                               method="post" enctype="multipart/form-data" novalidate>
 
                               <div class="col-8">
@@ -117,7 +117,7 @@
                               <h5 class="card-title">Add Category</h5>
 
                               <!-- <div class="dataTable-container"> -->
-                              <form class="needs-validation row g-3" action="/Add-New-Category" method="post"
+                              <form class="needs-validation row g-3" action="/admin/Add-New-Category" method="post"
                                 enctype="multipart/form-data" novalidate>
 
                                 <div class="col-6">

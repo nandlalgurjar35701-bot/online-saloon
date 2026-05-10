@@ -46,7 +46,7 @@ exports.SendAllUserEmail = async (req, res) => {
         if (result.statusCode == 200) {
             const data = await ContecUs.findByIdAndUpdate({ _id: req.query.ContectUs }, { status: 1 }, { new: true })
             req.flash("success", "mail send  successfully");
-            res.redirect("/");
+            res.redirect("/admin/");
         };
     } catch (error) {
         console.log(error);

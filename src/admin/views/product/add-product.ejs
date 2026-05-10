@@ -21,7 +21,7 @@
             </h1>
             <nav>
               <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
                 <li class="breadcrumb-item active">Dashboard</li>
               </ol>
             </nav>
@@ -36,7 +36,7 @@
                       <!-- <h3 class="card-title">Add Product </h3> -->
                       <% if(typeof service_data !=="undefined" && service_data){%>
                         <h5 class="card-title">Edit Product</h5>
-                        <form class="needs-validation" action="/add-product-store?id=<%= service_data._id%>"
+                        <form class="needs-validation" action="/admin/add-product-store?id=<%= service_data._id%>"
                           method="post" enctype="multipart/form-data" novalidate>
                           <div class="row g-3">
                             <div class="col">
@@ -120,7 +120,7 @@
                         </form>
                         <%}else{%>
                           <h5 class="card-title">Add Product</h5>
-                          <form class="needs-validation" action="/add-product-store" method="post"
+                          <form class="needs-validation" action="/admin/add-product-store" method="post"
                             enctype="multipart/form-data" novalidate>
 
                             <div class="row g-3">

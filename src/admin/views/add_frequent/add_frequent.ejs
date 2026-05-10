@@ -23,7 +23,7 @@
           </h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
               <li class="breadcrumb-item active">Dashboard</li>
             </ol>
           </nav>
@@ -157,7 +157,7 @@
 
             $.ajax({
               type: 'post',
-              url: `/add-frequent-data`,
+              url: `/admin/add-frequent-data`,
               data: { question, answer, faqData: `<%=faqData?._id.toString()%>`, blogId: blog },
               success: function (data) {
                 console.log("hii")

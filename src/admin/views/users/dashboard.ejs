@@ -20,7 +20,7 @@
             <h1><%- user.type %></h1>
             <nav>
               <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
                 <li class="breadcrumb-item active">Dashboard</li>
               </ol>
             </nav>
@@ -35,7 +35,7 @@
 
                   <div class="col-xxl-4 col-md-4">
                     <div class="card info-card sales-card">
-                      <a href="/get-All-order">
+                      <a href="/admin/get-All-order">
                         <div class="card-body">
                           <h5 class="card-title">Order <span>| Total</span></h5>
 
@@ -59,7 +59,7 @@
                   <!-- Revenue Card -->
                   <div class="col-xxl-4 col-md-4">
                     <div class="card info-card revenue-card">
-                      <a href="/view-all-payment">
+                      <a href="/admin/view-all-payment">
                         <div class="card-body">
                           <h5 class="card-title">Revenue <span>| Payment</span></h5>
                           <div class="d-flex align-items-center">
@@ -87,7 +87,7 @@
                   <!-- saloon card -->
                   <div class="col-xxl-4 col-md-4">
                     <div class="card info-card user-card">
-                      <a href="/view-saloon">
+                      <a href="/admin/view-saloon">
                         <div class="card-body">
                           <h5 class="card-title">Saloon <span>| Store</span></h5>
                           <div class="d-flex align-items-center">
@@ -107,7 +107,7 @@
                     <!-- user card -->
                     <div class="col-xxl-4 col-md-4">
                       <div class="card info-card user-card">
-                        <a href="/all-user?status=user">
+                        <a href="/admin/all-user?status=user">
                           <div class="card-body">
                             <h5 class="card-title">User <span>| User</span></h5>
                             <div class="d-flex align-items-center">
@@ -127,7 +127,7 @@
                       <!-- service card -->
                       <div class="col-xxl-4 col-md-4">
                         <div class="card info-card user-card">
-                          <a href="/view-product">
+                          <a href="/admin/view-product">
                             <div class="card-body">
                               <h5 class="card-title">Service <span>| Service</span></h5>
                               <div class="d-flex align-items-center">
@@ -147,7 +147,7 @@
                       <!-- service  packege  card -->
                       <div class="col-xxl-4 col-md-4">
                         <div class="card info-card user-card">
-                          <a href="/view-product-package">
+                          <a href="/admin/view-product-package">
                             <div class="card-body">
                               <h5 class="card-title">Package <span>| Service</span></h5>
                               <div class="d-flex align-items-center">
@@ -199,7 +199,7 @@
                   $.ajax({
                     type: 'get',
                     data: { "id": id },
-                    url: '/payment-Revenues',// nandlal
+                    url: '/admin/payment-Revenues',// nandlal
                     success: function (data) {
                       if (data) {
                         $('#payment').append(data.payment, ' ₹');

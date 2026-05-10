@@ -19,7 +19,7 @@
             <h1><%-user?.type %></h1>
             <nav>
               <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
                 <li class="breadcrumb-item active">Dashboard</li>
               </ol>
             </nav>
@@ -34,7 +34,7 @@
                       <h5 class="card-title">Filter</h5>
 
                       <!-- No Labels Form -->
-                      <form class="row g-3" action="/view-product-package">
+                      <form class="row g-3" action="/admin/view-product-package">
                         <div class="col-md-4">
                           <label>Enter Store Name</label> <br>
                           <% if(query?.StoreName!="" ){%>
@@ -74,7 +74,7 @@
                           <label></label> <br>
                           <div class="text-center">
                             <button type="submit" class="btn btn-primary">Submit</button>
-                            <a href="/view-product-package"> <button type="button" class="btn btn-secondary">Reset</button></a>
+                            <a href="/admin/view-product-package"> <button type="button" class="btn btn-secondary">Reset</button></a>
                           </div>
                         </div>
                       </form>
@@ -86,7 +86,7 @@
                     <div class="card-body">
                       <div class="d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Product Package List</h5>
-                        <a href="/add-product-package" class="btn btn-primary btn-sm">Add Product Package</a>
+                        <a href="/admin/add-product-package" class="btn btn-primary btn-sm">Add Product Package</a>
                       </div>
                       <div style="border-top: 1px solid #e9ecef; margin: 12px 0 14px 0;"></div>
 
@@ -142,15 +142,15 @@
                                   </button>
                                 </td>
                                 <td>
-                                  <a href="/add-product-package?id=<%= data._id%>" class="btn btn-info"
+                                  <a href="/admin/add-product-package?id=<%= data._id%>" class="btn btn-info"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit"><i
                                       class="ri-edit-box-line"></i></a>
-                                  <a href="/delete-product-package?id=<%= data._id%>" class="btn btn-danger"
+                                  <a href="/admin/delete-product-package?id=<%= data._id%>" class="btn btn-danger"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete">
                                     <i class="ri-delete-bin-5-line"></i>
                                   </a>
-                                  <!-- <a href="/add_service?id=<%= data._id%>" class="btn btn-dark">Edit</a>
-                                <a href="/delete_service?id=<%= data._id%>" class="btn btn-danger">Delete</a> -->
+                                  <!-- <a href="/admin/add_service?id=<%= data._id%>" class="btn btn-dark">Edit</a>
+                                <a href="/admin/delete_service?id=<%= data._id%>" class="btn btn-danger">Delete</a> -->
                                 </td>
                               </tr>
                               <%}%>
@@ -191,7 +191,7 @@
             $.ajax({
               type: 'get',
               data: { "id": num },
-              url: '/find-product-package-services',
+              url: '/admin/find-product-package-services',
               success: function (data) {
                 if (data.length > 0) {
                   $('#moduleDataAppend').empty()

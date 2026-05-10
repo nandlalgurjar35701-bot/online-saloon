@@ -45,7 +45,7 @@ exports.AddCategory = async (req, res, _id) => {
             req.flash("success", "Category Added Successfully !");
         }
 
-        res.redirect("/view-category");
+        res.redirect("/admin/view-category");
     } catch (error) {
         console.log(error);
     }

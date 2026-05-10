@@ -34,7 +34,7 @@ exports.addProductPage = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to load add product page.");
-    return res.redirect("/view-product");
+    return res.redirect("/admin/view-product");
   }
 };
 
@@ -69,16 +69,16 @@ exports.addProductStore = async (req, res) => {
     if (query.id && isValidObjectId(query.id)) {
       await productModel.findByIdAndUpdate(query.id, body);
       req.flash("success", "Product updated successfully.");
-      return res.redirect("/view-product");
+      return res.redirect("/admin/view-product");
     }
 
     await productModel.create(body);
     req.flash("success", "Product added successfully.");
-    return res.redirect("/view-product");
+    return res.redirect("/admin/view-product");
   } catch (error) {
     console.log(error);
     req.flash("error", error.message || "Unable to save product.");
-    return res.redirect("/add-product");
+    return res.redirect("/admin/add-product");
   }
 };
 
@@ -94,7 +94,7 @@ exports.viewProductPage = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to load products.");
-    return res.redirect("/");
+    return res.redirect("/admin/");
   }
 };
 
@@ -102,16 +102,16 @@ exports.deleteProduct = async (req, res) => {
   try {
     if (!isValidObjectId(req.query.id)) {
       req.flash("error", "Invalid product id.");
-      return res.redirect("/view-product");
+      return res.redirect("/admin/view-product");
     }
 
     await productModel.findByIdAndDelete(req.query.id);
     req.flash("success", "Product deleted successfully.");
-    return res.redirect("/view-product");
+    return res.redirect("/admin/view-product");
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to delete product.");
-    return res.redirect("/view-product");
+    return res.redirect("/admin/view-product");
   }
 };
 

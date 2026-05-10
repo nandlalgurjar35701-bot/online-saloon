@@ -22,7 +22,7 @@
                         </h1>
                         <nav>
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
                                 <li class="breadcrumb-item active">Dashboard</li>
                             </ol>
                         </nav>
@@ -37,7 +37,7 @@
                                   <h5 class="card-title">Add Store</h5>
                                   
                                       <% if(typeof saloon_data !=="undefined" && saloon_data){%>
-                                      <form action="/add-saloon-store?id=<%=saloon_data._id%>" method="post" enctype="multipart/form-data">
+                                      <form action="/admin/add-saloon-store?id=<%=saloon_data._id%>" method="post" enctype="multipart/form-data">
                                         <div class="row g-3">
                                           <div class="col">
                                             <input required type="text" name="storeName" class="form-control" value="<%= saloon_data.storeName%>" placeholder="Enter Your Store Name">
@@ -129,7 +129,7 @@
                         
                                       </form>
                                       <%}else{%>
-                                        <form action="/add-saloon-store" method="post" enctype="multipart/form-data">
+                                        <form action="/admin/add-saloon-store" method="post" enctype="multipart/form-data">
 
                                           <div class="row g-3">
                                             <div class="col">

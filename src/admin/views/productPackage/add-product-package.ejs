@@ -21,7 +21,7 @@
             </h1>
             <nav>
               <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
                 <li class="breadcrumb-item active">Dashboard</li>
               </ol>
             </nav>
@@ -37,11 +37,11 @@
                       <h5 class="card-title">Add Product Package</h5>
                       
                           <% if(data){ %>
-                            <form class="needs-validation" action="/add-product-package?id=<%= data._id%>" method="post"
+                            <form class="needs-validation" action="/admin/add-product-package?id=<%= data._id%>" method="post"
                               enctype="multipart/form-data" novalidate>
                               <% }else{ %>
 
-                                <form class="needs-validation" action="/add-product-package" method="post"
+                                <form class="needs-validation" action="/admin/add-product-package" method="post"
                                   enctype="multipart/form-data" novalidate>
                                   <% } %>
                                     <div class="row g-3">
@@ -224,7 +224,7 @@
             $.ajax({
               type: 'get',
               data: { saloonId: salonId },
-              url: '/find-services-for-product-package',
+              url: '/admin/find-services-for-product-package',
               success: function (data) {
                 if (data.length === 0) {
                   $('#txtSelectedValues').html('<option value="" disabled selected>No products found</option>');
@@ -283,7 +283,7 @@
             $.ajax({
               type: 'get',
               data: { id: a.value },
-              url: '/find-saloon',
+              url: '/admin/find-saloon',
               success: function (data) {
                 const element = document.getElementById("Gender")
 

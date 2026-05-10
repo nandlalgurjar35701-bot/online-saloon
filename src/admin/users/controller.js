@@ -22,7 +22,7 @@ exports.BlockUser = async (req, res) => {
         const Finddata = await user.findByIdAndUpdate({ _id: req.query.id }, { type: "block-User" }, { new: true })
         if (Finddata) {
             req.flash("success", "block-User Successfully !");
-            return res.redirect("/all-user");
+            return res.redirect("/admin/all-user");
         }
     } catch (error) {
         console.log(error);
@@ -45,10 +45,10 @@ exports.warning = async (req, res) => {
         const sendmailer = await sendmailwarning(req)
         if (sendmailer) {
             req.flash("success", "mail send successfully")
-            res.redirect("/all-user")
+            res.redirect("/admin/all-user")
         } else {
             req.flash("error", "mail not Send")
-            res.redirect("/all-user")
+            res.redirect("/admin/all-user")
         }
     } catch (error) {
         console.log(error);
@@ -64,7 +64,7 @@ exports.unblock = async (req, res) => {
         );
         req.flash("success", "unblock successfully")
         if (Finddata) {
-            res.redirect("/all-user")
+            res.redirect("/admin/all-user")
         }
     } catch (error) {
         console.log(error);
@@ -85,14 +85,14 @@ exports.userWalletAction = async (req, res) => {
                     obj.$inc["userWallet.point"] = -Number(req.query.amount);
                 } else {
                     req.flash("error", "insufficient point");
-                    return res.redirect("/all-user");
+                    return res.redirect("/admin/all-user");
                 }
             } else {
                 if (findUser.userWallet.balance >= req.query.amount) {
                     obj.$inc["userWallet.balance"] = -Number(req.query.amount);
                 } else {
                     req.flash("error", "insufficient balance");
-                    return res.redirect("/all-user");
+                    return res.redirect("/admin/all-user");
                 }
             };
         } else {
@@ -115,9 +115,9 @@ exports.userWalletAction = async (req, res) => {
             const saveTragaction = await walletTransaction(req)
 
             req.flash("success", "update  successfully");
-            res.redirect("/all-user");
+            res.redirect("/admin/all-user");
         } else {
-            res.redirect("/");
+            res.redirect("/admin/");
         };
     } catch (error) {
         console.log(error);

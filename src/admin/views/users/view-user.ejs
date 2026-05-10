@@ -18,7 +18,7 @@
                         <h1><%-user.type %></h1>
                         <nav>
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
                                 <li class="breadcrumb-item active">Dashboard</li>
                             </ol>
                         </nav>
@@ -32,7 +32,7 @@
                                         <div class="card-body">
                                             <h5 class="card-title">Filter</h5>
                                             <!-- No Labels Form -->
-                                            <form class="row g-3" action="/all-user">
+                                            <form class="row g-3" action="/admin/all-user">
                                                 <div class="col-md-4">
                                                     <label>Name</label> <br>
                                                     <input type="text" class="form-control" placeholder="Enter Name"
@@ -72,7 +72,7 @@
                                                     <div class="text-center">
                                                         <label></label> <br>
                                                         <button type="submit" class="btn btn-primary">Submit</button>
-                                                        <a href="/all-user"> <button type="button"
+                                                        <a href="/admin/all-user"> <button type="button"
                                                                 class="btn btn-secondary">Reset</button></a>
                                                     </div>
                                                 </div>
@@ -136,7 +136,7 @@
                                                                 <td>
                                                                     <% if(typeof data.numberOfOrder !=="undefined" &&
                                                                         data.numberOfOrder!="" ){%>
-                                                                        <a href="/get-All-order?userId=<%= data._id %>">
+                                                                        <a href="/admin/get-All-order?userId=<%= data._id %>">
                                                                             <%= data.numberOfOrder %>
                                                                         </a>
                                                                         <%}else{%>
@@ -145,7 +145,7 @@
                                                                 </td>
                                                                 <td>
                                                                     <% if( data.numberOfreferel>0){%>
-                                                                        <a href="/all-user?referId=<%=data._id%>">
+                                                                        <a href="/admin/all-user?referId=<%=data._id%>">
                                                                             <button type="button" class="btn btn-info">
                                                                                 <i class="bi bi-eye">
                                                                                     <%=data.numberOfreferel%>
@@ -172,7 +172,7 @@
                                                                 <td>
                                                                     <% if( data.type=="block-User" ||
                                                                         data.type=="block-admin" ){%>
-                                                                        <a href="/unblock?id=<%= data._id%>"
+                                                                        <a href="/admin/unblock?id=<%= data._id%>"
                                                                             class="btn btn-dark"
                                                                             data-bs-toggle="tooltip"
                                                                             data-bs-placement="top"
@@ -180,21 +180,21 @@
                                                                             <i class="bi bi-unlock-fill"></i>
                                                                         </a>
                                                                         <%}else{%>
-                                                                            <a href="/Block-User?id=<%=data._id%>"
+                                                                            <a href="/admin/Block-User?id=<%=data._id%>"
                                                                                 class="btn btn-danger"
                                                                                 data-bs-toggle="tooltip"
                                                                                 data-bs-placement="top"
                                                                                 data-bs-title="Block-User">
                                                                                 <i class="bx bx-block"></i>
                                                                             </a>
-                                                                            <a href="/warningpage?id=<%=data._id%>"
+                                                                            <a href="/admin/warningpage?id=<%=data._id%>"
                                                                                 class="btn btn-warning"
                                                                                 data-bs-toggle="tooltip"
                                                                                 data-bs-placement="top"
                                                                                 data-bs-title="Give Warning">
                                                                                 <i class="ri-alarm-warning-line"></i>
                                                                             </a>
-                                                                            <a href="/view-saloon?userId=<%=data._id%>"
+                                                                            <a href="/admin/view-saloon?userId=<%=data._id%>"
                                                                                 class="btn btn-info"
                                                                                 data-bs-toggle="tooltip"
                                                                                 data-bs-placement="top"
@@ -279,7 +279,7 @@
                         $('#moduleDataAppend').empty()
 
                         let abc = `<!-- No Labels Form -->
-                                <form class="row g-3" action="/wallet-Action">
+                                <form class="row g-3" action="/admin/wallet-Action">
                                     <input type="hidden" name="id" class="form-control" value="${a.value}" readonly>
                                  <div class="col-md-3">
                                   <label>wallet</label> <br>

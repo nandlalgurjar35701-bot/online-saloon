@@ -37,7 +37,7 @@ exports.rejectRequist = async (req, res) => {
     try {
         const data = await Contact.findByIdAndUpdate({ _id: req.query.id }, { status: -1 }, { new: true })
         if (data) {
-            res.redirect("/Contact-Us-Requist")
+            res.redirect("/admin/Contact-Us-Requist")
         }
     } catch (error) {
         console.log(error);

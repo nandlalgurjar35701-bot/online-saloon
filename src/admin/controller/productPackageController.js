@@ -34,7 +34,7 @@ exports.addProductPackagePage = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to load product package form.");
-    return res.redirect("/view-product-package");
+    return res.redirect("/admin/view-product-package");
   }
 };
 
@@ -42,11 +42,11 @@ exports.createOrUpdateProductPackage = async (req, res) => {
   try {
     const saved = await productPackageService.saveProductPackage(req);
     req.flash("success", saved ? "Product package saved successfully." : "Product package updated successfully.");
-    return res.redirect("/view-product-package");
+    return res.redirect("/admin/view-product-package");
   } catch (error) {
     console.log(error);
     req.flash("error", error.message || "Unable to save product package.");
-    return res.redirect("/add-product-package");
+    return res.redirect("/admin/add-product-package");
   }
 };
 
@@ -62,7 +62,7 @@ exports.viewProductPackagePage = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to load product packages.");
-    return res.redirect("/");
+    return res.redirect("/admin/");
   }
 };
 
@@ -70,15 +70,15 @@ exports.deleteProductPackage = async (req, res) => {
   try {
     if (!req.query.id || !isValidObjectId(req.query.id)) {
       req.flash("error", "Invalid package id.");
-      return res.redirect("/view-product-package");
+      return res.redirect("/admin/view-product-package");
     }
 
     await productPackageModel.findByIdAndDelete({ _id: mongoose.Types.ObjectId(req.query.id) });
-    return res.redirect("/view-product-package");
+    return res.redirect("/admin/view-product-package");
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to delete product package.");
-    return res.redirect("/view-product-package");
+    return res.redirect("/admin/view-product-package");
   }
 };
 

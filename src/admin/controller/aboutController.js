@@ -7,7 +7,7 @@ exports.renderAboutForm = async (req, res) => {
 
     if (req.query.id && !data) {
       req.flash("error", "About record not found.");
-      return res.redirect("/view-about");
+      return res.redirect("/admin/view-about");
     }
 
     return res.render("app/add_about", {
@@ -18,7 +18,7 @@ exports.renderAboutForm = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to load about form.");
-    return res.redirect("/view-about");
+    return res.redirect("/admin/view-about");
   }
 };
 
@@ -34,7 +34,7 @@ exports.renderAboutList = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to load about list.");
-    return res.redirect("/");
+    return res.redirect("/admin/");
   }
 };
 
@@ -42,7 +42,7 @@ exports.saveAbout = async (req, res) => {
   try {
     await aboutService.saveAbout(req.body);
     req.flash("success", "About saved successfully.");
-    return res.redirect("/view-about");
+    return res.redirect("/admin/view-about");
   } catch (error) {
     console.log(error);
     req.flash("error", error.message || "Unable to save about.");
@@ -55,15 +55,15 @@ exports.deleteAbout = async (req, res) => {
     const deleted = await aboutService.deleteAboutById(req.query.id);
     if (!deleted) {
       req.flash("error", "About record not found.");
-      return res.redirect("/view-about");
+      return res.redirect("/admin/view-about");
     }
 
     req.flash("success", "About deleted successfully.");
-    return res.redirect("/view-about");
+    return res.redirect("/admin/view-about");
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to delete about.");
-    return res.redirect("/view-about");
+    return res.redirect("/admin/view-about");
   }
 };
 

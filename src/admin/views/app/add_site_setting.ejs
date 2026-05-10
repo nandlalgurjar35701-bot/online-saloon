@@ -19,8 +19,8 @@
           <h1><%- user.type %></h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
-              <li class="breadcrumb-item"><a href="/view-site-setting-config">Site Setting Config</a></li>
+              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/admin/view-site-setting-config">Site Setting Config</a></li>
               <li class="breadcrumb-item active"><%= data ? "Edit" : "Add" %></li>
             </ol>
           </nav>
@@ -33,7 +33,7 @@
                 <div class="card-body">
                   <h5 class="card-title"><%= data ? "Edit Site Setting" : "Add Site Setting" %></h5>
 
-                  <form action="/site-setting-config-save" method="POST">
+                  <form action="/admin/site-setting-config-save" method="POST">
                     <% if (data && data._id) { %>
                       <input type="hidden" name="id" value="<%= data._id %>">
                     <% } %>
@@ -140,7 +140,7 @@
                     <div class="row mb-3">
                       <div class="col-sm-10 offset-sm-2">
                         <button type="submit" class="btn btn-primary">Submit</button>
-                        <a href="/view-site-setting-config" class="btn btn-secondary">Cancel</a>
+                        <a href="/admin/view-site-setting-config" class="btn btn-secondary">Cancel</a>
                       </div>
                     </div>
                   </form>

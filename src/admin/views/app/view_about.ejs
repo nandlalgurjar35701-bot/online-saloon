@@ -21,7 +21,7 @@
           <h1><%-user.type %></h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
               <li class="breadcrumb-item active">Dashboard</li>
             </ol>
           </nav>
@@ -36,7 +36,7 @@
                     <h5 class="card-title">Filter</h5>
 
                     <!-- No Labels Form -->
-                    <form class="row g-3" action="/view-about">
+                    <form class="row g-3" action="/admin/view-about">
                       <div class="col-md-9">
                         <label>Enter Title</label> <br>
                         <input type="text" name="title" class="form-control" value="<%= query.title ? query.title:''%>"
@@ -46,7 +46,7 @@
                         <div class="text-center">
                           <label></label> <br>
                           <button type="submit" class="btn btn-primary">Submit</button>
-                          <a href="/view-about"> <button type="button" class="btn btn-secondary">Reset</button></a>
+                          <a href="/admin/view-about"> <button type="button" class="btn btn-secondary">Reset</button></a>
                         </div>
                       </div>
                     </form>
@@ -59,7 +59,7 @@
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                       <h5 class="card-title mb-0">About List</h5>
-                      <a href="/about" class="btn btn-primary btn-sm">Add About</a>
+                      <a href="/admin/about" class="btn btn-primary btn-sm">Add About</a>
                     </div>
                     <div style="border-top: 1px solid #e9ecef; margin: 12px 0 14px 0;"></div>
 
@@ -96,10 +96,10 @@
                                 </div>
                               </td>
                               <td>
-                                <a href="/about?id=<%= singleData._id%>" class="btn btn-info"><i
+                                <a href="/admin/about?id=<%= singleData._id%>" class="btn btn-info"><i
                                     class="ri-edit-box-line" data-bs-toggle="tooltip" data-bs-placement="top"
                                     data-bs-title="Edit"></i></a>
-                                <a href="/delete-about?id=<%= singleData._id%>" class="btn btn-danger"><i
+                                <a href="/admin/delete-about?id=<%= singleData._id%>" class="btn btn-danger"><i
                                     class="ri-delete-bin-5-line" data-bs-toggle="tooltip" data-bs-placement="top"
                                     data-bs-title="Delete"></i></a>
                               </td>

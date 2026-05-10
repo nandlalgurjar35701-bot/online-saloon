@@ -51,7 +51,7 @@ exports.adminRegisterData = async (req, res) => {
         }
         if (user) {
             req.flash("error", "user already exist");
-            res.redirect("/register");
+            res.redirect("/admin/register");
         } else {
             req.body.password = bcrypt.hashSync(password, 10);
             req.body.type = "admin";
@@ -59,7 +59,7 @@ exports.adminRegisterData = async (req, res) => {
             const result = await user.save();
             if (result) {
                 req.flash("success", "registration successful");
-                res.redirect("/");
+                res.redirect("/admin/");
             }
         }
     } catch (error) {
@@ -86,7 +86,7 @@ exports.loginData = async (req, res) => {
             if (user) {
                 if (typeof user.password === 'undefined') {
                     req.flash("error", "Detail is Not Found ");
-                    return res.redirect("/");
+                    return res.redirect("/admin/admin");
                 };
                 const match = await bcrypt.compare(password, user.password);
                 if (match) {
@@ -103,14 +103,14 @@ exports.loginData = async (req, res) => {
                         overwrite: true
                     });
                     req.flash("success", "login successfully");
-                    return res.redirect("/");
+                    return res.redirect("/admin/admin");
                 } else {
                     req.flash("error", "invalid login details");
-                    return res.redirect("/");
+                    return res.redirect("/admin/admin");
                 };
             } else {
                 req.flash("error", "invalid login details");
-                return res.redirect("/");
+                return res.redirect("/admin/");
             };
         };
     } catch (error) {
@@ -123,7 +123,7 @@ exports.forgetPassword = async (req, res) => {
         res.render("users/Forget-Password", { user: req.user });
     } catch (error) {
         req.flash("error", error.message);
-        res.redirect("/");
+        res.redirect("/admin/");
     };
 };
 
@@ -137,19 +137,19 @@ exports.ForgetPassword = async (req, res) => {
                 const result = await userModel.findByIdAndUpdate({ _id: req.user._id }, { password: pp });
                 if (result) {
                     req.flash("success", "Password Change Successfully !");
-                    res.redirect("/");
+                    res.redirect("/admin/admin");
                 };
             } else {
                 req.flash("error", "Old Password Is Wrong !");
-                res.redirect("/forget-password");
+                res.redirect("/admin/forget-password");
             };
         } else {
             req.flash("error", "Password And Confirm Is Not Match");
-            res.redirect("/forget-password");
+            res.redirect("/admin/forget-password");
         };
     } catch (error) {
         req.flash("error", error.message);
-        res.redirect("/forget-password");
+        res.redirect("/admin/forget-password");
     };
 };
 
@@ -189,7 +189,7 @@ exports.add_profile_data = async (req, res) => {
         const updatedata = await userModel.findByIdAndUpdate({ _id: id }, obj, { new: true });
         req.flash("success", "profile updated successfully")
 
-        res.redirect("/")
+        res.redirect("/admin/admin")
     } catch (error) {
         console.log(error);
 
@@ -201,7 +201,7 @@ exports.AdminlogOut = async (req, res) => {
     try {
         res.clearCookie("accessToken", 'token', { expires: new Date(0) })
             .clearCookie("refreshToken", 'token', { expires: new Date(0) })
-            .redirect("/");
+            .redirect("/admin");
     } catch (error) {
         console.log(error);
     }

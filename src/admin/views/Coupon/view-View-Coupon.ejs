@@ -19,7 +19,7 @@
           <h1><%-user.type %></h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
               <li class="breadcrumb-item active">Dashboard</li>
             </ol>
           </nav>
@@ -34,7 +34,7 @@
                     <h5 class="card-title">Filter</h5>
 
                     <!-- No Labels Form -->
-                    <form class="needs-validation row g-3" action="/View-All-Coupon" novalidate >
+                    <form class="needs-validation row g-3" action="/admin/View-All-Coupon" novalidate >
                       <div class="col-md-4">
                         <label>Enter Greater Than Amount</label> <br>
                         <input type="number" name="amount" class="form-control" placeholder="Enter Amount"
@@ -81,7 +81,7 @@
                           <label></label> <br>
 
                           <button type="submit" class="btn btn-primary">Submit</button>
-                          <a href="/View-All-Coupon"> <button type="button" class="btn btn-secondary">Reset</button></a>
+                          <a href="/admin/View-All-Coupon"> <button type="button" class="btn btn-secondary">Reset</button></a>
                         </div>
                       </div>
                     </form>
@@ -137,9 +137,9 @@
                                 <%= data.Discount %>
                               </td>
                               <td>
-                                <a href="/Coupon?id=<%= data._id%>" class="btn btn-info"><i class="ri-edit-box-line"
+                                <a href="/admin/Coupon?id=<%= data._id%>" class="btn btn-info"><i class="ri-edit-box-line"
                                     title="Edit"></i></a>
-                                <a href="/Delete-Coupon?id=<%= data._id%>" class="btn btn-danger"><i
+                                <a href="/admin/Delete-Coupon?id=<%= data._id%>" class="btn btn-danger"><i
                                     class="ri-delete-bin-5-line" title="delete"></i></a>
                               </td>
                             </tr>
