@@ -9,7 +9,7 @@ exports.homeBanners = async (req, res) => {
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to load banners.");
-        return res.redirect("/");
+        return res.redirect("/admin/");
     }
 };
 
@@ -21,12 +21,12 @@ exports.addBanner = async (req, res) => {
         if (query.id) {
             if (!mongoose.Types.ObjectId.isValid(query.id)) {
                 req.flash("error", "Invalid banner id.");
-                return res.redirect("/home-banners");
+                return res.redirect("/admin/home-banners");
             }
             data = await homeBannerModel.findById(query.id);
             if (!data) {
                 req.flash("error", "Banner not found.");
-                return res.redirect("/home-banners");
+                return res.redirect("/admin/home-banners");
             }
         }
 
@@ -34,7 +34,7 @@ exports.addBanner = async (req, res) => {
     } catch (err) {
         console.log(err);
         req.flash("error", "Unable to open banner form.");
-        return res.redirect("/home-banners");
+        return res.redirect("/admin/home-banners");
     }
 };
 

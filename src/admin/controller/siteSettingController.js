@@ -7,7 +7,7 @@ exports.renderSiteSettingForm = async (req, res) => {
 
     if (req.query.id && !data) {
       req.flash("error", "Site setting record not found.");
-      return res.redirect("/view-site-setting-config");
+      return res.redirect("/admin/view-site-setting-config");
     }
 
     return res.render("app/add_site_setting", {
@@ -18,7 +18,7 @@ exports.renderSiteSettingForm = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to open site setting form.");
-    return res.redirect("/view-site-setting-config");
+    return res.redirect("/admin/view-site-setting-config");
   }
 };
 
@@ -35,7 +35,7 @@ exports.renderSiteSettingList = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to load site setting list.");
-    return res.redirect("/");
+    return res.redirect("/admin/");
   }
 };
 
@@ -43,7 +43,7 @@ exports.saveSiteSetting = async (req, res) => {
   try {
     await siteSettingService.saveSiteSetting(req.body);
     req.flash("success", "Site setting saved successfully.");
-    return res.redirect("/view-site-setting-config");
+    return res.redirect("/admin/view-site-setting-config");
   } catch (error) {
     console.log(error);
     req.flash("error", error.message || "Unable to save site setting.");
@@ -56,14 +56,14 @@ exports.deleteSiteSetting = async (req, res) => {
     const deleted = await siteSettingService.deleteSiteSettingById(req.query.id);
     if (!deleted) {
       req.flash("error", "Site setting record not found.");
-      return res.redirect("/view-site-setting-config");
+      return res.redirect("/admin/view-site-setting-config");
     }
 
     req.flash("success", "Site setting deleted successfully.");
-    return res.redirect("/view-site-setting-config");
+    return res.redirect("/admin/view-site-setting-config");
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to delete site setting.");
-    return res.redirect("/view-site-setting-config");
+    return res.redirect("/admin/view-site-setting-config");
   }
 };

@@ -5,7 +5,7 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
         <li class="nav-item">
-            <a class="nav-link " href="/">
+            <a class="nav-link " href="/admin/">
                 <i class="bi bi-grid"></i>
                 <span>Dashboard</span>
             </a>
@@ -18,23 +18,23 @@
             </a>
             <ul id="home-banners" class="nav-content collapse" data-bs-parent="#sidebar-nav">
                 <li>
-                    <a href="/home-banners">
+                    <a href="/admin/home-banners">
                         <i class="bi bi-circle"></i><span>view-banners</span></a>
                 </li>
                 <li>
-                    <a href="/view-category">
+                    <a href="/admin/view-category">
                         <i class="bi bi-circle"></i><span>all-category</span></a>
                 </li>
                 <li>
-                    <a href="/view-about">
+                    <a href="/admin/view-about">
                         <i class="bi bi-circle"></i><span>About Management</span></a>
                 </li>
                 <li>
-                    <a href="/view-blog">
+                    <a href="/admin/view-blog">
                         <i class="bi bi-circle"></i><span>Blog Management</span></a>
                 </li>
                 <li>
-                    <a href="/view-frequent">
+                    <a href="/admin/view-frequent">
                         <i class="bi bi-circle"></i><span>FAQ Management</span></a>
                 </li>
         </li>
@@ -46,12 +46,12 @@
         </a>
         <ul id="app-config-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
             <li>
-                <a href="/view-gallery-config">
+                <a href="/admin/view-gallery-config">
                     <i class="bi bi-circle"></i><span>Gallery Config</span>
                 </a>
             </li>
             <li>
-                <a href="/view-site-setting-config">
+                <a href="/admin/view-site-setting-config">
                     <i class="bi bi-circle"></i><span>Site Setting Config</span>
                 </a>
             </li>
@@ -65,14 +65,14 @@
 
             <% if (storeItems.length === 0) { %>
                 <li>
-                    <a href="/add-saloon">
+                    <a href="/admin/add-saloon">
                         <i class="bi bi-circle"></i><span>Add Saloon</span>
                     </a>
                 </li>
             <% } else { %>
                 <% for (const store of storeItems) { %>
                     <li>
-                        <a href="/add-saloon?id=<%= store._id %>">
+                        <a href="/admin/add-saloon?id=<%= store._id %>">
                             <i class="bi bi-circle"></i><span><%= store.storeName || "store" %></span>
                         </a>
                     </li>
@@ -89,12 +89,12 @@
         </a>
         <ul id="components-nav1" class="nav-content collapse " data-bs-parent="#sidebar-nav">
             <li>
-                <a href="/view-product">
+                <a href="/admin/view-product">
                     <i class="bi bi-circle"></i><span>View Product</span>
                 </a>
             </li>
             <li>
-                <a href="/view-product-package">
+                <a href="/admin/view-product-package">
                     <i class="bi bi-circle"></i><span>View Product Package</span>
                 </a>
             </li>
@@ -127,12 +127,12 @@
         </a>
         <ul id="icon-User" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
             <li>
-                <a href="/all-user">
+                <a href="/admin/all-user">
                     <i class="bi bi-circle"></i><span>All User</span>
                 </a>
             </li>
             <li>
-                <a href="/view-team-member">
+                <a href="/admin/view-team-member">
                     <i class="bi bi-circle"></i><span>Team Management</span>
                 </a>
             </li>
@@ -145,7 +145,7 @@
         </a>
         <ul id="icon-Artists" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
             <li>
-                <a href="/Artists">
+                <a href="/admin/Artists">
                     <i class="bi bi-circle"></i><span> Artists </span>
                 </a>
             </li>
@@ -158,7 +158,7 @@
         </a>
         <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
             <li>
-                <a href="/get-All-order">
+                <a href="/admin/get-All-order">
                     <i class="bi bi-circle"></i><span>View All Order</span>
                 </a>
             </li>
@@ -180,7 +180,7 @@
         </a>
         <ul id="icon-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
             <li>
-                <a href="/view-all-payment">
+                <a href="/admin/view-all-payment">
                     <i class="bi bi-circle"></i><span>All Payment</span>
                 </a>
             </li>
@@ -194,13 +194,13 @@
         </a>
         <ul id="icon-Vacancy" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
             <li>
-                <a href="/Vacancy">
+                <a href="/admin/Vacancy">
                     <i class="bi bi-circle"></i><span>Add Vacancy Post</span>
                 </a>
             </li>
 
             <li>
-                <a href="/View-Vacancy">
+                <a href="/admin/View-Vacancy">
                     <i class="bi bi-circle"></i><span>View Vacancy</span>
                 </a>
             </li>
@@ -216,17 +216,17 @@
         </a>
         <ul id="icon-Refer" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
             <li>
-                <a href="/Set-point-to-rupee">
+                <a href="/admin/Set-point-to-rupee">
                     <i class="bi bi-circle"></i><span>Set point to rupee</span>
                 </a>
             </li>
             <!-- <li>
-                            <a href="/Refer-Earn">
+                            <a href="/admin/Refer-Earn">
                                 <i class="bi bi-circle"></i><span>Refer-Earn</span>
                             </a>
                         </li> -->
             <li>
-                <a href="/View-Refer-Earn">
+                <a href="/admin/View-Refer-Earn">
                     <i class="bi bi-circle"></i><span>View-Refer-Earn</span>
                 </a>
             </li>
@@ -239,7 +239,7 @@
         </a>
         <ul id="icon-Contact" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
             <li>
-                <a href="/Contact-Us-Requist">
+                <a href="/admin/Contact-Us-Requist">
                     <i class="bi bi-circle"></i><span>View-Contact-Us-Requist</span>
                 </a>
             </li>
@@ -252,10 +252,10 @@
         </a>
         <ul id="icon-Letter" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
             <li>
-                <!-- <a href="/Send-All-User-Email">
+                <!-- <a href="/admin/Send-All-User-Email">
                                 <i class="bi bi-circle"></i><span>Send All User Email</span>
                             </a> -->
-                <a href="/Send-notification">
+                <a href="/admin/Send-notification">
                     <i class="bi bi-circle"></i><span>Send All User Email</span>
                 </a>
             </li>
@@ -268,7 +268,7 @@
         </a>
         <ul id="icon-Testimonial" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
             <li>
-                <a href="/view-testimonial">
+                <a href="/admin/view-testimonial">
                     <i class="bi bi-circle"></i><span>Testimonial Management</span>
                 </a>
             </li>

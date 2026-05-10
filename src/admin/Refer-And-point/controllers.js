@@ -25,19 +25,19 @@ exports.pointAndRupee = async (req, res) => {
             result = await refer.findByIdAndUpdate({ _id: mongoose.Types.ObjectId(req.query.id) }, req.body, { new: true });
             if (result) {
                 req.flash("success", "update succsfully");
-                res.redirect("/View-Refer-Earn");
+                res.redirect("/admin/View-Refer-Earn");
             };
         } else {
             const referDetail = new refer(req.body);
             result = await referDetail.save();
             if (result) {
                 req.flash("success", "created succsfully");
-                res.redirect("/View-Refer-Earn");
+                res.redirect("/admin/View-Refer-Earn");
             }
         }
         if (!result) {
             req.flash("error", "samething is Wroung");
-            res.redirect("/Set-point-to-rupee");
+            res.redirect("/admin/Set-point-to-rupee");
         };
     } catch (error) {
         console.log(error);
@@ -59,7 +59,7 @@ exports.ViewReferEarn = async (req, res) => {
 exports.deletReferEranProgram = async (req, res) => {
     try {
         const data = await refer.findByIdAndDelete({ _id: mongoose.Types.ObjectId(req.query.id) });
-        res.redirect("/View-Refer-Earn")
+        res.redirect("/admin/View-Refer-Earn")
     } catch (error) {
         console.log(error);
     };

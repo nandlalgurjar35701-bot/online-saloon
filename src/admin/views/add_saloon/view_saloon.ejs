@@ -19,7 +19,7 @@
           <h1><%-user.type %></h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
               <li class="breadcrumb-item active">Dashboard</li>
             </ol>
           </nav>
@@ -34,7 +34,7 @@
                     <h5 class="card-title">Filter</h5>
 
                     <!-- No Labels Form -->
-                    <form class="row g-3" action="/view-saloon">
+                    <form class="row g-3" action="/admin/view-saloon">
                       <div class="col-md-4">
                         <label>Choose City</label> <br>
                         <select id="inputState" name="city" class="form-select">
@@ -83,7 +83,7 @@
                         <label></label> <br>
                         <div class="text-center">
                           <button type="submit" class="btn btn-primary">Submit</button>
-                          <a href="/view-saloon"> <button type="button" class="btn btn-secondary">Reset</button></a>
+                          <a href="/admin/view-saloon"> <button type="button" class="btn btn-secondary">Reset</button></a>
                         </div>
                       </div>
                     </form>
@@ -95,7 +95,7 @@
                   <div class="card-body ">
                     <div class="d-flex justify-content-between align-items-center">
                       <h5 class="card-title mb-0">Saloon List</h5>
-                      <a href="/add-saloon" class="btn btn-primary btn-sm">Add Store</a>
+                      <a href="/admin/add-saloon" class="btn btn-primary btn-sm">Add Store</a>
                     </div>
                     <div style="border-top: 1px solid #e9ecef; margin: 12px 0 14px 0;"></div>
 
@@ -178,14 +178,14 @@
                               </td>
                               <% let NumberOfservice;%>
                                 <td>
-                                  <a href="/add-product?saloonId=<%= store._id%>" class="btn btn-success text-warning"
+                                  <a href="/admin/add-product?saloonId=<%= store._id%>" class="btn btn-success text-warning"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Add New Service"><i
                                       class="ri-file-add-line"></i></a>
                                   <%store.ccc.forEach(element=> {%>
 
                                     <%if( element._id==0){%>
                                       <% NumberOfservice=element.count %>
-                                        <a href="/view-product?id=<%= store._id%>" class="btn btn-success"
+                                        <a href="/admin/view-product?id=<%= store._id%>" class="btn btn-success"
                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="view Service">
                                           <%= element.count %>
                                             <i class="bi bi-eye"></i>
@@ -196,7 +196,7 @@
                                 </td>
                                 <td>
                                   <%if(NumberOfservice>1){%>
-                                    <a href="/add-product-package?saloonId=<%= store._id%>"
+                                    <a href="/admin/add-product-package?saloonId=<%= store._id%>"
                                       class="btn btn-success text-warning" data-bs-toggle="tooltip"
                                       data-bs-placement="top" data-bs-title="Add New Package">
                                       <i class="ri-file-add-line"></i></a>
@@ -205,7 +205,7 @@
                                       <%if(store.ccc.length>1){%>
                                         <%store.ccc.forEach(element=> {%>
                                           <%if( element._id==1){%>
-                                            <a href="/view-product-package?id=<%= store._id%>" class="btn btn-success"
+                                            <a href="/admin/view-product-package?id=<%= store._id%>" class="btn btn-success"
                                               data-bs-toggle="tooltip" data-bs-placement="top"
                                               data-bs-title="view Package">
                                               <%= element.count %>
@@ -217,11 +217,11 @@
                                                   <!-- sahil view end -->
                                 </td>
                                 <td>
-                                  <!-- <a href="/add-saloon?id=<%= data._id%>" class="btn btn-dark">Edit</a>
-                                <a href="/delete-saloon?id=<%= data._id%>" class="btn btn-danger">Delete</a> -->
-                                  <a href="/add-saloon?id=<%= store._id%>" class="btn btn-info" data-bs-toggle="tooltip"
+                                  <!-- <a href="/admin/add-saloon?id=<%= data._id%>" class="btn btn-dark">Edit</a>
+                                <a href="/admin/delete-saloon?id=<%= data._id%>" class="btn btn-danger">Delete</a> -->
+                                  <a href="/admin/add-saloon?id=<%= store._id%>" class="btn btn-info" data-bs-toggle="tooltip"
                                     data-bs-placement="top" data-bs-title="Edit"><i class="ri-edit-box-line"></i></a>
-                                  <a href="/delete-saloon?id=<%= store._id%>" class="btn btn-danger"
+                                  <a href="/admin/delete-saloon?id=<%= store._id%>" class="btn btn-danger"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Saloon">
                                     <i class="ri-delete-bin-5-line"></i>
                                   </a>
@@ -296,7 +296,7 @@
           $.ajax({
             type: 'get',
             data: { "id": num },
-            url: '/get-saloon-address',
+            url: '/admin/get-saloon-address',
             success: function (data) {
               if (data.length > 0) {
                 $('#moduleDataAppend').empty()

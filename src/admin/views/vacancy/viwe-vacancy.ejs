@@ -19,7 +19,7 @@
           <h1><%-user.type %></h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
               <li class="breadcrumb-item active">Dashboard</li>
             </ol>
           </nav>
@@ -34,7 +34,7 @@
                     <h5 class="card-title">Filter</h5>
 
                     <!-- No Labels Form -->
-                    <form class="row g-3" action="/View-Vacancy">
+                    <form class="row g-3" action="/admin/View-Vacancy">
 
                       <div class="col-md-3">
                         <label>Job Title</label> <br>
@@ -63,7 +63,7 @@
                         <label></label> <br>
                         <div class="text-center">
                           <button type="submit" class="btn btn-primary">Submit</button>
-                          <a href="/View-Vacancy"> <button type="button" class="btn btn-secondary">Reset</button></a>
+                          <a href="/admin/View-Vacancy"> <button type="button" class="btn btn-secondary">Reset</button></a>
                         </div>
                       </div>
                     </form>
@@ -145,10 +145,10 @@
                                   class="btn btn-info"><i class="bi bi-eye"></i></button>
                               </td>
                               <td>
-                                <a href="/delete-Vacancy?id=<%= data._id%>" class="btn btn-danger">
+                                <a href="/admin/delete-Vacancy?id=<%= data._id%>" class="btn btn-danger">
                                   <i class="ri-delete-bin-5-line" title="delete"></i>
                                 </a>
-                                <a href="/Vacancy?id=<%=data._id%>" class="btn btn-info">
+                                <a href="/admin/Vacancy?id=<%=data._id%>" class="btn btn-info">
                                   <i class="ri-edit-box-line" title="Edit"></i>
                                 </a>
                               </td>
@@ -191,7 +191,7 @@
           $.ajax({
             type: 'get',
             data: { "id": num },
-            url: '/find-Vacancy',
+            url: '/admin/find-Vacancy',
             success: function (data) {
               if (data.length > 0) {
                 $('#moduleDataAppend').empty()

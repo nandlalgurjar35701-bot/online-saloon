@@ -7,7 +7,7 @@ exports.renderGalleryForm = async (req, res) => {
 
     if (req.query.id && !data) {
       req.flash("error", "Gallery record not found.");
-      return res.redirect("/view-gallery-config");
+      return res.redirect("/admin/view-gallery-config");
     }
 
     return res.render("app/add_gallery", {
@@ -18,7 +18,7 @@ exports.renderGalleryForm = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to open gallery form.");
-    return res.redirect("/view-gallery-config");
+    return res.redirect("/admin/view-gallery-config");
   }
 };
 
@@ -35,7 +35,7 @@ exports.renderGalleryList = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to load gallery list.");
-    return res.redirect("/");
+    return res.redirect("/admin/");
   }
 };
 
@@ -43,7 +43,7 @@ exports.saveGallery = async (req, res) => {
   try {
     await galleryService.saveGallery({ body: req.body, file: req.file });
     req.flash("success", "Gallery saved successfully.");
-    return res.redirect("/view-gallery-config");
+    return res.redirect("/admin/view-gallery-config");
   } catch (error) {
     console.log(error);
     req.flash("error", error.message || "Unable to save gallery.");
@@ -56,14 +56,14 @@ exports.deleteGallery = async (req, res) => {
     const deleted = await galleryService.deleteGalleryById(req.query.id);
     if (!deleted) {
       req.flash("error", "Gallery record not found.");
-      return res.redirect("/view-gallery-config");
+      return res.redirect("/admin/view-gallery-config");
     }
 
     req.flash("success", "Gallery deleted successfully.");
-    return res.redirect("/view-gallery-config");
+    return res.redirect("/admin/view-gallery-config");
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to delete gallery.");
-    return res.redirect("/view-gallery-config");
+    return res.redirect("/admin/view-gallery-config");
   }
 };

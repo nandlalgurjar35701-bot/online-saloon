@@ -18,7 +18,7 @@
           <h1><%-user.type %></h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
               <li class="breadcrumb-item active">Dashboard</li>
             </ol>
           </nav>
@@ -33,7 +33,7 @@
                     <h5 class="card-title">Filter</h5>
 
                     <!-- No Labels Form -->
-                    <form class="needs-validation row g-3" action="/Contact-Us-Requist" novalidate>
+                    <form class="needs-validation row g-3" action="/admin/Contact-Us-Requist" novalidate>
 
                       <div class="col-md-3">
                         <label> Enter name</label> <br>
@@ -76,7 +76,7 @@
                           <label></label> <br>
 
                           <button type="submit" class="btn btn-primary">Submit</button>
-                          <a href="/Contact-Us-Requist"> <button type="button"
+                          <a href="/admin/Contact-Us-Requist"> <button type="button"
                               class="btn btn-secondary">Reset</button></a>
                         </div>
                       </div>
@@ -127,12 +127,12 @@
                               <td>
 
                                 <%if(query.status!='-1'){%>
-                                  <a href="/Send-notification?id=<%= data._id%>" class="btn btn-info"
+                                  <a href="/admin/Send-notification?id=<%= data._id%>" class="btn btn-info"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Give Reply">
                                     <!-- <i class="ri-edit-box-line" title="Edit"></i> -->
                                     <i class="bi bi-reply-all-fill"></i>
                                   </a>
-                                  <a href="/Reject-requist?id=<%= data._id%>" class="btn btn-danger"
+                                  <a href="/admin/Reject-requist?id=<%= data._id%>" class="btn btn-danger"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete Rejected">
                                     <i class="ri-delete-bin-5-line" title="delete"></i>
                                   </a>

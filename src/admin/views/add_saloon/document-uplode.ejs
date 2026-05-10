@@ -22,7 +22,7 @@
           </h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
               <li class="breadcrumb-item active">Dashboard</li>
             </ol>
           </nav>
@@ -35,13 +35,13 @@
                 <div class="card">
                   <div class="card-body">
                     <h5 class="card-title">document-
-                      <a href="/add-saloon?id=<%=_id%>">Step 1</a>
-                        <a href="/business-profile-info-by-admin?id=<%=_id%>">Step 2</a>
-                        <a href="/business-bank-information?id=<%=_id%>">Step 3</a>
+                      <a href="/admin/add-saloon?id=<%=_id%>">Step 1</a>
+                        <a href="/admin/business-profile-info-by-admin?id=<%=_id%>">Step 2</a>
+                        <a href="/admin/business-bank-information?id=<%=_id%>">Step 3</a>
                         <a href="#">Step 4</a>
                     </h5>
                     <%if(req.query.id){%>
-                    <form action="/business-uplode-document-admin?id=<%=saloon_data._id%>" method="post"
+                    <form action="/admin/business-uplode-document-admin?id=<%=saloon_data._id%>" method="post"
                       enctype="multipart/form-data">
 
                       <div class="row g-3">
@@ -118,7 +118,7 @@
 
                     </form>
                     <%}else{%>
-                      <form action="/business-uplode-document-admin?id=<%=saloon_data._id%>" method="post"
+                      <form action="/admin/business-uplode-document-admin?id=<%=saloon_data._id%>" method="post"
                         enctype="multipart/form-data">
   
                         <div class="row g-3">

@@ -15,7 +15,7 @@ exports.renderFaqForm = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to load FAQ form.");
-    return res.redirect("/view-frequent");
+    return res.redirect("/admin/view-frequent");
   }
 };
 
@@ -40,7 +40,7 @@ exports.renderFaqList = async (req, res) => {
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to load FAQs.");
-    return res.redirect("/");
+    return res.redirect("/admin/");
   }
 };
 
@@ -49,15 +49,15 @@ exports.deleteFaq = async (req, res) => {
     const deleted = await faqService.deleteFaqById(req.query.id);
     if (!deleted) {
       req.flash("error", "FAQ not found.");
-      return res.redirect("/view-frequent");
+      return res.redirect("/admin/view-frequent");
     }
 
     req.flash("success", "FAQ deleted successfully.");
-    return res.redirect("/view-frequent");
+    return res.redirect("/admin/view-frequent");
   } catch (error) {
     console.log(error);
     req.flash("error", "Unable to delete FAQ.");
-    return res.redirect("/view-frequent");
+    return res.redirect("/admin/view-frequent");
   }
 };
 

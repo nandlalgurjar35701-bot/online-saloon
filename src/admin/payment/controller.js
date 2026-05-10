@@ -125,10 +125,10 @@ exports.DeletePayment = async (req, res) => {
         if (req.query.id != undefined && req.query.id != "") {
             const updateData = await payment.findByIdAndDelete({ _id: mongoose.Types.ObjectId(req.query.id) })
             if (updateData) {
-                res.redirect("/view-all-payment");
+                res.redirect("/admin/view-all-payment");
             };
         } else {
-            res.redirect("/");
+            res.redirect("/admin/");
         }
     } catch (error) {
         console.log(error);

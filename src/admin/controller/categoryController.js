@@ -16,12 +16,12 @@ exports.Category = async (req, res) => {
         if (req.query.id) {
             if (!mongoose.Types.ObjectId.isValid(req.query.id)) {
                 req.flash("error", "Invalid parent category id.");
-                return res.redirect("/view-category");
+                return res.redirect("/admin/view-category");
             }
             const parentCategory = await CategoryModule.findById(req.query.id).lean();
             if (!parentCategory) {
                 req.flash("error", "Parent category not found.");
-                return res.redirect("/view-category");
+                return res.redirect("/admin/view-category");
             }
             return res.render("category/index", {
                 user: req.user,
@@ -31,13 +31,13 @@ exports.Category = async (req, res) => {
         } else if (req.query.EditId) {
             if (!mongoose.Types.ObjectId.isValid(req.query.EditId)) {
                 req.flash("error", "Invalid category id.");
-                return res.redirect("/view-category");
+                return res.redirect("/admin/view-category");
             }
 
             const findData = await CategoryModule.findOne({ _id: mongoose.Types.ObjectId(req.query.EditId) });
             if (!findData) {
                 req.flash("error", "Category not found.");
-                return res.redirect("/view-category");
+                return res.redirect("/admin/view-category");
             }
 
             return res.render("category/index", { user: req.user, data: findData });
@@ -47,7 +47,7 @@ exports.Category = async (req, res) => {
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to load category page.");
-        return res.redirect("/view-category");
+        return res.redirect("/admin/view-category");
     }
 };
 
@@ -57,7 +57,7 @@ exports.AddCategory = async (req, res) => {
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to save category.");
-        return res.redirect("/view-category");
+        return res.redirect("/admin/view-category");
     }
 };
 
@@ -94,12 +94,12 @@ exports.ViwesCategory = async (req, res) => {
         if (data) {
             return res.render("category/view-category", { query: req.query, data, user: req.user });
         } else {
-            return res.redirect("/");
+            return res.redirect("/admin/");
         }
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to load categories.");
-        return res.redirect("/");
+        return res.redirect("/admin/");
     }
 };
 
@@ -109,26 +109,26 @@ exports.DeleteCategory = async (req, res) => {
 
         if (!mongoose.Types.ObjectId.isValid(req.query.id)) {
             req.flash("error", "Invalid category id.");
-            return res.redirect("/view-category");
+            return res.redirect("/admin/view-category");
         }
 
         const hasChildren = await CategoryModule.exists({ parent_Name: mongoose.Types.ObjectId(req.query.id) });
         if (hasChildren) {
             req.flash("error", "Please delete sub categories first.");
-            return res.redirect("/view-category");
+            return res.redirect("/admin/view-category");
         }
 
         const result = await CategoryModule.findByIdAndRemove({ _id: mongoose.Types.ObjectId(req.query.id) });
         if (result) {
             req.flash("success", "Category Delete Succesfully !");
-            return res.redirect("/view-category");
+            return res.redirect("/admin/view-category");
         } else {
             req.flash("error", "Category not found.");
-            return res.redirect("/view-category");
+            return res.redirect("/admin/view-category");
         }
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to delete category.");
-        return res.redirect("/view-category");
+        return res.redirect("/admin/view-category");
     }
 };

@@ -112,26 +112,26 @@ exports.saloonRegister = async (req, res) => {
                 .limit(2);
 
             if (adminStores.length === 1) {
-                return res.redirect(`/add-saloon?id=${adminStores[0]._id}`);
+                return res.redirect(`/admin/add-saloon?id=${adminStores[0]._id}`);
             }
         }
 
         if (req.query.id) {
             if (!isValidObjectId(req.query.id)) {
                 req.flash("error", "Invalid store id.");
-                return res.redirect("/add-saloon");
+                return res.redirect("/admin/add-saloon");
             }
             saloon_data = await saloon.findOne({ _id: mongoose.Types.ObjectId(req.query.id), ...storeScope });
             if (!saloon_data) {
                 req.flash("error", "Store not found.");
-                return res.redirect("/add-saloon");
+                return res.redirect("/admin/add-saloon");
             }
         }
         return res.render("add_saloon/saloon-Register", { user: req.user, data: saloon_data })
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to load store form.");
-        return res.redirect("/add-saloon");
+        return res.redirect("/admin/add-saloon");
     }
 }
 
@@ -149,31 +149,31 @@ exports.addSaloonStore = async (req, res) => {
         if (query.id) {
             if (!isValidObjectId(query.id)) {
                 req.flash("error", "Invalid store id.");
-                return res.redirect("/add-saloon");
+                return res.redirect("/admin/add-saloon");
             }
 
             const existingStore = await saloon.findOne({ _id: query.id, ...storeScope });
             if (!existingStore) {
                 req.flash("error", "Store not found.");
-                return res.redirect("/add-saloon");
+                return res.redirect("/admin/add-saloon");
             }
 
             const duplicateName = await saloon.findOne({ storeName, _id: { $ne: existingStore._id } });
             if (duplicateName) {
                 req.flash("error", "storeName Already Exists");
-                return res.redirect(`/add-saloon?id=${existingStore._id}`);
+                return res.redirect(`/admin/add-saloon?id=${existingStore._id}`);
             }
 
             const duplicateEmail = await saloon.findOne({ email, _id: { $ne: existingStore._id } });
             if (duplicateEmail) {
                 req.flash("error", "email Already Exists");
-                return res.redirect(`/add-saloon?id=${existingStore._id}`);
+                return res.redirect(`/admin/add-saloon?id=${existingStore._id}`);
             }
 
             const duplicatePhone = await saloon.findOne({ Phone, _id: { $ne: existingStore._id } });
             if (duplicatePhone) {
                 req.flash("error", "Phone Already Exists");
-                return res.redirect(`/add-saloon?id=${existingStore._id}`);
+                return res.redirect(`/admin/add-saloon?id=${existingStore._id}`);
             }
 
             const updatePayload = {
@@ -194,35 +194,35 @@ exports.addSaloonStore = async (req, res) => {
 
             const updated = await saloon.findByIdAndUpdate(existingStore._id, updatePayload, { new: true });
             req.flash("success", "saloon update successfully step-1");
-            return res.redirect(`/add-saloon?id=${updated._id}`);
+            return res.redirect(`/admin/add-saloon?id=${updated._id}`);
         } else {
             if (!storeName || !email || !Phone || !ownerName) {
                 req.flash("error", "Please fill all required fields.");
-                return res.redirect("/add-saloon");
+                return res.redirect("/admin/add-saloon");
             }
             if (!password) {
                 req.flash("error", "Password is required.");
-                return res.redirect("/add-saloon");
+                return res.redirect("/admin/add-saloon");
             }
             if (password !== confromPassword) {
                 req.flash("error", "password not match");
-                return res.redirect("/add-saloon");
+                return res.redirect("/admin/add-saloon");
             }
 
             const duplicateName = await saloon.findOne({ storeName });
             if (duplicateName) {
                 req.flash("error", "storeName Already Exists");
-                return res.redirect("/add-saloon");
+                return res.redirect("/admin/add-saloon");
             }
             const duplicateEmail = await saloon.findOne({ email });
             if (duplicateEmail) {
                 req.flash("error", "email Already Exists");
-                return res.redirect("/add-saloon");
+                return res.redirect("/admin/add-saloon");
             }
             const duplicatePhone = await saloon.findOne({ Phone });
             if (duplicatePhone) {
                 req.flash("error", "Phone Already Exists");
-                return res.redirect("/add-saloon");
+                return res.redirect("/admin/add-saloon");
             }
 
             const createdAdmin = await upsertSaloonAdminUser({
@@ -246,12 +246,12 @@ exports.addSaloonStore = async (req, res) => {
                 description
             });
             req.flash("success", "Store added successfully.");
-            return res.redirect(`/add-saloon?id=${created._id}`);
+            return res.redirect(`/admin/add-saloon?id=${created._id}`);
         }
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to save store details.");
-        return res.redirect("/add-saloon");
+        return res.redirect("/admin/add-saloon");
     }
 }
 
@@ -263,12 +263,12 @@ exports.businessProfile = async (req, res) => {
         const storeScope = getStoreScopeForUser(req.user);
         if (!req.query.id || !isValidObjectId(req.query.id)) {
             req.flash("error", "Invalid store id.");
-            return res.redirect("/add-saloon");
+            return res.redirect("/admin/add-saloon");
         }
         const find = await saloon.findOne({ _id: mongoose.Types.ObjectId(req.query.id), ...storeScope });
         if (!find) {
             req.flash("error", "Store not found.");
-            return res.redirect("/add-saloon");
+            return res.redirect("/admin/add-saloon");
         }
 
         const updated = await saloon.findByIdAndUpdate(
@@ -278,11 +278,11 @@ exports.businessProfile = async (req, res) => {
         );
 
         req.flash("success", "update is Succesfuuly step 2");
-        return res.redirect(`/add-saloon?id=${updated._id}`);
+        return res.redirect(`/admin/add-saloon?id=${updated._id}`);
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to save business profile info.");
-        return res.redirect("/add-saloon");
+        return res.redirect("/admin/add-saloon");
     }
 }
 
@@ -293,12 +293,12 @@ exports.businessBankInfoAdmin = async (req, res) => {
         const storeScope = getStoreScopeForUser(req.user);
         if (!req.query.id || !isValidObjectId(req.query.id)) {
             req.flash("error", "Invalid store id.");
-            return res.redirect("/add-saloon");
+            return res.redirect("/admin/add-saloon");
         }
         const find = await saloon.findOne({ _id: mongoose.Types.ObjectId(req.query.id), ...storeScope });
         if (!find) {
             req.flash("error", "Store not found.");
-            return res.redirect("/add-saloon");
+            return res.redirect("/admin/add-saloon");
         }
 
         const updated = await saloon.findByIdAndUpdate(
@@ -308,11 +308,11 @@ exports.businessBankInfoAdmin = async (req, res) => {
         );
 
         req.flash("success", "update is Succesfuuly step 3");
-        return res.redirect(`/add-saloon?id=${updated._id}`);
+        return res.redirect(`/admin/add-saloon?id=${updated._id}`);
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to save bank info.");
-        return res.redirect("/add-saloon");
+        return res.redirect("/admin/add-saloon");
     }
 }
 
@@ -323,12 +323,12 @@ exports.businessUplodeDocumentAdmin = async (req, res) => {
         const storeScope = getStoreScopeForUser(req.user);
         if (!req.query.id || !isValidObjectId(req.query.id)) {
             req.flash("error", "Invalid store id.");
-            return res.redirect("/add-saloon");
+            return res.redirect("/admin/add-saloon");
         }
         const find = await saloon.findOne({ _id: mongoose.Types.ObjectId(req.query.id), ...storeScope });
         if (!find) {
             req.flash("error", "Store not found.");
-            return res.redirect("/add-saloon");
+            return res.redirect("/admin/add-saloon");
         }
         const files = req.files || {};
         const documents = {
@@ -340,7 +340,7 @@ exports.businessUplodeDocumentAdmin = async (req, res) => {
 
         if (!documents.BannerLogo || !documents.logoImage || !documents.panImage || !documents.businessCertificate) {
             req.flash("error", "All document images are required.");
-            return res.redirect(`/add-saloon?id=${find._id}`);
+            return res.redirect(`/admin/add-saloon?id=${find._id}`);
         }
 
         const updated = await saloon.findByIdAndUpdate(
@@ -350,21 +350,21 @@ exports.businessUplodeDocumentAdmin = async (req, res) => {
         );
 
         req.flash("success", "update is Succesfuuly STEP 4");
-        return res.redirect(`/add-saloon?id=${updated._id}`);
+        return res.redirect(`/admin/add-saloon?id=${updated._id}`);
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to upload documents.");
-        return res.redirect("/add-saloon");
+        return res.redirect("/admin/add-saloon");
     }
 }
 
 exports.viewSaloon = async (req, res) => {
     try {
-        return res.redirect("/add-saloon");
+        return res.redirect("/admin/add-saloon");
     } catch (error) {
         console.log(error)
         req.flash("error", "Unable to load stores.");
-        return res.redirect("/add-saloon");
+        return res.redirect("/admin/add-saloon");
 
     }
 }
@@ -377,7 +377,7 @@ exports.deleteSaloon = async (req, res) => {
         const storeScope = getStoreScopeForUser(req.user);
         if (!isValidObjectId(id)) {
             req.flash("error", "Invalid store id.");
-            return res.redirect("/add-saloon");
+            return res.redirect("/admin/add-saloon");
         }
         const deleted = await saloon.findOneAndDelete({ _id: id, ...storeScope });
         if (deleted) {
@@ -398,11 +398,11 @@ exports.deleteSaloon = async (req, res) => {
         } else {
             req.flash("error", "Store not found.");
         }
-        return res.redirect("/add-saloon")
+        return res.redirect("/admin/add-saloon")
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to delete store.");
-        return res.redirect("/add-saloon");
+        return res.redirect("/admin/add-saloon");
     }
 }
 
@@ -472,11 +472,11 @@ exports.addImagesInSaloon = async (req, res) => {
         const storeScope = getStoreScopeForUser(req.user);
         if (!isValidObjectId(req.query.id)) {
             req.flash("error", "Invalid store id.");
-            return res.redirect("/add-saloon");
+            return res.redirect("/admin/add-saloon");
         }
         if (!req.files || req.files.length === 0) {
             req.flash("error", "Please upload at least one image.");
-            return res.redirect(`/add-saloon?id=${req.query.id}`);
+            return res.redirect(`/admin/add-saloon?id=${req.query.id}`);
         }
         let arr = [];
         req.files.forEach(element => {
@@ -486,16 +486,16 @@ exports.addImagesInSaloon = async (req, res) => {
 
         if (result) {
             req.flash("success", "Store images updated successfully.");
-            return res.redirect(`/add-saloon?id=${req.query.id}`)
+            return res.redirect(`/admin/add-saloon?id=${req.query.id}`)
         } else {
             req.flash("error", "Store not found.");
-            return res.redirect("/add-saloon")
+            return res.redirect("/admin/add-saloon")
         }
 
     } catch (error) {
         console.log(error);
         req.flash("error", "Unable to update store images.");
-        return res.redirect("/add-saloon");
+        return res.redirect("/admin/add-saloon");
     }
 }
 

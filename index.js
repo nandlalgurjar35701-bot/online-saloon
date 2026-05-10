@@ -4,6 +4,7 @@ const path = require('path');
 const flash = require('connect-flash');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const serviceController = require("./src/api/controller/serviceController");
 
 require('dotenv').config();
 require('./src/datasources/connection');
@@ -12,7 +13,7 @@ const app = express();
 const port = process.env.PORT || 7070;
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.set('views', path.join(__dirname, 'src/api/views'));
+app.set('views', [path.join(__dirname, 'src/api/views'), path.join(__dirname, 'src/admin/views')]);
 app.set('view engine', 'ejs');
 
 app.use(cookieParser('keyboard cat'));
@@ -43,6 +44,9 @@ app.use((req, res, next) => {
 });
 
 require('./src/api/routes')(app);
+require('./src/admin/routes')(app);
+
+app.all("*", serviceController.notFoundPage);
 
 app.listen(port, () => {
   console.log(`server is running http://localhost:${port}`);

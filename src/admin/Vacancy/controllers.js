@@ -61,13 +61,13 @@ exports.addVacency = async (req, res) => {
         if (req.query.id != undefined && req.query.id != "") {
             const result = await vacancy.findByIdAndUpdate({ _id: mongoose.Types.ObjectId(req.query.id) })
             if (result) {
-                res.redirect("/View-Vacancy");
+                res.redirect("/admin/View-Vacancy");
             };
         } else {
             const vacancyDitail = new vacancy(req.body);
             const result = await vacancyDitail.save();
             if (result) {
-                res.redirect("/View-Vacancy");
+                res.redirect("/admin/View-Vacancy");
             };
 
 
@@ -104,7 +104,7 @@ exports.deletVacancy = async (req, res) => {
     try {
         const data = await vacancy.findByIdAndDelete({ _id: req.query.id })
         if (data) {
-            res.redirect("/View-Vacancy")
+            res.redirect("/admin/View-Vacancy")
         }
     } catch (error) {
         console.log(error);

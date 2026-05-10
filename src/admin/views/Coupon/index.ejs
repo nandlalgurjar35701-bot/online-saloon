@@ -18,7 +18,7 @@
           <h1><%-user.type %></h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
               <li class="breadcrumb-item active">Dashboard</li>
             </ol>
           </nav>
@@ -33,7 +33,7 @@
                     <% if(typeof Coupon !=="undefined" && Coupon){%>
                      
                         <h5 class="card-title">Coupon Edit</h5>
-                        <form class="needs-validation row g-3" action="/Create-Coupon?id=<%=Coupon._id %>" method="post"
+                        <form class="needs-validation row g-3" action="/admin/Create-Coupon?id=<%=Coupon._id %>" method="post"
                           novalidate>
                           <div class="col-md-6">
                             <label for="">Title Name</label>
@@ -99,7 +99,7 @@
                         <%}else{%>
                           <h5 class="card-title">Coupon create</h5>
                           <!-- No Labels Form -->
-                          <form class="needs-validation row g-3" action="/Create-Coupon" method="post" novalidate>
+                          <form class="needs-validation row g-3" action="/admin/Create-Coupon" method="post" novalidate>
                             <div class="col-md-6">
                               <label for="">Title Name</label>
                               <input type="text" name="Title" class="form-control" placeholder="Enter Title Name"

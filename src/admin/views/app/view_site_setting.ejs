@@ -19,7 +19,7 @@
           <h1><%- user.type %></h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
               <li class="breadcrumb-item active">Site Setting Config</li>
             </ol>
           </nav>
@@ -31,7 +31,7 @@
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Filter Site Setting</h5>
-                  <form class="row g-3" action="/view-site-setting-config">
+                  <form class="row g-3" action="/admin/view-site-setting-config">
                     <div class="col-md-4">
                       <label>Brand Name</label>
                       <input type="text" name="brandName" class="form-control" value="<%= query.brandName || '' %>"
@@ -53,7 +53,7 @@
                     <div class="col-md-2 d-flex align-items-end">
                       <div>
                         <button type="submit" class="btn btn-primary">Submit</button>
-                        <a href="/view-site-setting-config" class="btn btn-secondary">Reset</a>
+                        <a href="/admin/view-site-setting-config" class="btn btn-secondary">Reset</a>
                       </div>
                     </div>
                   </form>
@@ -64,7 +64,7 @@
                 <div class="card-body">
                   <div class="d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">Site Setting Records</h5>
-                    <a href="/site-setting-config" class="btn btn-primary btn-sm">Add Site Setting</a>
+                    <a href="/admin/site-setting-config" class="btn btn-primary btn-sm">Add Site Setting</a>
                   </div>
                   <div style="border-top: 1px solid #e9ecef; margin: 12px 0 14px 0;"></div>
 
@@ -97,11 +97,11 @@
                               <% } %>
                             </td>
                             <td>
-                              <a href="/site-setting-config?id=<%= item._id %>" class="btn btn-info" data-bs-toggle="tooltip"
+                              <a href="/admin/site-setting-config?id=<%= item._id %>" class="btn btn-info" data-bs-toggle="tooltip"
                                 data-bs-placement="top" data-bs-title="Edit">
                                 <i class="ri-edit-box-line"></i>
                               </a>
-                              <a href="/delete-site-setting-config?id=<%= item._id %>" class="btn btn-danger" data-bs-toggle="tooltip"
+                              <a href="/admin/delete-site-setting-config?id=<%= item._id %>" class="btn btn-danger" data-bs-toggle="tooltip"
                                 data-bs-placement="top" data-bs-title="Delete">
                                 <i class="ri-delete-bin-5-line"></i>
                               </a>

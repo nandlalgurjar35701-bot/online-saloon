@@ -23,7 +23,7 @@
           <h1><%- user.type %></h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
               <li class="breadcrumb-item active">Dashboard</li>
             </ol>
           </nav>
@@ -99,7 +99,7 @@
 
             $("#hidden").val(descriptionHTML);
             $.ajax({
-              url: "/add-about-store",
+              url: "/admin/add-about-store",
               type: "POST",
               data: {
                 id: $("input[name='id']").val() || null,
