@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken")
-const userModel = require('../models/adminModel');
+const adminModel = require('../models/adminModel');
 const saloonModel = require("../models/saloonStoreModel");
 
 const getNormalizedRole = (value) => String(value || "").toLowerCase();
@@ -30,7 +30,7 @@ module.exports = async (req, res, next) => {
             const token = req.cookies.accessToken
             const { _id } = jwt.verify(token, process.env.accessToken);
 
-            req.user = await userModel.findOneAndUpdate({ _id }, { auth: token, isDeleted: false }, { new: true })
+            req.user = await adminModel.findOneAndUpdate({ _id }, { auth: token, isDeleted: false }, { new: true })
             if (req.user) {
                 await attachSidebarStores(req, res);
                 next()
@@ -54,7 +54,7 @@ module.exports = async (req, res, next) => {
                     httpOnly: true,
                     overwrite: true
                 });
-                req.user = await userModel.findOne({ _id: varifyRefreshToken._id })
+                req.user = await adminModel.findOne({ _id: varifyRefreshToken._id })
                 if (req.user) {
                     await attachSidebarStores(req, res);
                     next()

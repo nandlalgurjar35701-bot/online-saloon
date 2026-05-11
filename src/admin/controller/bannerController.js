@@ -3,7 +3,11 @@ const mongoose = require("mongoose");
 
 exports.homeBanners = async (req, res) => {
     try {
-        const data = await homeBannerModel.find().sort({ createdAt: -1 });
+        let filter = {};
+        if (req.user?.tendentId) {
+            filter.tendentId = req.user.tendentId
+        }
+        const data = await homeBannerModel.find(filter).sort({ createdAt: -1 });
         res.locals.message = req.flash();
         return res.render("app/homeBanner", { user: req.user, data, Findblog: [] });
     } catch (error) {
@@ -47,28 +51,29 @@ exports.uplodeBanner = async (req, res) => {
         if (req.body.id) {
             if (!mongoose.Types.ObjectId.isValid(req.body.id)) {
                 req.flash("error", "Invalid banner id.");
-                return res.redirect('/home-banners');
+                return res.redirect('/admin/home-banners');
             }
 
             const updated = await homeBannerModel.findByIdAndUpdate(req.body.id, req.body, { runValidators: true });
             if (!updated) {
                 req.flash("error", "Banner not found.");
-                return res.redirect('/home-banners');
+                return res.redirect('/admin/home-banners');
             }
             req.flash("success", "Banner updated successfully.");
         } else {
             if (!req.body.image) {
                 req.flash("error", "Banner image is required.");
-                return res.redirect('/add-banner');
+                return res.redirect('/admin/add-banner');
             }
+            req.body.tendentId = req.user.tendentId;
             await homeBannerModel.create(req.body);
             req.flash("success", "Banner added successfully.");
         }
-        return res.redirect('/home-banners');
+        return res.redirect('/admin/home-banners');
     } catch (err) {
         console.log(err);
         req.flash("error", "Unable to save banner.");
-        return res.redirect('/home-banners');
+        return res.redirect('/admin/home-banners');
     }
 };
 
@@ -77,20 +82,20 @@ exports.deleteBanner = async (req, res) => {
         const { query } = req;
         if (!mongoose.Types.ObjectId.isValid(query.id)) {
             req.flash("error", "Invalid banner id.");
-            return res.redirect('/home-banners');
+            return res.redirect('/admin/home-banners');
         }
 
         const data = await homeBannerModel.findByIdAndDelete(query.id);
         if (!data) {
             req.flash("error", "Banner not found.");
-            return res.redirect('/home-banners');
+            return res.redirect('/admin/home-banners');
         }
 
         req.flash("success", "Banner deleted successfully.");
-        return res.redirect('/home-banners');
+        return res.redirect('/admin/home-banners');
     } catch (err) {
         console.log(err);
         req.flash("error", "Unable to delete banner.");
-        return res.redirect('/home-banners');
+        return res.redirect('/admin/home-banners');
     }
 };

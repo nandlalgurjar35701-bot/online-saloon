@@ -2,6 +2,11 @@ const { string } = require("joi");
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
+  tendentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    index: true
+  },
   name: {
     type: String,
     default: ""
@@ -67,10 +72,5 @@ const userSchema = new mongoose.Schema({
     default: null
   }
 }, { timestamps: true, versionKey: false });
-
-
-
-
-
 
 module.exports = mongoose.model("admin", userSchema);

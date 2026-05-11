@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
+    tendentId: {
+        type: mongoose.Types.ObjectId,
+        default: null,
+    },
     heading: {
         type: String,
         default: ""
