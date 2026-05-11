@@ -9,7 +9,7 @@ const Artist = new mongoose.Schema({
         type: [String],
     },
 
-}, { timestamps: true });
+}, { timestamps: true, versionKey: false });
 
 
 const artist = new mongoose.model("artist", Artist);

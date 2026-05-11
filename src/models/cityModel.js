@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
 
 const city = new mongoose.Schema({
- State: {
-  type: String
- },
- District: {
-  type: String
- },
+    State: {
+        type: String
+    },
+    District: {
+        type: String
+    },
 
-}, { timestamps: true });
+}, { timestamps: true, versionKey: false });
 
 
 const citys = new mongoose.model("city", city);

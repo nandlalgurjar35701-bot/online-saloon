@@ -39,7 +39,7 @@ const usercart = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         default: null
     }
-}, { timestamps: true });
+}, { timestamps: true, versionKey: false });
 
 
 const cart = new mongoose.model("cart", usercart);

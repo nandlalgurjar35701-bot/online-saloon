@@ -5,7 +5,7 @@ const letter = new mongoose.Schema({
         type: String
     },
 
-}, { timestamps: true });
+}, { timestamps: true, versionKey: false });
 
 
 const Newsletter = new mongoose.model("Newsletter", letter);

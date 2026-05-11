@@ -24,7 +24,7 @@ const coupons = new mongoose.Schema({
         type: Number,
         default: "0"
     },
-}, { timestamps: true });
+}, { timestamps: true, versionKey: false });
 
 
 const coupon = new mongoose.model("coupon", coupons);

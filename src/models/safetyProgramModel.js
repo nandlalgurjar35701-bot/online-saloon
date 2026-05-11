@@ -24,7 +24,7 @@ const Safety = new mongoose.Schema({
         type: Number,
         default: "0"
     },
-}, { timestamps: true });
+}, { timestamps: true, versionKey: false });
 
 
 const SafetyProgram = new mongoose.model("SafetyProgram", Safety);

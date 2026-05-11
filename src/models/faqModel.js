@@ -14,6 +14,6 @@ const userSchema = new mongoose.Schema({
     default: ""
   },
 
-})
+}, { timestamps: true, versionKey: false });
 
 module.exports = mongoose.model("FAQ", userSchema);

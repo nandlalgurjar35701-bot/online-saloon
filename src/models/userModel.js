@@ -96,7 +96,7 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     default: null
   }
-}, { timestamps: true });
+}, { timestamps: true, versionKey: false });
 
 
 

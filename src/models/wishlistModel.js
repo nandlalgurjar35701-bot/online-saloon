@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const userWishlist = new mongoose.Schema({
-
     userId: {
         type: mongoose.Types.ObjectId
     },
@@ -13,7 +12,7 @@ const userWishlist = new mongoose.Schema({
         default: []
     },
 
-}, { timestamps: true });
+}, { timestamps: true, versionKey: false });
 
 
 const wishlist = new mongoose.model("wishlist", userWishlist);

@@ -161,7 +161,7 @@ const saloon_Store = new mongoose.Schema({
             default: ""
         },
     }
-}, { timestamps: true });
+}, { timestamps: true, versionKey: false });
 
 
 const saloon = new mongoose.model("saloon", saloon_Store);

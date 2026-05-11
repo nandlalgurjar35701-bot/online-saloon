@@ -20,7 +20,7 @@ const Blog = new mongoose.Schema({
     Description: {
         type: String,
     }
-}, { timestamps: true });
+}, { timestamps: true, versionKey: false });
 
 
 const blog = new mongoose.model("blog", Blog);

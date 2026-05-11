@@ -62,7 +62,7 @@ const orderSchema = new mongoose.Schema({
 
     }
 
-}, { timestamps: true });
+}, { timestamps: true, versionKey: false });
 
 
 const order = new mongoose.model("order", orderSchema);

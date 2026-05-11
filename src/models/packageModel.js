@@ -30,7 +30,7 @@ const packages = new mongoose.Schema({
         type: String
     }
 
-}, { timestamps: true });
+}, { timestamps: true, versionKey: false });
 
 
 const package = new mongoose.model("package", packages);

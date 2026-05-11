@@ -24,7 +24,7 @@ const reviews = new mongoose.Schema({
         type: [mongoose.Types.ObjectId],
 
     }
-}, { timestamps: true });
+}, { timestamps: true, versionKey: false });
 
 
 const review = new mongoose.model("review", reviews);
