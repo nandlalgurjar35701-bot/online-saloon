@@ -40,20 +40,7 @@ const userSchema = new mongoose.Schema({
   otp: {
     type: String
   },
-  userWallet: {
-    balance: {
-      type: Number,
-      default: 0
-    },
-    point: {
-      type: Number,
-      default: 0
-    },
-    useBalance: {
-      type: Number,
-      default: 0
-    }
-  },
+
   referalDetails: {
     referalAmount: {
       type: Number
@@ -62,24 +49,7 @@ const userSchema = new mongoose.Schema({
       type: String
     }
   },
-  location: {
-    aria: {
-      type: String,
-      default: ""
-    },
-    pincode: {
-      type: String,
-      default: ""
-    },
-    city: {
-      type: String,
-      default: ""
-    },
-    state: {
-      type: String,
-      default: ""
-    },
-  },
+
   auth: {
     type: String,
     default: ""
