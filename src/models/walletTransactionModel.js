@@ -29,7 +29,12 @@ const Transaction = new mongoose.Schema({
     },
     description: {
         type: String
-    }
+    },
+    tendentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        index: true
+    },
 }, { timestamps: true, versionKey: false });
 
 

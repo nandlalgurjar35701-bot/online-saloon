@@ -27,6 +27,9 @@ exports.renderTestimonialForm = async (req, res) => {
 exports.renderTestimonialList = async (req, res) => {
   try {
     res.locals.message = req.flash();
+    if (req.user?.tendentId) {
+      req.query.tendentId = req.user.tendentId;
+    }
     const data = await testimonialService.getTestimonials(req.query);
     return res.render("app/view_testimonial", {
       user: req.user,
@@ -42,6 +45,9 @@ exports.renderTestimonialList = async (req, res) => {
 
 exports.saveTestimonial = async (req, res) => {
   try {
+    if (req.user?.tendentId) {
+      req.body.tendentId = req.user.tendentId;
+    }
     await testimonialService.saveTestimonial({ body: req.body, file: req.file });
     req.flash("success", "Testimonial saved successfully.");
     return res.redirect("/admin/view-testimonial");

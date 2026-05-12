@@ -8,8 +8,12 @@ exports.sendNotification = async (req, res) => {
     try {
         res.locals.message = req.flash();
         let data
+        const condition = { _id: req.query.id };
+        if (req.user?.tendentId) {
+            condition.tendentId = req.user.tendentId;
+        }
         if (req.query.id != undefined && req.query.id != "") {
-            data = await ContecUs.findOne({ _id: req.query.id })
+            data = await ContecUs.findOne(condition)
         }
 
         res.render("newsletters/index", { user: req.user, data });
@@ -23,9 +27,13 @@ const { newLetterEmail } = require("../../middleware/mail");
 exports.SendAllUserEmail = async (req, res) => {
     try {
         let arr;
-        const newsletterData = await newsletters.distinct("email");
-        const userData = await user.distinct("email");
-        const saloonData = await saloon.distinct("email");
+        const condition = {};
+        if (req.user?.tendentId) {
+            condition.tendentId = req.user.tendentId;
+        }
+        const newsletterData = await newsletters.distinct("email", condition);
+        const userData = await user.distinct("email", condition);
+        const saloonData = await saloon.distinct("email", condition);
         if (req.body.status == 0) {
             arr = [...newsletterData, ...userData, ...saloonData];
             arr.flat(2);

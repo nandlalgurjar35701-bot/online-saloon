@@ -160,7 +160,12 @@ const saloon_Store = new mongoose.Schema({
             type: String,
             default: ""
         },
-    }
+    },
+    tendentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        index: true
+    },
 }, { timestamps: true, versionKey: false });
 
 

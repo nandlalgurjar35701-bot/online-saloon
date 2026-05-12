@@ -39,7 +39,8 @@ app.use((req, res, next) => {
 
 // Middleware to log each API hit
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.originalUrl}`);
+  console.table({ [req.method]: req.originalUrl });
+  console.log(req.query, req.body)
   next();
 });
 

@@ -41,6 +41,11 @@ const productPackageSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  tendentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    index: true
+  },
 }, { versionKey: false, timestamps: true, });
 
 module.exports = mongoose.model("productPackage", productPackageSchema);

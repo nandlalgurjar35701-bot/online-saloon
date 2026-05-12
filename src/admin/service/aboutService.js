@@ -15,6 +15,10 @@ exports.getAboutList = async (query = {}) => {
     condition.title = { $regex: String(query.title).trim(), $options: "i" };
   }
 
+  if (query.tendentId) {
+    condition.tendentId = query.tendentId;
+  }
+
   return aboutModel.find(condition).sort({ createdAt: -1 }).lean();
 };
 
@@ -22,6 +26,7 @@ exports.saveAbout = async (body = {}) => {
   const payload = {
     title: String(body.title || "").trim(),
     description: String(body.description || "").trim(),
+    tendentId: body.tendentId || null,
   };
 
   if (!payload.title) {

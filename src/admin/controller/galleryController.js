@@ -25,6 +25,9 @@ exports.renderGalleryForm = async (req, res) => {
 exports.renderGalleryList = async (req, res) => {
   try {
     res.locals.message = req.flash();
+    if (req.user?.tendentId) {
+      req.query.tendentId = req.user.tendentId;
+    }
     const data = await galleryService.getGalleryList(req.query);
 
     return res.render("app/view_gallery", {
@@ -41,6 +44,9 @@ exports.renderGalleryList = async (req, res) => {
 
 exports.saveGallery = async (req, res) => {
   try {
+    if (req.user?.tendentId) {
+      req.body.tendentId = req.user.tendentId;
+    }
     await galleryService.saveGallery({ body: req.body, file: req.file });
     req.flash("success", "Gallery saved successfully.");
     return res.redirect("/admin/view-gallery-config");

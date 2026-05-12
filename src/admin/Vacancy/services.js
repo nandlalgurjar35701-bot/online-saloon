@@ -10,6 +10,13 @@ exports.ViewVacancy = async (req) => {
             }
         })
     }
+    if (req.user?.tendentId) {
+        pipeline.push({
+            '$match': {
+                'tendentId': mongoose.Types.ObjectId(req.user.tendentId)
+            }
+        })
+    }
     pipeline.push({
         '$lookup': {
             'from': 'users',

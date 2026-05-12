@@ -5,6 +5,7 @@ const service = require("./services")
 
 exports.Artists = async (req, res) => {
     try {
+        res.locals.message = req.flash();
         const condition = []
         const obj = {};
         if (req.query.id != undefined && req.query.id != "") {

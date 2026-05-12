@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
     tendentId: {
-        type: mongoose.Types.ObjectId,
-        default: null,
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        index: true
     },
     heading: {
         type: String,

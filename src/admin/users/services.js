@@ -28,6 +28,10 @@ exports.allUser = async (req, res) => {
             serchobj.type = req.query.status;
         }
 
+        if (req.user?.tendentId) {
+            serchobj.tendentId = mongoose.Types.ObjectId(req.user.tendentId);
+        }
+
         const Finddata = await user.aggregate([
             { '$match': serchobj }, {
                 '$lookup': {

@@ -75,6 +75,10 @@ exports.ViwesCategory = async (req, res) => {
         } else {
             condition = { parent_Name: null };
         }
+
+        if (req.user?.tendentId) {
+            condition.tendentId = req.user.tendentId;
+        }
         const typeCondition = buildTypeCondition(req.query.type);
         if (typeCondition) {
             condition.type = typeCondition;

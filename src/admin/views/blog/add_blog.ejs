@@ -14,110 +14,40 @@
   <%- include('../../partials/Header.ejs') %>
     <%- include("../../partials/sidebar.ejs") %>
       <%- include("../../partials/alertMsg.ejs") %>
-      <main id="main" class="main">
-        <div class="pagetitle">
-          <h1>
-            <%-user.type %>
-          </h1>
-          <nav>
-            <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
-              <li class="breadcrumb-item active">Dashboard</li>
-            </ol>
-          </nav>
-        </div><!-- End Page Title -->
+        <main id="main" class="main">
+          <div class="pagetitle">
+            <h1>
+              <%-user.type %>
+            </h1>
+            <nav>
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
+                <li class="breadcrumb-item active">Dashboard</li>
+              </ol>
+            </nav>
+          </div><!-- End Page Title -->
 
-        <section class="section dashboard">
-          <div class="row">
+          <section class="section dashboard">
             <div class="row">
-              <div class="col-lg-12">
-                <div class="card">
-                  <div class="card-body">
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="card">
+                    <div class="card-body">
 
-                    <% if(typeof blog_data !=="undefined" && blog_data){%>
-                      <h5 class="card-title">Edit Blog</h5>
-                      <form  id="form1" method="post" enctype="multipart/form-data" >
-
-                        <div class="row g-3">
-                          <div class="col">
-                            <label for="">Blog Title</label>
-                            <input type="text" name="Title" id="title" value="<%= blog_data.Title%>"
-                              class="form-control" placeholder="Enter Your Title" required>
-                          </div>
-                          <div class="col">
-                            <label for="">Writer Name</label>
-                            <input type="text" name="WriterName" id="writename" value="<%= blog_data.WriterName%>"
-                              class="form-control" placeholder="Enter Writer Name" required>
-
-                          </div>
-                        </div><br>
-
-                        <div class="row g-3">
-                          <div class="col">
-                            <label for="starting-time">Date</label>
-                            <input required type="date" id="writedate" value="<%= blog_data.WriteDate%>"
-                              name="WriteDate" class="form-control">
-
-                          </div>
-                          <div class="col">
-                            <label for="starting-time">Category</label>
-                            <select class="form-select" name="category" id="category"
-                              aria-label="Default select example" required>
-                              <%for (category_data of category_data) {%>
-                                <option value="<%=category_data._id%>"
-                                  <%=blog_data.category.toString()===category_data._id.toString() ? "selected" : "" %>>
-                                  <%= category_data.Name %>
-                                </option>
-                                <%}%>
-                            </select>
-
-                          </div>
-                        </div><br>
-
-                        <div class="row g-3">
-                          <div class="col">
-                            <label for="starting-time">Choose Image</label>
-                            <input class="form-control" type="file" id="image" name="image" id="formFile">
-                            <img src="/uploads/<%= blog_data.image[0]%>" width="60px">
-                          </div>
-                          <div class="col">
-                            <input class="form-control" type="hidden" id="hidden" name="description">
-                          </div>
-                        </div><br>
-
-                        <div class="col">
-                          <input class="form-control" type="hidden" id="hidden1" name="blogid"
-                            value="<%= blog_data._id%>">
-                        </div>
-
-                        <div class="card">
-                          <div class="card-body">
-                            <h5 class="card-title">Blog Description</h5>
-                            <!-- Quill Editor Full -->
-                            <div id="description1" class="quill-editor-full" required>
-                            </div>
-                          </div>
-                        </div>
-
-                       
-                        <button type="submit" class="btn btn-primary">Update</button>
-
-                      </form>
-                      <%}else{%>
-                        <h5 class="card-title">Add Blog</h5>
-                        <form  id="form" method="post" enctype="multipart/form-data" >
+                      <% if(typeof blog_data !=="undefined" && blog_data){%>
+                        <h5 class="card-title">Edit Blog</h5>
+                        <form id="form1" method="post" enctype="multipart/form-data">
 
                           <div class="row g-3">
                             <div class="col">
                               <label for="">Blog Title</label>
-                              <input type="text" name="Title" id="title" class="form-control"
-                                placeholder="Enter Your Blog Title" required="">
-
+                              <input type="text" name="Title" id="title" value="<%= blog_data.Title%>"
+                                class="form-control" placeholder="Enter Your Title" required>
                             </div>
                             <div class="col">
                               <label for="">Writer Name</label>
-                              <input type="text" name="WriterName" id="writename" class="form-control"
-                                placeholder="Enter Writer Name" required="">
+                              <input type="text" name="WriterName" id="writename" value="<%= blog_data.WriterName%>"
+                                class="form-control" placeholder="Enter Writer Name" required>
 
                             </div>
                           </div><br>
@@ -125,58 +55,129 @@
                           <div class="row g-3">
                             <div class="col">
                               <label for="starting-time">Date</label>
-                              <input required type="date" id="writedate" name="WriteDate" class="form-control">
+                              <input required type="date" id="writedate" value="<%= blog_data.WriteDate%>"
+                                name="WriteDate" class="form-control">
 
                             </div>
                             <div class="col">
                               <label for="starting-time">Category</label>
                               <select class="form-select" name="category" id="category"
                                 aria-label="Default select example" required>
-                                <option value="">Select Category</option>
                                 <%for (category_data of category_data) {%>
-                                  <option value="<%=category_data._id %>">
+                                  <option value="<%=category_data._id%>"
+                                    <%=blog_data.category.toString()===category_data._id.toString() ? "selected" : "" %>
+                                    >
                                     <%= category_data.Name %>
                                   </option>
                                   <%}%>
                               </select>
+
                             </div>
                           </div><br>
 
                           <div class="row g-3">
                             <div class="col">
                               <label for="starting-time">Choose Image</label>
-                              <input class="form-control" type="file" id="image" name="image" id="formFile" required>
+                              <input class="form-control" type="file" id="image" name="image" id="formFile">
+                              <img src="/uploads/<%= blog_data.image[0]%>" width="60px">
                             </div>
                             <div class="col">
                               <input class="form-control" type="hidden" id="hidden" name="description">
                             </div>
                           </div><br>
 
+                          <div class="col">
+                            <input class="form-control" type="hidden" id="hidden1" name="blogid"
+                              value="<%= blog_data._id%>">
+                          </div>
 
                           <div class="card">
                             <div class="card-body">
                               <h5 class="card-title">Blog Description</h5>
                               <!-- Quill Editor Full -->
-                              <div class="quill-editor-full" required>
-                                <p>Enter Discription </p>
+                              <div id="description1" class="quill-editor-full" required>
                               </div>
                             </div>
                           </div>
-                          <div class="row mb-3">
-                            <div class="col-sm-10">
-                              <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                          </div>
+
+
+                          <button type="submit" class="btn btn-primary">Update</button>
+
                         </form>
-                        <%}%>
+                        <%}else{%>
+                          <h5 class="card-title">Add Blog</h5>
+                          <form id="form" method="post" enctype="multipart/form-data">
+
+                            <div class="row g-3">
+                              <div class="col">
+                                <label for="">Blog Title</label>
+                                <input type="text" name="Title" id="title" class="form-control"
+                                  placeholder="Enter Your Blog Title" required="">
+
+                              </div>
+                              <div class="col">
+                                <label for="">Writer Name</label>
+                                <input type="text" name="WriterName" id="writename" class="form-control"
+                                  placeholder="Enter Writer Name" required="">
+
+                              </div>
+                            </div><br>
+
+                            <div class="row g-3">
+                              <div class="col">
+                                <label for="starting-time">Date</label>
+                                <input required type="date" id="writedate" name="WriteDate" class="form-control">
+
+                              </div>
+                              <div class="col">
+                                <label for="starting-time">Category</label>
+                                <select class="form-select" name="category" id="category"
+                                  aria-label="Default select example" required>
+                                  <option value="">Select Category</option>
+                                  <%for (category_data of category_data) {%>
+                                    <option value="<%=category_data._id %>">
+                                      <%= category_data.Name %>
+                                    </option>
+                                    <%}%>
+                                </select>
+                              </div>
+                            </div><br>
+
+                            <div class="row g-3">
+                              <div class="col">
+                                <label for="starting-time">Choose Image</label>
+                                <input class="form-control" type="file" id="image" name="image" id="formFile" required>
+                              </div>
+                              <div class="col">
+                                <input class="form-control" type="hidden" id="hidden" name="description">
+                              </div>
+                            </div><br>
+
+
+                            <div class="card">
+                              <div class="card-body">
+                                <h5 class="card-title">Blog Description</h5>
+                                <!-- Quill Editor Full -->
+                                <div class="quill-editor-full" required>
+                                  <p>Enter Discription </p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="row mb-3">
+                              <div class="col-sm-10">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                              </div>
+                            </div>
+                          </form>
+                          <%}%>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-      </main>
-      <%- include("../../partials/script.ejs") %>
+          </section>
+        </main>
+        <%- include("../../partials/script.ejs") %>
 </body>
 <script>
   $("#form").submit(
@@ -190,7 +191,7 @@
         type: 'POST',
         data: file,
         success: function (data) {
-          window.location.replace("/view-blog")
+          window.location.replace("/admin/view-blog")
         },
         cache: false,
         contentType: false,
@@ -210,7 +211,7 @@
         type: 'POST',
         data: file,
         success: function (data) {
-          window.location.replace("/view-blog")
+          window.location.replace("/admin/view-blog")
         },
         cache: false,
         contentType: false,

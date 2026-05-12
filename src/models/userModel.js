@@ -95,7 +95,12 @@ const userSchema = new mongoose.Schema({
   referId: {
     type: mongoose.Types.ObjectId,
     default: null
-  }
+  },
+  tendentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    index: true
+  },
 }, { timestamps: true, versionKey: false });
 
 

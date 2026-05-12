@@ -8,8 +8,13 @@ exports.setPointToRupee = async (req, res) => {
         res.locals.message = req.flash();
         let data;
         const { query, ...rest } = req;
+        const condition = {};
+        if (req.user?.tendentId) {
+            condition.tendentId = req.user.tendentId;
+        }
         if (req.query.id != undefined && req.query.id != "") {
-            data = await refer.findOne({ _id: req.query.id });
+            condition._id = req.query.id;
+            data = await refer.findOne(condition);
         }
         res.render("Refer-And-point/index", { user: req.user, data });
     } catch (error) {
@@ -20,6 +25,9 @@ exports.setPointToRupee = async (req, res) => {
 exports.pointAndRupee = async (req, res) => {
     try {
         res.locals.message = req.flash();
+        if (req.user?.tendentId) {
+            req.body.tendentId = req.user.tendentId;
+        }
         let result;
         if (req.query.id != undefined && req.query.id != "") {
             result = await refer.findByIdAndUpdate({ _id: mongoose.Types.ObjectId(req.query.id) }, req.body, { new: true });
@@ -46,7 +54,12 @@ exports.pointAndRupee = async (req, res) => {
 
 exports.ViewReferEarn = async (req, res) => {
     try {
-        const data = await refer.find();
+        res.locals.message = req.flash();
+        const condition = {};
+        if (req.user?.tendentId) {
+            condition.tendentId = req.user.tendentId;
+        }
+        const data = await refer.find(condition);
         if (data) {
             res.render("Refer-And-point/viwe-refer", { data, user: req.user, query: req.query });
         };

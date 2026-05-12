@@ -27,6 +27,9 @@ exports.renderTeamForm = async (req, res) => {
 exports.renderTeamList = async (req, res) => {
   try {
     res.locals.message = req.flash();
+    if (req.user?.tendentId) {
+      req.query.tendentId = req.user.tendentId;
+    }
     const data = await teamService.getTeamMembers(req.query);
     return res.render("app/view_team", {
       user: req.user,
@@ -42,6 +45,9 @@ exports.renderTeamList = async (req, res) => {
 
 exports.saveTeamMember = async (req, res) => {
   try {
+    if (req.user?.tendentId) {
+      req.body.tendentId = req.user.tendentId;
+    }
     await teamService.saveTeamMember({ body: req.body, file: req.file });
     req.flash("success", "Team member saved successfully.");
     return res.redirect("/admin/view-team-member");

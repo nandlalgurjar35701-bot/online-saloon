@@ -25,6 +25,9 @@ exports.renderAboutForm = async (req, res) => {
 exports.renderAboutList = async (req, res) => {
   try {
     res.locals.message = req.flash();
+    if (req.user?.tendentId) {
+      req.query.tendentId = req.user.tendentId;
+    }
     const data = await aboutService.getAboutList(req.query);
     return res.render("app/view_about", {
       user: req.user,
@@ -40,6 +43,9 @@ exports.renderAboutList = async (req, res) => {
 
 exports.saveAbout = async (req, res) => {
   try {
+    if (req.user?.tendentId) {
+      req.body.tendentId = req.user.tendentId;
+    }
     await aboutService.saveAbout(req.body);
     req.flash("success", "About saved successfully.");
     return res.redirect("/admin/view-about");

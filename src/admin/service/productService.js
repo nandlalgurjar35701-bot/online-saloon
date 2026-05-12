@@ -20,6 +20,10 @@ exports.fetchProductList = async (req) => {
     }
   }
 
+  if (req.user?.tendentId) {
+    match.tendentId = mongoose.Types.ObjectId(req.user.tendentId);
+  }
+
   pipeline.push({ $match: match });
   pipeline.push({
     $lookup: {

@@ -23,6 +23,9 @@ exports.viewSaloon = async (req) => {
     if (getNormalizedRole(req.user?.type) === "admin") {
       match.userId = req.user._id;
     }
+    if (req.user?.tendentId) {
+      match.tendentId = mongoose.Types.ObjectId(req.user.tendentId);
+    }
 
     let pipeline = [];
     pipeline.push({

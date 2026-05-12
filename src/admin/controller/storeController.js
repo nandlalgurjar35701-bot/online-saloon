@@ -17,7 +17,7 @@ const findStoreRecord = async (id) => {
     return saloon.findOne({ _id: objectId });
 };
 
-const upsertSaloonAdminUser = async ({ ownerName, email, phone, password }) => {
+const upsertSaloonAdminUser = async ({ ownerName, email, phone, password, tendentId }) => {
     const normalizedPhone = Number(phone);
     const condition = {
         $or: [{ email }, { phone: normalizedPhone }]
@@ -28,6 +28,7 @@ const upsertSaloonAdminUser = async ({ ownerName, email, phone, password }) => {
         phone: normalizedPhone,
         type: "ADMIN",
         verify: true,
+        tendentId: tendentId || null,
     };
 
     if (password) {
@@ -53,7 +54,8 @@ exports.businessOtpSent = async (req, res) => {
         if (user) {
             user = await users.findOneAndUpdate({ phone }, { otp: "1234" }, { new: true });
         } else {
-            user = await users.create({ phone, otp: "1234" });
+            let body = { tendentId: req.user.tendentId, phone, otp: "1234" }
+            user = await users.create(body);
         }
 
         return res.send({
@@ -64,7 +66,11 @@ exports.businessOtpSent = async (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        return res.status(500).send({ status: false, message: "Unable to send otp", data: [] });
+        return res.status(500).send({
+            status: false,
+            message: error.message,
+            data: []
+        });
     }
 };
 
@@ -99,7 +105,7 @@ exports.businessOtpVerify = async (req, res) => {
 
 exports.saloonRegister = async (req, res) => {
     try {
-       
+
         res.locals.message = req.flash()
         let saloon_data;
         const storeScope = getStoreScopeForUser(req.user);
@@ -230,9 +236,11 @@ exports.addSaloonStore = async (req, res) => {
                 email,
                 phone: Phone,
                 password,
+                tendentId: user?.tendentId || null,
             });
 
             const created = await saloon.create({
+                tendentId: user?.tendentId || null,
                 userId: createdAdmin?._id || user?._id || null,
                 storeName,
                 email,
