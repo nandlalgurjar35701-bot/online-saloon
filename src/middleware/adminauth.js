@@ -2,15 +2,9 @@ const jwt = require("jsonwebtoken")
 const adminModel = require('../models/adminModel');
 const saloonModel = require("../models/saloonStoreModel");
 
-const getNormalizedRole = (value) => String(value || "").toLowerCase();
-
 const attachSidebarStores = async (req, res) => {
     try {
-        const role = getNormalizedRole(req.user?.type);
-        const condition = {};
-        if (role === "admin") {
-            condition.userId = req.user?._id;
-        }
+        const condition = { tendentId: req.user.tendentId };
 
         const stores = await saloonModel
             .find(condition)
