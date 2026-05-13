@@ -79,10 +79,11 @@ exports.login = async (req, res) => {
 
 exports.loginData = async (req, res) => {
     try {
+        let filter = { tendentId: req.headers.tendentId, email: req.body.email }
         res.locals.message = req.flash();
         const { email, password } = req.body;
         if (email) {
-            const user = await adminModel.findOne({ email: req.body.email });
+            const user = await adminModel.findOne(filter);
             if (user) {
                 if (typeof user.password === 'undefined') {
                     req.flash("error", "Detail is Not Found ");
