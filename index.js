@@ -40,7 +40,9 @@ app.use((req, res, next) => {
 // Middleware to log each API hit
 app.use((req, res, next) => {
   console.table({ [req.method]: req.originalUrl });
-  console.log(req.query, req.body)
+  console.log(req.query, req.body);
+  req.headers['subdomain'] = req.host.split('.')[0];
+
   next();
 });
 
