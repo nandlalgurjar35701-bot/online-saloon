@@ -5,6 +5,7 @@ const flash = require('connect-flash');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const serviceController = require("./src/api/controller/serviceController");
+const tendentModel = require('./src/models/tendent.model');
 
 require('dotenv').config();
 require('./src/datasources/connection');
@@ -38,11 +39,14 @@ app.use((req, res, next) => {
 });
 
 // Middleware to log each API hit
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   console.table({ [req.method]: req.originalUrl });
   console.log(req.query, req.body);
   req.headers['subdomain'] = req.host.split('.')[0];
-
+  let data = await tendentModel.findOne({ subdomain: req.headers['subdomain'], status: 'active' })
+  if (data) {
+    req.headers['tendentId'] = data._id;
+  }
   next();
 });
 
