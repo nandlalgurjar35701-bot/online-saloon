@@ -6,12 +6,13 @@ const cart = require("../../models/cartModel")
 
 exports.saloonService = async (req) => {
     try {
+        const tendentId = req.headers.tendentId;
         let findData;
         if (req.query.id != undefined && req.query.id) {
             let _id = req.query.id;
-            findData = await saloonService.find({ _id });
+            findData = await saloonService.find({ _id, tendentId });
         } else {
-            findData = await saloonService.find();
+            findData = await saloonService.find({ tendentId });
         };
 
         if (findData.length > 0) {
@@ -35,9 +36,10 @@ exports.saloonService = async (req) => {
     };
 };
 
-exports.add_Service = async ({ body, file, query }) => {
+exports.add_Service = async ({ body, file, query, headers }) => {
     try {
-        let obj = {};
+        const tendentId = headers.tendentId;
+        let obj = { tendentId };
         let imgs = [];
         let categorys = [];
 
@@ -69,7 +71,7 @@ exports.add_Service = async ({ body, file, query }) => {
                 obj.type = body.type;
             };
 
-            const result = await saloonService.findByIdAndUpdate({ _id }, { $set: obj }, { new: true });
+            const result = await saloonService.findOneAndUpdate({ _id, tendentId }, { $set: obj }, { new: true });
             if (result) {
                 return {
                     statusCode: 200,
@@ -95,10 +97,10 @@ exports.add_Service = async ({ body, file, query }) => {
             };
             if (body.saloonStore != undefined && body.saloonStore != "") {
                 let saloonStore = mongoose.Types.ObjectId(body.saloonStore);
-                const findstore = await saloonstore.findOne({ _id: saloonStore });
+                const findstore = await saloonstore.findOne({ _id: saloonStore, tendentId });
                 if (findstore) {
                     if (body.ServiceName != undefined && body.ServiceName != "") {
-                        const findData = await saloonService.find({ saloonStore, ServiceName: body.ServiceName });
+                        const findData = await saloonService.find({ saloonStore, ServiceName: body.ServiceName, tendentId });
                         if (findData.length > 0) {
                             return {
                                 statusCode: 400,
@@ -169,8 +171,9 @@ exports.add_Service = async ({ body, file, query }) => {
 };
 
 
-exports.getAllSaloonServiceByCatogory = async ({ user, query }) => {
+exports.getAllSaloonServiceByCatogory = async ({ user, query, headers }) => {
     try {
+        const tendentId = headers.tendentId;
         let arrr = []
         let final = []
         let arr = {};
@@ -180,16 +183,18 @@ exports.getAllSaloonServiceByCatogory = async ({ user, query }) => {
         let findCategory;
         if (query.catogoryId != undefined && query.catogoryId != "") {
             obj._id = mongoose.Types.ObjectId(query.catogoryId);
+            obj.tendentId = tendentId;
             findCategory = await category.findOne(obj);
-            subcotegory = await category.find({ parent_Name: findCategory._id });
+            subcotegory = await category.find({ parent_Name: findCategory._id, tendentId });
 
         } else if (query.categoryName) {
             obj.Name = { $regex: query.categoryName, $options: 'i' }
             obj.parent_Name = { $ne: null }
+            obj.tendentId = tendentId;
             findCategory = await category.find(obj);
         }
-        const findCart = await cart.findOne({ userId: user._id, saloonId })
-        const findStore = await saloonstore.findOne({ _id: saloonId });
+        const findCart = await cart.findOne({ userId: user._id, saloonId, tendentId })
+        const findStore = await saloonstore.findOne({ _id: saloonId, tendentId });
         if (!findStore) {
             return {
                 statusCode: 400,
@@ -208,7 +213,7 @@ exports.getAllSaloonServiceByCatogory = async ({ user, query }) => {
         } else if (findCategory.length > 0) {
             for await (const element of findCategory) {
                 arrr.push(element)
-                const findData = await saloonService.find({ saloonStore: saloonId, last_category: element._id });
+                const findData = await saloonService.find({ saloonStore: saloonId, last_category: element._id, tendentId });
                 if (findData.length > 0) {
                     findData.forEach(index => {
                         if (findCart != null && findCart) {
@@ -250,7 +255,7 @@ exports.getAllSaloonServiceByCatogory = async ({ user, query }) => {
             arrr.push(findCategory)
             arr.Category = findCategory
             for await (const element of subcotegory) {
-                const findData = await saloonService.find({ saloonStore: saloonId, last_category: element._id });
+                const findData = await saloonService.find({ saloonStore: saloonId, last_category: element._id, tendentId });
                 if (findData.length > 0) {
                     findData.forEach(index => {
                         if (findCart != null && findCart) {
@@ -299,9 +304,10 @@ exports.getAllSaloonServiceByCatogory = async ({ user, query }) => {
 };
 
 
-exports.getServiceByCategory = async ({ query }) => {
+exports.getServiceByCategory = async ({ query, headers }) => {
     try {
-        let obj = {};
+        const tendentId = headers.tendentId;
+        let obj = { tendentId };
         const condition = [];
         if (query.id != undefined && query.id != "") {
             obj.$and = [];
@@ -325,9 +331,9 @@ exports.getServiceByCategory = async ({ query }) => {
 
             let arrr = [];
 
-            const findCategory = await category.findOne({ _id: mongoose.Types.ObjectId(query.id) });
+            const findCategory = await category.findOne({ _id: mongoose.Types.ObjectId(query.id), tendentId });
             if (findCategory) {
-                const findsubCategory = await category.find({ parent_Name: findCategory._id });
+                const findsubCategory = await category.find({ parent_Name: findCategory._id, tendentId });
 
                 if (findsubCategory.length > 0) {
                     let i = 1;
@@ -357,7 +363,7 @@ exports.getServiceByCategory = async ({ query }) => {
                         });
 
                         if (query.city != undefined && query.city != "") {
-                            const findData = await saloonstore.find({ "location.city": query.city })
+                            const findData = await saloonstore.find({ "location.city": query.city, tendentId })
                             if (findData.length > 0) {
                                 condition.push({
                                     '$match': {
@@ -481,9 +487,10 @@ exports.getServiceByCategory = async ({ query }) => {
 };
 
 
-exports.getSaloonByLocation = async ({ query }) => {
+exports.getSaloonByLocation = async ({ query, headers }) => {
     try {
-        let obj = {};
+        const tendentId = headers.tendentId;
+        let obj = { tendentId };
         let condition = [];
         if (query.State != "" && query.State != undefined && !query.city) {
             obj['location.state'] = query.State;

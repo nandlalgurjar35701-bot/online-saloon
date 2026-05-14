@@ -6,24 +6,31 @@ const { query } = require("express");
 const jwt = require("jsonwebtoken");
 const referralCodeGenerator = require("referral-code-generator");
 const appServices = require("../services/appServices");
+const { default: mongoose } = require("mongoose");
 
 exports.index = async (req, res) => {
     try {
         const q = String(req.query.q || "").trim();
         const categoryId = String(req.query.categoryId || "").trim();
-        const data = await appServices.index({ q, categoryId })
+        const tendentId = req.headers.tendentId;
+        const data = await appServices.index({ q, categoryId, tendentId })
         data.filters = { q, categoryId };
-        res.render('index', { data })
+        res.render('index', { data, tendentId })
     } catch (error) {
         console.log(error);
     };
 };
 
-exports.otpSent = async ({ body }) => {
+exports.otpSent = async ({ body, headers }) => {
     try {
+        let filter = {}
+        if (headers.tendentId) {
+            filter.tendentId = headers.tendentId;
+        }
         let user;
         if (body.phone != undefined && body.phone != "") {
-            const data = await userModel.findOne({ phone: body.phone });
+            filter.phone = body.phone;
+            const data = await userModel.findOne(filter);
             if (data) user = data;
         } else {
             return {
@@ -33,6 +40,7 @@ exports.otpSent = async ({ body }) => {
                 data: []
             };
         }
+
         if (user) {
             return {
                 statusCode: 400,
@@ -40,32 +48,39 @@ exports.otpSent = async ({ body }) => {
                 message: "User Already Exists",
                 data: []
             };
-        } else {
-            body.otp = '1234'
-            const userData = await userModel(body);
-            const result = await userData.save()
-            return {
-                statusCode: 200,
-                status: true,
-                message: "Otp Send",
-                data: [result]
-            };
+        }
+
+        body.otp = '1234'
+        body.tendentId = headers.tendentId;
+        const userData = await userModel(body);
+        const result = await userData.save()
+        return {
+            statusCode: 200,
+            status: true,
+            message: "Otp Send",
+            data: [result]
         };
+
     } catch (error) {
         console.log(error);
     };
 };
 
-exports.otpVerify = async ({ body }) => {
+exports.otpVerify = async ({ body, headers }) => {
     try {
+        let filter = {}
+        if (headers.tendentId) {
+            filter.tendentId = headers.tendentId;
+        }
         let user;
         if (body.phone) {
-            const data = await userModel.findOne({ phone: body.phone });
+            filter.phone = body.phone;
+            const data = await userModel.findOne(filter);
             if (data) user = data;
         };
         if (user) {
             if (user.otp === body.otp) {
-                const data = await userModel.findOneAndUpdate({ phone: body.phone }, { $set: { verify: true } }, { new: true });
+                const data = await userModel.findOneAndUpdate({ _id: user._id, tendentId: headers.tendentId }, { $set: { verify: true } }, { new: true });
                 return {
                     statusCode: 200,
                     status: true,
@@ -93,13 +108,18 @@ exports.otpVerify = async ({ body }) => {
     };
 };
 
-exports.register = async ({ body, query }) => {
+exports.register = async ({ body, query, headers }) => {
     try {
+        let filter = {}
+        if (headers.tendentId) {
+            filter.tendentId = headers.tendentId;
+        }
         const { email, password } = body;
         let user;
 
         if (email) {
-            const data = await userModel.findOne({ email });
+            filter.email = email;
+            const data = await userModel.findOne(filter);
             if (data) user = data;
         };
         if (user) {
@@ -112,13 +132,13 @@ exports.register = async ({ body, query }) => {
         } else {
             if (body.referCode != undefined && body.referCode != "" || query.referCode != undefined && query.referCode != "") {
                 let obj = {};
-                const findReferAmount = await userModel.findOne({ type: "super-admin" }, { referalDetails: 1 });
-                if (findReferAmount.referalDetails.referaType === "point") {
+                const findReferAmount = await userModel.findOne({ type: "super-admin", tendentId: headers.tendentId }, { referalDetails: 1 });
+                if (findReferAmount && findReferAmount.referalDetails && findReferAmount.referalDetails.referaType === "point") {
                     obj['userWallet.point'] = findReferAmount.referalDetails.referalAmount;
-                } else {
+                } else if (findReferAmount && findReferAmount.referalDetails) {
                     obj['userWallet.balance'] = findReferAmount.referalDetails.referalAmount;
                 };
-                const findData = await userModel.findOneAndUpdate({ $or: [{ referCode: body.referCode }, { referCode: query.referCode }] }, { $inc: obj });
+                const findData = await userModel.findOneAndUpdate({ $or: [{ referCode: body.referCode }, { referCode: query.referCode }], tendentId: headers.tendentId }, { $inc: obj });
                 if (findData) {
                     body.referId = findData._id
                 };
@@ -131,7 +151,7 @@ exports.register = async ({ body, query }) => {
             for (let i = 0; i < j; i++) {
                 body.referCode = referralCodeGenerator.custom('uppercase', 6, 6, 'Onlinesaloon')
                 if (body.referCode) {
-                    const findData = await userModel.findOne({ referCode: body.referCode });
+                    const findData = await userModel.findOne({ referCode: body.referCode, tendentId: headers.tendentId });
                     if (!findData) {
                         break;
                     } else {
@@ -141,12 +161,12 @@ exports.register = async ({ body, query }) => {
                 };
             };
 
-            const user = await userModel.findOneAndUpdate({ phone: body.phone }, { $set: body }, { new: true });
+            const userData = await userModel.findOneAndUpdate({ phone: body.phone, tendentId: headers.tendentId }, { $set: body }, { new: true });
 
             //user register hone ke baad referel user ka wallte balece badao 
 
-            const token = jwt.sign({ _id: user._id }, process.env.SECRET);
-            if (user) {
+            const token = jwt.sign({ _id: userData._id }, process.env.SECRET);
+            if (userData) {
                 return {
                     statusCode: 201,
                     status: true,
@@ -196,16 +216,20 @@ exports.otplogin = async ({ body }) => {
     }
 }*/
 
-exports.login = async ({ body }) => {
+exports.login = async ({ body, headers }) => {
     try {
+        let filter = {}
+        if (headers.tendentId) {
+            filter.tendentId = headers.tendentId;
+        }
         const { email, password, phone } = body;
         if (email) {
-            const user = await userModel.findOne({ email: body.email });
+            const user = await userModel.findOne({ email: body.email, ...filter });
             if (user) {
                 const match = await bcrypt.compare(password, user.password);
                 if (match) {
                     const token = jwt.sign({ _id: user._id }, process.env.SECRET);
-                    const up = await userModel.findOneAndUpdate({ _id: user._id }, { auth: token }, { new: true });
+                    const up = await userModel.findOneAndUpdate({ _id: user._id, tendentId: headers.tendentId }, { auth: token }, { new: true });
                     if (up) {
                         return {
                             statusCode: 200,
@@ -233,8 +257,8 @@ exports.login = async ({ body }) => {
         };
 
         if (phone) {
-            const user = await userModel.findOneAndUpdate({ phone: body.phone }, { $set: { otp: "1234" } }, { new: true });
-            const data = await userModel.findOne({ phone: body.phone });
+            const user = await userModel.findOneAndUpdate({ phone: body.phone, ...filter }, { $set: { otp: "1234" } }, { new: true });
+            const data = await userModel.findOne({ phone: body.phone, ...filter });
             if (data) {
                 return {
                     statusCode: 200,
@@ -256,16 +280,17 @@ exports.login = async ({ body }) => {
     };
 };
 
-exports.loginOtpVerify = async ({ body }) => {
+exports.loginOtpVerify = async ({ body, headers }) => {
     try {
+        let tendentId = headers.tendentId;
         const { phone, otp } = body;
-        const user = await userModel.findOne({ phone });
+        const user = await userModel.findOne({ phone, tendentId });
         if (user) {
             if (otp == user.otp) {
-                const user = await userModel.findOneAndUpdate({ phone: body.phone }, { $set: { otp: "" } }, { new: true });
+                const user = await userModel.findOneAndUpdate({ phone: body.phone, tendentId }, { $set: { otp: "" } }, { new: true });
                 const token = jwt.sign({ _id: user._id }, process.env.SECRET);
                 if (user) {
-                    const up = await userModel.findOneAndUpdate({ _id: user._id }, { auth: token }, { new: true });
+                    const up = await userModel.findOneAndUpdate({ _id: user._id, tendentId }, { auth: token }, { new: true });
                     if (up) {
                         return {
                             statusCode: 200,
@@ -296,13 +321,14 @@ exports.loginOtpVerify = async ({ body }) => {
     };
 };
 
-exports.user_Profile = async ({ user, query }) => {
+exports.user_Profile = async ({ user, query, headers }) => {
     try {
         if (user) {
             let condition = []
             condition.push({
                 '$match': {
-                    '_id': user._id
+                    '_id': user._id,
+                    'tendentId': mongoose.Types.ObjectId(headers.tendentId)
                 }
             })
             if (query.Transaction != undefined && query.Transaction != "") {
@@ -343,12 +369,19 @@ exports.user_Profile = async ({ user, query }) => {
         };
     } catch (error) {
         console.log(error);
+        return {
+            statusCode: 400,
+            status: false,
+            message: error.message,
+            data: []
+        }
     };
 };
 
-exports.userEditProfile = async ({ body, user, file }) => {
+exports.userEditProfile = async ({ body, user, file, headers }) => {
     try {
         let obj = {};
+        const tendentId = headers.tendentId;
         if (body.name) {
             obj.name = body.name;
         };
@@ -368,7 +401,7 @@ exports.userEditProfile = async ({ body, user, file }) => {
             obj.image = `${process.env.url}/uploads/${file.filename}`;
         };
 
-        const result = await userModel.findByIdAndUpdate({ _id: user._id }, { $set: obj }, { new: true });
+        const result = await userModel.findOneAndUpdate({ _id: user._id, tendentId }, { $set: obj }, { new: true });
         if (result) {
             return {
                 statusCode: 200,
@@ -406,11 +439,11 @@ exports.logOut = async (req, res) => {
 };
 
 
-exports.EditUserProfile = async ({ user, file }) => {
+exports.EditUserProfile = async ({ user, file, headers }) => {
     try {
         if (file.filename != undefined && file.filename != "") {
-
-            const result = await userModel.findByIdAndUpdate({ _id: user._id }, { image: `${process.env.url}/uploads/${file.filename}` }, { new: true });
+            const tendentId = headers.tendentId;
+            const result = await userModel.findOneAndUpdate({ _id: user._id, tendentId }, { image: `${process.env.url}/uploads/${file.filename}` }, { new: true });
             if (result) {
                 return {
                     statusCode: 200,
@@ -441,14 +474,15 @@ exports.EditUserProfile = async ({ user, file }) => {
 
 exports.about = async (req, res) => {
     try {
-        const websiteData = await appServices.index();
-        const aboutData = await aboutModel.findOne().lean();
+        const tendentId = req.headers.tendentId;
+        const websiteData = await appServices.index({ tendentId });
+        const aboutData = await aboutModel.findOne({ tendentId }).lean();
         const data = {
             ...websiteData,
             title: aboutData?.title || "",
             description: aboutData?.description || "",
         };
-        res.render('about', { data })
+        res.render('about', { data, tendentId })
     } catch (error) {
         console.log(error);
     };

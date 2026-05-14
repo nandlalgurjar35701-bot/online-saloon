@@ -14,7 +14,9 @@
             alert(message);
         };
 
-        const getHeaders = () => ({ Authorization: `Bearer ${getAuthToken()}` });
+        const getHeaders = () => ({ 
+            Authorization: `Bearer ${getAuthToken()}`
+        });
         const cartActions = Array.from(document.querySelectorAll(".cart-action"));
         const wishlistButtons = Array.from(document.querySelectorAll(".wishlist-toggle"));
         const serviceState = {};

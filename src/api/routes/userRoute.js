@@ -17,7 +17,7 @@ app.get("/get-site-config", async (req, res) => {
             config = JSON.parse(fs.readFileSync(configPath, "utf8"));
         }
 
-        const activeSiteSetting = await siteSettingModel.findOne({ status: true }).sort({ createdAt: -1 }).lean();
+        const activeSiteSetting = await siteSettingModel.findOne({ tendentId: req.headers.tendentId }).sort({ createdAt: -1 }).lean();
         if (activeSiteSetting) {
             const staticSiteSetting = config.siteSetting || {};
             config.siteSetting = {

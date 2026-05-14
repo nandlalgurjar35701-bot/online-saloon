@@ -3,12 +3,13 @@ const mongoose = require("mongoose");
 const { query } = require("express");
 const { error } = require("console");
 
-exports.registerSaloonStore = async ({ body, user, files, query }) => {
+exports.registerSaloonStore = async ({ body, user, files, query, headers }) => {
     try {
+        const tendentId = headers.tendentId;
         let catogoryarr = []
         if (query.id) {
             let _id = mongoose.Types.ObjectId(query.id);
-            const result = await saloon.findOne({ _id });
+            const result = await saloon.findOne({ _id, tendentId });
             if (result) {
                 let obj = {};
                 let locations = {};
@@ -48,7 +49,7 @@ exports.registerSaloonStore = async ({ body, user, files, query }) => {
                 if (locations.city != undefined && locations.city != "") {
                     obj.location = locations;
                 }
-                const result = await saloon.findByIdAndUpdate({ _id }, { $set: obj }, { new: true });
+                const result = await saloon.findOneAndUpdate({ _id, tendentId }, { $set: obj }, { new: true });
                 if (result) {
                     return {
                         statusCode: 200,
@@ -69,7 +70,7 @@ exports.registerSaloonStore = async ({ body, user, files, query }) => {
             const { storeName, Email, PhoneNumber } = body;
             body.userId = user._id;
             if (storeName) {
-                const result = await saloon.findOne({ storeName });
+                const result = await saloon.findOne({ storeName, tendentId });
                 if (result) {
                     return {
                         statusCode: 400,
@@ -80,7 +81,7 @@ exports.registerSaloonStore = async ({ body, user, files, query }) => {
                 };
             };
             if (Email) {
-                const result = await saloon.findOne({ Email });
+                const result = await saloon.findOne({ Email, tendentId });
                 if (result) {
                     return {
                         statusCode: 400,
@@ -91,7 +92,7 @@ exports.registerSaloonStore = async ({ body, user, files, query }) => {
                 };
             };
             if (PhoneNumber) {
-                const result = await saloon.findOne({ PhoneNumber });
+                const result = await saloon.findOne({ PhoneNumber, tendentId });
                 if (result) {
                     return {
                         statusCode: 400,
@@ -135,6 +136,7 @@ exports.registerSaloonStore = async ({ body, user, files, query }) => {
                 category: catogoryarr,
                 TimeRange: body.TimeRange,
                 weekRange: body.weekRange,
+                tendentId
             });
             const result = await saloon_details.save();
             if (result) {
@@ -151,14 +153,13 @@ exports.registerSaloonStore = async ({ body, user, files, query }) => {
     };
 };
 
-exports.getSaloonStore = async ({ query }) => {
+exports.getSaloonStore = async ({ query, headers }) => {
     try {
-        let condition = {};
+        const tendentId = headers.tendentId;
+        let condition = { tendentId };
         if (query.id) {
             condition._id = mongoose.Types.ObjectId(query.id);
-        } else {
-            condition = {};
-        };
+        }
         let result = await saloon.find(condition);
         if (result.length > 0) {
             return {
@@ -181,11 +182,12 @@ exports.getSaloonStore = async ({ query }) => {
 };
 
 
-exports.getAllSaloonCity = async ({ query }) => {
+exports.getAllSaloonCity = async ({ query, headers }) => {
     try {
+        const tendentId = headers.tendentId;
         const arr = [];
         const category = [];
-        let condition = {};
+        let condition = { tendentId };
         if (query.category != undefined && query.category != "") {
             category.push(query.category);
             condition.category = { $in: category };
@@ -210,11 +212,12 @@ exports.getAllSaloonCity = async ({ query }) => {
 };
 
 
-exports.getAllSaloonRequistCity = async ({ query }) => {
+exports.getAllSaloonRequistCity = async ({ query, headers }) => {
     try {
+        const tendentId = headers.tendentId;
         const arr = [];
         const category = [];
-        let condition = {};
+        let condition = { tendentId };
         if (query.category != undefined && query.category != "") {
             category.push(query.category);
             condition.category = { $in: category };

@@ -70,7 +70,8 @@ exports.editCoupon = async ({ query, body }) => {
 
 exports.getCoupon = async (req) => {
     try {
-        const findData = await coupon.find();
+        const tendentId = req.headers.tendentId;
+        const findData = await coupon.find({ tendentId });
         if (findData.length > 0) {
             return {
                 statusCode: 200,

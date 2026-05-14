@@ -2,7 +2,8 @@ const { default: mongoose } = require("mongoose")
 
 module.exports = controllerFunction => async (request, response, next) => {
     try {
-        const { statusCode, ...resObj } = await controllerFunction(request, response, next)
+        const { statusCode = 200, ...resObj } = await controllerFunction(request, response, next)
+        console.log(resObj, '---resObj')
         response.status(+statusCode).json(resObj)
     } catch (error) {
         if (error instanceof mongoose.Error.CastError) {

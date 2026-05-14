@@ -9,7 +9,8 @@ exports.getreviews = async (query) => {
         const condition = [];
         condition.push({
             '$match': {
-                'saloonId': saloonId
+                'saloonId': saloonId,
+                'tendentId': mongoose.Types.ObjectId(query.tendentId)
             }
         });
         condition.push({

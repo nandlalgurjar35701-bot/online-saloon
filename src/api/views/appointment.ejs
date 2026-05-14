@@ -25,7 +25,7 @@
                     <div class="appointment-form p-5">
                         <p class="fs-4 text-uppercase text-primary">Get In Touch</p>
                         <h1 class="display-5 mb-4 text-white">Schedule Your Visit</h1>
-                        <form action="/appointment" method="post">
+                        <form id="appointmentForm">
                             <div class="row gy-3 gx-4">
                                 <div class="col-lg-6"><input type="text" name="name" class="form-control py-3 border-white bg-transparent text-white" placeholder="Name" required></div>
                                 <div class="col-lg-6"><input type="email" name="email" class="form-control py-3 border-white bg-transparent text-white" placeholder="Email"></div>
@@ -60,5 +60,31 @@
     </div>
 
     <%- include("./partials/footerlink.ejs") %>
+    <script>
+    (function () {
+        const form = document.getElementById("appointmentForm");
+        if (form) {
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const payload = Object.fromEntries(formData.entries());
+                try {
+                    const res = await fetch("/appointment", {
+                        method: "POST",
+                        headers: { 
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await res.json();
+                    alert(result.message || (res.ok ? "Appointment request submitted!" : "Failed."));
+                    if (res.ok) form.reset();
+                } catch (err) {
+                    alert("Unable to submit appointment.");
+                }
+            });
+        }
+    })();
+    </script>
 </body>
 </html>

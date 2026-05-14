@@ -3,9 +3,10 @@ const Appointment = require("../../models/appointmentModel");
 const Contact = require("../../models/contactUsModel");
 const Newsletter = require("../../models/newsletterModel");
 
-const renderWithData = async (res, viewName, statusCode = 200) => {
-  const data = await appServices.index();
-  return res.status(statusCode).render(viewName, { data });
+const renderWithData = async (req, res, viewName, statusCode = 200) => {
+  const tendentId = req.headers.tendentId;
+  const data = await appServices.index({ tendentId });
+  return res.status(statusCode).render(viewName, { data, tendentId });
 };
 
 exports.servicePage = async (req, res) => {
@@ -14,8 +15,9 @@ exports.servicePage = async (req, res) => {
     const q = String(req.query.q || "").trim();
     const categoryId = String(req.query.categoryId || "").trim();
     const limit = 9;
-    const data = await appServices.index({ includeProducts: false });
-    const paginatedProducts = await appServices.getPaginatedProducts({ page, limit, q, categoryId });
+    const tendentId = req.headers.tendentId;
+    const data = await appServices.index({ includeProducts: false, tendentId });
+    const paginatedProducts = await appServices.getPaginatedProducts({ page, limit, q, categoryId, tendentId });
 
     data.products = paginatedProducts.items;
     data.filters = { q, categoryId };
@@ -28,7 +30,7 @@ exports.servicePage = async (req, res) => {
       hasNext: paginatedProducts.hasNext,
     };
 
-    return res.status(200).render("service", { data });
+    return res.status(200).render("service", { data, tendentId });
   } catch (error) {
     console.log(error);
     return res.status(500).render("404");
@@ -37,7 +39,7 @@ exports.servicePage = async (req, res) => {
 
 exports.pricePage = async (req, res) => {
   try {
-    return await renderWithData(res, "price");
+    return await renderWithData(req, res, "price");
   } catch (error) {
     console.log(error);
     return res.status(500).render("404");
@@ -46,7 +48,7 @@ exports.pricePage = async (req, res) => {
 
 exports.teamPage = async (req, res) => {
   try {
-    return await renderWithData(res, "team");
+    return await renderWithData(req, res, "team");
   } catch (error) {
     console.log(error);
     return res.status(500).render("404");
@@ -55,7 +57,7 @@ exports.teamPage = async (req, res) => {
 
 exports.testimonialPage = async (req, res) => {
   try {
-    return await renderWithData(res, "testimonial");
+    return await renderWithData(req, res, "testimonial");
   } catch (error) {
     console.log(error);
     return res.status(500).render("404");
@@ -64,7 +66,7 @@ exports.testimonialPage = async (req, res) => {
 
 exports.galleryPage = async (req, res) => {
   try {
-    return await renderWithData(res, "gallery");
+    return await renderWithData(req, res, "gallery");
   } catch (error) {
     console.log(error);
     return res.status(500).render("404");
@@ -73,7 +75,7 @@ exports.galleryPage = async (req, res) => {
 
 exports.appointmentPage = async (req, res) => {
   try {
-    return await renderWithData(res, "appointment");
+    return await renderWithData(req, res, "appointment");
   } catch (error) {
     console.log(error);
     return res.status(500).render("404");
@@ -82,7 +84,7 @@ exports.appointmentPage = async (req, res) => {
 
 exports.contactPage = async (req, res) => {
   try {
-    return await renderWithData(res, "contact");
+    return await renderWithData(req, res, "contact");
   } catch (error) {
     console.log(error);
     return res.status(500).render("404");
@@ -91,7 +93,7 @@ exports.contactPage = async (req, res) => {
 
 exports.profilePage = async (req, res) => {
   try {
-    return await renderWithData(res, "profile");
+    return await renderWithData(req, res, "profile");
   } catch (error) {
     console.log(error);
     return res.status(500).render("404");
@@ -100,7 +102,7 @@ exports.profilePage = async (req, res) => {
 
 exports.wishlistPage = async (req, res) => {
   try {
-    return await renderWithData(res, "wishlist");
+    return await renderWithData(req, res, "wishlist");
   } catch (error) {
     console.log(error);
     return res.status(500).render("404");
@@ -109,7 +111,7 @@ exports.wishlistPage = async (req, res) => {
 
 exports.ordersPage = async (req, res) => {
   try {
-    return await renderWithData(res, "orders");
+    return await renderWithData(req, res, "orders");
   } catch (error) {
     console.log(error);
     return res.status(500).render("404");
@@ -118,8 +120,9 @@ exports.ordersPage = async (req, res) => {
 
 exports.cartPage = async (req, res) => {
   try {
-    const data = await appServices.index();
-    return res.render("cart", { data, razorpayKey: process.env.key_id || "" });
+    const tendentId = req.headers.tendentId;
+    const data = await appServices.index({ tendentId });
+    return res.render("cart", { data, tendentId, razorpayKey: process.env.key_id || "" });
   } catch (error) {
     console.log(error);
     return res.status(500).render("404");
@@ -141,14 +144,19 @@ exports.createAppointment = async (req, res) => {
       service,
       date,
       message: message || "",
+      tendentId: req.headers.tendentId
     });
 
-    req.flash("success", "Appointment request submitted successfully.");
-    return res.redirect("/appointment");
+    return res.status(201).json({
+      status: true,
+      message: "Appointment request submitted successfully."
+    });
   } catch (error) {
     console.log(error);
-    req.flash("error", "Unable to submit appointment right now.");
-    return res.redirect("/appointment");
+    return res.status(500).json({
+      status: false,
+      message: "Unable to submit appointment right now."
+    });
   }
 };
 
@@ -160,8 +168,10 @@ exports.createContact = async (req, res) => {
       return res.redirect("/contact");
     }
 
+    const tendentId = req.headers.tendentId;
     const alreadyPending = await Contact.findOne({
       status: 0,
+      tendentId,
       $or: [{ email }, { phone }],
     });
     if (alreadyPending) {
@@ -175,14 +185,19 @@ exports.createContact = async (req, res) => {
       phone,
       services: services || "",
       message,
+      tendentId
     });
 
-    req.flash("success", "Contact request sent successfully.");
-    return res.redirect("/contact");
+    return res.status(201).json({
+      status: true,
+      message: "Contact request sent successfully."
+    });
   } catch (error) {
     console.log(error);
-    req.flash("error", "Unable to send contact request right now.");
-    return res.redirect("/contact");
+    return res.status(500).json({
+      status: false,
+      message: "Unable to send contact request right now."
+    });
   }
 };
 
@@ -195,23 +210,28 @@ exports.createNewsletter = async (req, res) => {
       return res.redirect(redirectTo);
     }
 
-    const alreadySubscribed = await Newsletter.findOne({ email });
+    const tendentId = req.headers.tendentId;
+    const alreadySubscribed = await Newsletter.findOne({ email, tendentId });
     if (!alreadySubscribed) {
-      await Newsletter.create({ email });
+      await Newsletter.create({ email, tendentId });
     }
 
-    req.flash("success", "Newsletter subscription successful.");
-    return res.redirect(redirectTo);
+    return res.status(201).json({
+      status: true,
+      message: "Newsletter subscription successful."
+    });
   } catch (error) {
     console.log(error);
-    req.flash("error", "Unable to subscribe right now.");
-    return res.redirect(req.get("referer") || "/");
+    return res.status(500).json({
+      status: false,
+      message: "Unable to subscribe right now."
+    });
   }
 };
 
 exports.notFoundPage = async (req, res) => {
   try {
-    return await renderWithData(res, "404", 404);
+    return await renderWithData(req, res, "404", 404);
   } catch (error) {
     console.log(error);
     return res.status(404).render("404");

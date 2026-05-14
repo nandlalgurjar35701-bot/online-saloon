@@ -8,7 +8,7 @@
                     <p class="text-white">
                         <%= data?.siteSetting?.newsletterDescription || "Get salon updates, offers and grooming tips straight to your inbox." %>
                     </p>
-                    <form action="/newsletter" method="post" class="position-relative mx-auto rounded-pill">
+                    <form id="newsletterForm" class="position-relative mx-auto rounded-pill">
                         <input class="form-control rounded-pill border-0 w-100 py-3 ps-4 pe-5" type="email" name="email"
                             placeholder="Enter your email" required>
                         <button type="submit"
@@ -102,6 +102,28 @@
         }
         var title = config.pageTitle;
         if (title) document.title = title;
+    }
+ 
+    const newsletterForm = document.getElementById("newsletterForm");
+    if (newsletterForm) {
+        newsletterForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = newsletterForm.querySelector('input[name="email"]').value;
+            try {
+                const res = await fetch("/newsletter", {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email })
+                });
+                const result = await res.json();
+                alert(result.message || (res.ok ? "Subscribed!" : "Failed."));
+                if (res.ok) newsletterForm.reset();
+            } catch (err) {
+                alert("Subscription failed.");
+            }
+        });
     }
 })();
 </script>

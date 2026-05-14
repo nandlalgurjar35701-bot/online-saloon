@@ -4,11 +4,11 @@ const cart = require("../../models/cartModel");
 const saloon = require("../../models/saloonStoreModel");
 const package = require("../../models/packageModel");
 
-exports.removeserviceFromCart = async ({ body, user, query }) => {
+exports.removeserviceFromCart = async ({ body, user, query, headers }) => {
     try {
         if (query.id) {
             const _id = mongoose.Types.ObjectId(query.id);
-            const findData = await cart.findOne({ _id });
+            const findData = await cart.findOne({ _id, tendentId: headers.tendentId });
             let cartdata = [];
             let Amount = [];
             let obj = {};
@@ -48,7 +48,7 @@ exports.removeserviceFromCart = async ({ body, user, query }) => {
                             };
                             obj.totalamount = sum;
                         } else { obj.totalamount = 0 }
-                        const result = await cart.findByIdAndUpdate({ _id }, { $set: obj }, { new: true });
+                        const result = await cart.findOneAndUpdate({ _id, tendentId: headers.tendentId }, { $set: obj }, { new: true });
                         if (result) {
                             return {
                                 statusCode: 200,
@@ -95,111 +95,65 @@ exports.removeserviceFromCart = async ({ body, user, query }) => {
     };
 };
 
-exports.getcart = async ({ user, query }) => {
+exports.getcart = async ({ user, query, headers }) => {
     try {
-        let arr = [];
-        let condition = [];
-        if (query.saloonId != undefined && query.saloonId != "") {
-            condition.push({
-                '$match': {
-                    '$and': [
-                        {
-                            'userId': user._id
-                        },
-                        {
-                            'saloonId': mongoose.Types.ObjectId(query.saloonId)
-                        }
-                    ]
-                }
-            })
-        } else {
-            condition.push({
-                '$match': {
-                    '$and': [
-                        {
-                            'userId': user._id
-                        },
-                    ]
-                }
-            })
-        }
-        condition.push({
-            '$unwind': {
-                'path': '$cartdata'
-            }
-        }, {
-            '$lookup': {
-                'from': 'products',
-                'localField': 'cartdata.serviceId',
-                'foreignField': '_id',
-                'as': 'result'
-            }
-        }, {
-            '$unwind': {
-                'path': '$result'
-            }
-        }, {
-            '$project': {
-                'totalamount': 1,
-                'cartdata': {
-                    'saloonId': '$result.saloonStore',
-                    'serviceId': '$result._id',
-                    'quantity': '$cartdata.quantity',
-                    'Amount': '$cartdata.Amount',
-                    'ServiceName': '$result.ServiceName',
-                    'ServicePrice': '$result.ServicePrice',
-                    'timePeriod_in_minits': '$result.timePeriod_in_minits',
-                    'serviceProvider': '$result.serviceProvider',
-                    'image': '$result.image',
-                    'description': '$result.description'
-                },
-                'addressId': '$addressId'
-            }
-        })
-        const findData = await cart.aggregate(condition)
-        const findSaloon = await cart.aggregate([
+        const tendentId = mongoose.Types.ObjectId(headers.tendentId);
+        const condition = [
             {
                 '$match': {
-                    'userId': user._id
+                    'userId': user._id,
+                    'tendentId': tendentId
                 }
-            }, {
+            },
+            {
+                '$unwind': {
+                    'path': '$cartdata'
+                }
+            },
+            {
                 '$lookup': {
-                    'from': 'saloons',
-                    'localField': 'saloonId',
+                    'from': 'products',
+                    'localField': 'cartdata.serviceId',
                     'foreignField': '_id',
                     'as': 'result'
                 }
-            }, {
+            },
+            {
                 '$unwind': {
                     'path': '$result'
                 }
-            }, {
-                '$replaceRoot': {
-                    'newRoot': '$result'
+            },
+            {
+                '$group': {
+                    '_id': '$_id',
+                    'totalamount': { '$first': '$totalamount' },
+                    'addressId': { '$first': '$addressId' },
+                    'items': {
+                        '$push': {
+                            'saloonId': '$result.saloonStore',
+                            'serviceId': '$result._id',
+                            'quantity': '$cartdata.quantity',
+                            'Amount': '$cartdata.Amount',
+                            'ServiceName': '$result.ServiceName',
+                            'ServicePrice': '$result.ServicePrice',
+                            'timePeriod_in_minits': '$result.timePeriod_in_minits',
+                            'serviceProvider': '$result.serviceProvider',
+                            'image': '$result.image',
+                            'description': '$result.description'
+                        }
+                    }
                 }
             }
-        ])
-        let i;
-        i = 1
-        let cartData = []
-        for (const saloon of findSaloon) {
-            cartData = []
-            for (const cart of findData) {
-                if (cart.cartdata.saloonId.toString() === saloon._id.toString()) {
-                    cartData.push(cart)
-                }
-            }
-            if (cartData.length > 0) {
-                saloon.cart = cartData
-                arr.push(saloon)
-            }
-        }
-        if (arr) {
+        ];
+
+        const findData = await cart.aggregate(condition);
+
+        if (findData && findData.length > 0) {
             return {
                 statusCode: 200,
                 status: true,
                 message: "your cart is here !",
-                data: arr
+                data: findData
             };
         } else {
             return {
@@ -214,14 +168,16 @@ exports.getcart = async ({ user, query }) => {
     };
 };
 
-exports.addcart = async ({ user, query }) => {
+exports.addcart = async ({ user, query, headers }) => {
     try {
         let obj = {};
         let serviceArr = [];
-        let findData = await cart.findOne({ userId: user._id });
+        let tendentId = headers.tendentId;
+        let findData = await cart.findOne({ userId: user._id, tendentId });
 
         if (!findData) {
             obj.userId = user._id;
+            obj.tendentId = tendentId;
             findData = await cart.create(obj);
         }
 
@@ -229,7 +185,7 @@ exports.addcart = async ({ user, query }) => {
         // if (query.serviceId) {
         let _id = mongoose.Types.ObjectId(query.serviceId);
 
-        let findService = await service.findById(query.serviceId);
+        let findService = await service.findOne({ _id: mongoose.Types.ObjectId(query.serviceId), tendentId });
 
         if (!findService) {
             return {
@@ -240,7 +196,7 @@ exports.addcart = async ({ user, query }) => {
             };
         }
 
-        const FindCart = await cart.findOne({ userId: user._id, });
+        const FindCart = await cart.findOne({ userId: user._id, tendentId });
 
         let isMerged = false;
         if (FindCart.cartdata.length > 0) {
@@ -281,7 +237,7 @@ exports.addcart = async ({ user, query }) => {
             return x + y;
         }, 0);
 
-        const result = await cart.findByIdAndUpdate(FindCart._id, { cartdata: serviceArr, totalamount: sum }, { new: true });
+        const result = await cart.findOneAndUpdate({ _id: FindCart._id, tendentId }, { cartdata: serviceArr, totalamount: sum }, { new: true });
 
 
         return {
@@ -295,10 +251,10 @@ exports.addcart = async ({ user, query }) => {
     };
 };
 
-exports.removeCart = async ({ query }) => {
+exports.removeCart = async ({ query, headers }) => {
     try {
         const _id = mongoose.Types.ObjectId(query.id);
-        const result = await cart.findByIdAndRemove({ _id })
+        const result = await cart.findOneAndRemove({ _id, tendentId: headers.tendentId })
         if (result) {
             return {
                 statusCode: 200,

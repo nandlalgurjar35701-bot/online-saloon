@@ -3,8 +3,9 @@ const category = require("../../models/categoryModel")
 const mongoose = require("mongoose")
 const { getreviews } = require("./services")
 
-exports.addReviews = async ({ body, user, query }) => {
+exports.addReviews = async ({ body, user, query, headers }) => {
     try {
+        const tendentId = headers.tendentId;
         let obj = {};
         if (query.id != undefined && query.id != "") {
             let _id = mongoose.Types.ObjectId(query.id)
@@ -14,7 +15,7 @@ exports.addReviews = async ({ body, user, query }) => {
             if (body.Description != undefined && body.Description != "") {
                 obj.Description = body.Description;
             }
-            const updateDate = await review.findByIdAndUpdate({ _id }, obj, { new: true })
+            const updateDate = await review.findOneAndUpdate({ _id, tendentId }, obj, { new: true })
             if (updateDate) {
                 return {
                     statusCode: 200,
@@ -37,6 +38,7 @@ exports.addReviews = async ({ body, user, query }) => {
             if (user) {
                 obj.userId = user._id;
             }
+            obj.tendentId = tendentId;
             obj.Date = new Date();
 
             const reviewDetail = new review(obj);
@@ -55,9 +57,10 @@ exports.addReviews = async ({ body, user, query }) => {
     };
 };
 
-exports.getReviews = async ({ query, user }) => {
+exports.getReviews = async ({ query, user, headers }) => {
     try {
         query.user = user
+        query.tendentId = headers.tendentId;
         const result = await getreviews(query);
         if (result.status === true) {
             return {
@@ -80,13 +83,14 @@ exports.getReviews = async ({ query, user }) => {
 };
 
 
-exports.updateLikeDislike = async ({ user, query }) => {
+exports.updateLikeDislike = async ({ user, query, headers }) => {
     try {
+        const tendentId = headers.tendentId;
         if (query.id != undefined && query.id != "") {
             let obj = {};
             let like = []
             const _id = mongoose.Types.ObjectId(query.id)
-            const findData = await review.findOne({ _id })
+            const findData = await review.findOne({ _id, tendentId })
             if (findData) {
                 //dislike me hai to remove aur like me add 
                 if (query.like != undefined && query.like != "") {
@@ -160,7 +164,7 @@ exports.updateLikeDislike = async ({ user, query }) => {
                 }
 
 
-                const update = await review.findByIdAndUpdate({ _id }, obj, { new: true })
+                const update = await review.findOneAndUpdate({ _id, tendentId }, obj, { new: true })
                 if (update) {
                     return {
                         statusCode: 200,
