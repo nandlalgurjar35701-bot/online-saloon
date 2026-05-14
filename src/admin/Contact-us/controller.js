@@ -26,8 +26,8 @@ exports.ContactUsRequist = async (req, res) => {
             condition.status = 0
         }
 
-        if (req.user?.tendentId) {
-            condition.tendentId = req.user.tendentId;
+        if (req.headers['tendentId']) {
+            condition.tendentId = req.headers['tendentId'];
         }
 
         const data = await Contact.find(condition);

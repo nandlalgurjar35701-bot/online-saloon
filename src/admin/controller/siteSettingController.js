@@ -25,8 +25,8 @@ exports.renderSiteSettingForm = async (req, res) => {
 exports.renderSiteSettingList = async (req, res) => {
   try {
     res.locals.message = req.flash();
-    if (req.user?.tendentId) {
-      req.query.tendentId = req.user.tendentId;
+    if (req.headers['tendentId']) {
+      req.query.tendentId = req.headers['tendentId'];
     }
     const data = await siteSettingService.getSiteSettingList(req.query);
 
@@ -44,8 +44,8 @@ exports.renderSiteSettingList = async (req, res) => {
 
 exports.saveSiteSetting = async (req, res) => {
   try {
-    if (req.user?.tendentId) {
-      req.body.tendentId = req.user.tendentId;
+    if (req.headers['tendentId']) {
+      req.body.tendentId = req.headers['tendentId'];
     }
     await siteSettingService.saveSiteSetting(req.body);
     req.flash("success", "Site setting saved successfully.");

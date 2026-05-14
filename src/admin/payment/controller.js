@@ -21,13 +21,13 @@ exports.ViewAllPayment = async (req, res) => {
         if (req.query.amount) {
             serchobj2["orderData.amount"] = { $gte: Number(req.query.amount) * 100 };
         }
-        if (req.user?.tendentId) {
-            serchobj2.tendentId = mongoose.Types.ObjectId(req.user.tendentId);
+        if (req.headers['tendentId']) {
+            serchobj2.tendentId = req.headers['tendentId'];
         }
         let condition = [];
-        if (req.user?.tendentId) {
+        if (req.headers['tendentId']) {
             condition.push({
-                $match: { tendentId: mongoose.Types.ObjectId(req.user.tendentId) }
+                $match: { tendentId: req.headers['tendentId'] }
             });
         }
         condition.push({

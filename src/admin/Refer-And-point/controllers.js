@@ -9,8 +9,8 @@ exports.setPointToRupee = async (req, res) => {
         let data;
         const { query, ...rest } = req;
         const condition = {};
-        if (req.user?.tendentId) {
-            condition.tendentId = req.user.tendentId;
+        if (req.headers['tendentId']) {
+            condition.tendentId = req.headers['tendentId'];
         }
         if (req.query.id != undefined && req.query.id != "") {
             condition._id = req.query.id;
@@ -25,8 +25,8 @@ exports.setPointToRupee = async (req, res) => {
 exports.pointAndRupee = async (req, res) => {
     try {
         res.locals.message = req.flash();
-        if (req.user?.tendentId) {
-            req.body.tendentId = req.user.tendentId;
+        if (req.headers['tendentId']) {
+            req.body.tendentId = req.headers['tendentId'];
         }
         let result;
         if (req.query.id != undefined && req.query.id != "") {
@@ -56,8 +56,8 @@ exports.ViewReferEarn = async (req, res) => {
     try {
         res.locals.message = req.flash();
         const condition = {};
-        if (req.user?.tendentId) {
-            condition.tendentId = req.user.tendentId;
+        if (req.headers['tendentId']) {
+            condition.tendentId = req.headers['tendentId'];
         }
         const data = await refer.find(condition);
         if (data) {

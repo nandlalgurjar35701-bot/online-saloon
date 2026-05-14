@@ -29,8 +29,8 @@ exports.findStoreOptions = async (req) => {
   if (getNormalizedRole(req.user?.type) === "admin") {
     match.userId = req.user?._id;
   }
-  if (req.user?.tendentId) {
-    match.tendentId = mongoose.Types.ObjectId(req.user.tendentId);
+  if (req.headers['tendentId']) {
+    match.tendentId = req.headers['tendentId'];
   }
 
   if (req.query.saloonId && isValidObjectId(req.query.saloonId)) {
@@ -45,8 +45,8 @@ exports.findStoreOptions = async (req) => {
 
 exports.saveProductPackage = async (req) => {
   const body = { ...req.body };
-  if (req.user?.tendentId) {
-    body.tendentId = req.user.tendentId;
+  if (req.headers['tendentId']) {
+    body.tendentId = req.headers['tendentId'];
   }
   const isEdit = req.query.id && isValidObjectId(req.query.id);
 
@@ -122,8 +122,8 @@ exports.getProductPackageList = async (req) => {
   if (req.query.id && isValidObjectId(req.query.id)) {
     match.saloonStore = mongoose.Types.ObjectId(req.query.id);
   }
-  if (req.user?.tendentId) {
-    match.tendentId = mongoose.Types.ObjectId(req.user.tendentId);
+  if (req.headers['tendentId']) {
+    match.tendentId = req.headers['tendentId'];
   }
 
   pipeline.push({ $match: match });

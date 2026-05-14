@@ -14,9 +14,9 @@ exports.addProductPage = async (req, res) => {
     res.locals.message = req.flash();
     const categoryCondition = { type: { $in: ["product", 0, "0", null] } };
     const saloonCondition = getStoreScopeForUser(req.user);
-    if (req.user?.tendentId) {
-      categoryCondition.tendentId = req.user.tendentId;
-      saloonCondition.tendentId = req.user.tendentId;
+    if (req.headers['tendentId']) {
+      categoryCondition.tendentId = req.headers['tendentId'];
+      saloonCondition.tendentId = req.headers['tendentId'];
     }
     const category = await Category.find(categoryCondition);
     const saloonList = await saloon
@@ -46,8 +46,8 @@ exports.addProductStore = async (req, res) => {
   try {
     res.locals.message = req.flash();
     const { body, files, query } = req;
-    if (req.user?.tendentId) {
-      body.tendentId = req.user.tendentId;
+    if (req.headers['tendentId']) {
+      body.tendentId = req.headers['tendentId'];
     }
     const storeScope = getStoreScopeForUser(req.user);
 
@@ -132,8 +132,8 @@ exports.getProductCategoryOptions = async (req, res) => {
     const condition = {
       parent_Name: mongoose.Types.ObjectId(parentId),
     };
-    if (req.user?.tendentId) {
-      condition.tendentId = req.user.tendentId;
+    if (req.headers['tendentId']) {
+      condition.tendentId = req.headers['tendentId'];
     }
     const subCategory = await Category.find(condition);
 

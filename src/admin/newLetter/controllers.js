@@ -9,8 +9,8 @@ exports.sendNotification = async (req, res) => {
         res.locals.message = req.flash();
         let data
         const condition = { _id: req.query.id };
-        if (req.user?.tendentId) {
-            condition.tendentId = req.user.tendentId;
+        if (req.headers['tendentId']) {
+            condition.tendentId = req.headers['tendentId'];
         }
         if (req.query.id != undefined && req.query.id != "") {
             data = await ContecUs.findOne(condition)
@@ -28,8 +28,8 @@ exports.SendAllUserEmail = async (req, res) => {
     try {
         let arr;
         const condition = {};
-        if (req.user?.tendentId) {
-            condition.tendentId = req.user.tendentId;
+        if (req.headers['tendentId']) {
+            condition.tendentId = req.headers['tendentId'];
         }
         const newsletterData = await newsletters.distinct("email", condition);
         const userData = await user.distinct("email", condition);

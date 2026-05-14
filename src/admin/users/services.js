@@ -28,8 +28,8 @@ exports.allUser = async (req, res) => {
             serchobj.type = req.query.status;
         }
 
-        if (req.user?.tendentId) {
-            serchobj.tendentId = mongoose.Types.ObjectId(req.user.tendentId);
+        if (req.headers['tendentId']) {
+            serchobj.tendentId = req.headers['tendentId'];
         }
 
         const Finddata = await user.aggregate([

@@ -7,8 +7,8 @@ exports.Coupon = async (req, res) => {
         res.locals.message = req.flash();
         if (req.query.id != undefined && req.query.id != "") {
             const condition = { _id: mongoose.Types.ObjectId(req.query.id) };
-            if (req.user?.tendentId) {
-                condition.tendentId = req.user.tendentId;
+            if (req.headers['tendentId']) {
+                condition.tendentId = req.headers['tendentId'];
             }
             const Coupon = await coupon.findOne(condition);
             if (Coupon) {
@@ -25,8 +25,8 @@ exports.Coupon = async (req, res) => {
 exports.createCoupon = async (req, res) => {
     try {
         res.locals.message = req.flash();
-        if (req.user?.tendentId) {
-            req.body.tendentId = req.user.tendentId;
+        if (req.headers['tendentId']) {
+            req.body.tendentId = req.headers['tendentId'];
         }
         if (req.query.id != undefined && req.query.id != "") {
             const _id = mongoose.Types.ObjectId(req.query.id);
@@ -82,8 +82,8 @@ exports.ViewAllCoupon = async (req, res) => {
             searchobj.StartDate = req.query.startdate
             serchobj.StartDate = req.query.startdate
         }
-        if (req.user?.tendentId) {
-            serchobj.tendentId = req.user.tendentId;
+        if (req.headers['tendentId']) {
+            serchobj.tendentId = req.headers['tendentId'];
         }
         const updateData = await coupon.find(serchobj);
         res.render("Coupon/view-View-Coupon", { user: req.user, data: updateData, filter: req.query, searchobj });

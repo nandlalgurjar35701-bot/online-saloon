@@ -9,7 +9,7 @@ const veconcy = require("../../models/vacancyModel");
 
 exports.AllDetail = async (req, res) => {
     try {
-        let filter = { tendentId: req.user.tendentId };
+        let filter = { tendentId: req.headers['tendentId'] };
         let resObj = {}
         resObj.order = await order.countDocuments(filter)//{status:"cancel"}
         resObj.user = await user.countDocuments(filter) //super Admin

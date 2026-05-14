@@ -54,7 +54,7 @@ exports.businessOtpSent = async (req, res) => {
         if (user) {
             user = await users.findOneAndUpdate({ phone }, { otp: "1234" }, { new: true });
         } else {
-            let body = { tendentId: req.user.tendentId, phone, otp: "1234" }
+            let body = { tendentId: req.headers['tendentId'], phone, otp: "1234" }
             user = await users.create(body);
         }
 
@@ -236,11 +236,11 @@ exports.addSaloonStore = async (req, res) => {
                 email,
                 phone: Phone,
                 password,
-                tendentId: user?.tendentId || null,
+                tendentId: req.headers['tendentId'] || null,
             });
 
             const created = await saloon.create({
-                tendentId: user?.tendentId || null,
+                tendentId: req.headers['tendentId'] || null,
                 userId: createdAdmin?._id || user?._id || null,
                 storeName,
                 email,
