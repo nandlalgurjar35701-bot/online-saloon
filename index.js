@@ -35,6 +35,21 @@ app.use((req, res, next) => {
   res.locals.successMessages = req.flash("success");
   res.locals.errorMessages = req.flash("error");
   res.locals.currentPath = req.path || "/";
+
+  // Retain flash messages for admin routes which call req.flash() with no arguments
+  const message = {};
+  if (res.locals.successMessages.length > 0) message.success = res.locals.successMessages;
+  if (res.locals.errorMessages.length > 0) message.error = res.locals.errorMessages;
+
+  const originalFlash = req.flash.bind(req);
+  req.flash = function(type, msg) {
+    if (arguments.length === 0) {
+      const allFlash = originalFlash();
+      return { ...message, ...allFlash };
+    }
+    return originalFlash(type, msg);
+  };
+
   next();
 });
 
@@ -44,9 +59,13 @@ app.use(async (req, res, next) => {
   console.table({ [req.method]: req.originalUrl });
   console.log(req.query, req.body);
   req.headers['subdomain'] = req.host.split('.')[0];
+  console.log(req.headers['subdomain'], '----subdomain')
   let data = await tendentModel.findOne({ subdomain: req.headers['subdomain'], status: 'active' })
+  console.log(data, '----data')
   if (data) {
     req.headers['tendentId'] = data._id;
+  } else {
+    throw new Error('Subdomain not found');
   }
   next();
 });

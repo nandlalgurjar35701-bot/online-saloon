@@ -80,9 +80,9 @@ exports.login = async (req, res) => {
 exports.loginData = async (req, res) => {
     try {
         let filter = { tendentId: req.headers.tendentId, email: req.body.email }
-        res.locals.message = req.flash();
         const { email, password } = req.body;
         if (email) {
+            console.log(filter, '---filter')
             const user = await adminModel.findOne(filter);
             if (user) {
                 if (typeof user.password === 'undefined') {
@@ -116,6 +116,8 @@ exports.loginData = async (req, res) => {
         };
     } catch (error) {
         console.log(error);
+        req.flash("error", error.message);
+        return res.redirect("/admin/");
     };
 };
 exports.forgetPassword = async (req, res) => {
