@@ -79,41 +79,34 @@ exports.login = async (req, res) => {
 
 exports.loginData = async (req, res) => {
     try {
-        let filter = { tendentId: req.headers.tendentId, email: req.body.email }
         const { email, password } = req.body;
-        if (email) {
-            console.log(filter, '---filter')
-            const user = await adminModel.findOne(filter);
-            if (user) {
-                if (typeof user.password === 'undefined') {
-                    req.flash("error", "Detail is Not Found ");
-                    return res.redirect("/admin/");
-                };
-                const match = await bcrypt.compare(password, user.password);
-                if (match) {
-                    const accessToken = jwt.sign({ _id: user._id }, process.env.accessToken);
-                    const refreshToken = jwt.sign({ _id: user._id }, process.env.refreshToken);
+        if (!email) throw new Error("Email is required");
 
-                    res.cookie("accessToken", accessToken, {
-                        expires: new Date(Date.now() + 10000 * 60 * 60),//1 minit
-                        httpOnly: true,
-                        overwrite: true
-                    }).cookie("refreshToken", refreshToken, {
-                        expires: new Date(Date.now() + 10000 * 60 * 60 * 12),//10 minit
-                        httpOnly: true,
-                        overwrite: true
-                    });
-                    req.flash("success", "login successfully");
-                    return res.redirect("/admin/");
-                } else {
-                    req.flash("error", "invalid login details");
-                    return res.redirect("/admin/");
-                };
-            } else {
-                req.flash("error", "invalid login details");
-                return res.redirect("/admin/");
-            };
-        };
+        let filter = { tendentId: req.headers.tendentId, email };
+        console.log(filter, '---filter');
+
+        const user = await adminModel.findOne(filter);
+        if (!user) throw new Error("invalid login details");
+        if (typeof user.password === 'undefined') throw new Error("Detail is Not Found");
+
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) throw new Error("invalid login details");
+
+        const accessToken = jwt.sign({ _id: user._id }, process.env.accessToken);
+        const refreshToken = jwt.sign({ _id: user._id }, process.env.refreshToken);
+
+        res.cookie("accessToken", accessToken, {
+            expires: new Date(Date.now() + 10000 * 60 * 60),//1 minit
+            httpOnly: true,
+            overwrite: true
+        }).cookie("refreshToken", refreshToken, {
+            expires: new Date(Date.now() + 10000 * 60 * 60 * 12),//10 minit
+            httpOnly: true,
+            overwrite: true
+        });
+        
+        req.flash("success", "login successfully");
+        return res.redirect("/admin/");
     } catch (error) {
         console.log(error);
         req.flash("error", error.message);
