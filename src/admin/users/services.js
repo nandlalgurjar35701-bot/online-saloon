@@ -28,6 +28,10 @@ exports.allUser = async (req, res) => {
             serchobj.type = req.query.status;
         }
 
+        if (req.headers['tendentId']) {
+            serchobj.tendentId = req.headers['tendentId'];
+        }
+
         const Finddata = await user.aggregate([
             { '$match': serchobj }, {
                 '$lookup': {

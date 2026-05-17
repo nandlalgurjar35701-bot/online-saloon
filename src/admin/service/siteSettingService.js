@@ -29,6 +29,10 @@ exports.getSiteSettingList = async (query = {}) => {
     condition.status = normalizeBoolean(query.status);
   }
 
+  if (query.tendentId) {
+    condition.tendentId = query.tendentId;
+  }
+
   return siteSettingModel.find(condition).sort({ createdAt: -1 }).lean();
 };
 
@@ -52,6 +56,7 @@ exports.saveSiteSetting = async (body = {}) => {
       linkedin: String(body.socialLinkedin || "").trim(),
     },
     status: normalizeBoolean(body.status),
+    tendentId: body.tendentId || null,
   };
 
   if (!payload.brandName) {

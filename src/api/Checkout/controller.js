@@ -8,12 +8,15 @@ const cart = require("../../models/cartModel");
 const payment = require("../../models/paymentModel");
 const transaction = require("../../models/referTransactionModel");
 
-exports.Checkout = async ({ user, query }) => {
+exports.Checkout = async ({ user, query, headers }) => {
     try {
+        const tendentId = headers.tendentId;
+        const tendentIdObj = mongoose.Types.ObjectId(tendentId);
         let condition = [];
         condition.push({
             '$match': {
-                '_id': user._id
+                '_id': user._id,
+                'tendentId': tendentIdObj
             }
         });
         condition.push({
@@ -25,7 +28,8 @@ exports.Checkout = async ({ user, query }) => {
                     {
                         $match: {
                             userId: user._id,
-                            saloonId: mongoose.Types.ObjectId(query.saloonId)
+                            saloonId: mongoose.Types.ObjectId(query.saloonId),
+                            tendentId: tendentIdObj
                         },
                     },
                 ],
@@ -122,9 +126,9 @@ exports.Checkout = async ({ user, query }) => {
 
         if (query.couponId != undefined && query.couponId != "") {
 
-            const findCoupon = await coupon.findOne({ _id: mongoose.Types.ObjectId(query.couponId) });
+            const findCoupon = await coupon.findOne({ _id: mongoose.Types.ObjectId(query.couponId), tendentId });
             if (findCoupon) {
-                const findOrder = await order.find({ userId: user._id, couponId: mongoose.Types.ObjectId(query.couponId) });
+                const findOrder = await order.find({ userId: user._id, tendentId, couponId: mongoose.Types.ObjectId(query.couponId) });
                 console.log("user",user._id)
                 console.log(findOrder.length,"findOrder", "limit", findCoupon.Limit)
                 if (findOrder.length > findCoupon.Limit) {
@@ -238,7 +242,7 @@ exports.Checkout = async ({ user, query }) => {
             let cart = [];
             for (const item of cartitem) {
                 let userServish = {};
-                const findservish = await servish.findOne({ _id: item.serviceId });
+                const findservish = await servish.findOne({ _id: item.serviceId, tendentId });
                 userServish.ServiceName = findservish.ServiceName;
                 userServish.ServicePrice = findservish.ServicePrice;
                 userServish.quantity = item.quantity;
@@ -318,7 +322,8 @@ exports.applyBalance = async (data) => {
 const { walletTransaction } = require("../refer And ponts/controller");
 exports.applyBalance = async (req, res) => {
     try {
-        const findcart = await cart.findOne({ _id: req.query.cartId }, { totalamount: 1, disCount: 1, pay: 1 });
+        const tendentId = req.headers.tendentId;
+        const findcart = await cart.findOne({ _id: req.query.cartId, tendentId }, { totalamount: 1, disCount: 1, pay: 1 });
         if (findcart.pay > 0) {
             return {
                 statusCode: 200,
@@ -334,19 +339,19 @@ exports.applyBalance = async (req, res) => {
             if (user.userWallet.balance >= findcart.totalamount) {
                 Amount = user.userWallet.balance - findcart.totalamount;
 
-                Data = await userModel.findByIdAndUpdate({ _id: user._id }, { $inc: { "userWallet.useBalance": +findcart.totalamount, "userWallet.balance": -findcart.totalamount } }, { new: true });
+                Data = await userModel.findOneAndUpdate({ _id: user._id, tendentId }, { $inc: { "userWallet.useBalance": +findcart.totalamount, "userWallet.balance": -findcart.totalamount } }, { new: true });
                 findcart.totalamount = 0;
                 findcart._doc.disCount = findcart.totalamount;
             } else if (user.userWallet.balance < findcart.totalamount) {
                 let amount = findcart.totalamount - user.userWallet.balance;
 
-                Data = await userModel.findByIdAndUpdate({ _id: user._id }, { $inc: { "userWallet.useBalance": +user.userWallet.balance, "userWallet.balance": -user.userWallet.balance } }, { new: true });
+                Data = await userModel.findOneAndUpdate({ _id: user._id, tendentId }, { $inc: { "userWallet.useBalance": +user.userWallet.balance, "userWallet.balance": -user.userWallet.balance } }, { new: true });
                 findcart.totalamount = amount;
                 findcart._doc.disCount = user.userWallet.balance;
             };
 
             if (Data) {
-                const updateCart = await cart.findByIdAndUpdate({ _id: findcart._id }, { pay: findcart.totalamount, disCount: findcart._doc.disCount }, { new: true })
+                const updateCart = await cart.findOneAndUpdate({ _id: findcart._id, tendentId }, { pay: findcart.totalamount, disCount: findcart._doc.disCount }, { new: true })
                 // tragaction save 
                 let body = {};
                 body.userId = user._id;

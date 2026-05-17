@@ -10,6 +10,13 @@ exports.ViewVacancy = async (req) => {
             }
         })
     }
+    if (req.headers['tendentId']) {
+        pipeline.push({
+            '$match': {
+                'tendentId': req.headers['tendentId']
+            }
+        })
+    }
     pipeline.push({
         '$lookup': {
             'from': 'users',

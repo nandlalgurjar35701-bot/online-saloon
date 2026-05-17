@@ -38,7 +38,12 @@ const usercart = new mongoose.Schema({
     addressId: {
         type: mongoose.Types.ObjectId,
         default: null
-    }
+    },
+    tendentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        index: true
+    },
 }, { timestamps: true, versionKey: false });
 
 

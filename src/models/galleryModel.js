@@ -22,6 +22,11 @@ const gallerySchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    tendentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      index: true
+    },
   },
   { versionKey: false, timestamps: true }
 );

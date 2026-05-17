@@ -4,6 +4,7 @@ const { getAllSaloonCity } = require("../../api/saloonstore/controller");
 
 exports.ContactUsRequist = async (req, res) => {
     try {
+        res.locals.message = req.flash();
         let condition = {}
         if (req.query.phone != undefined && req.query.phone != "") {
             condition.phone = Number(req.query.phone)
@@ -23,6 +24,10 @@ exports.ContactUsRequist = async (req, res) => {
             condition.status = Number(req.query.status)
         } else {
             condition.status = 0
+        }
+
+        if (req.headers['tendentId']) {
+            condition.tendentId = req.headers['tendentId'];
         }
 
         const data = await Contact.find(condition);

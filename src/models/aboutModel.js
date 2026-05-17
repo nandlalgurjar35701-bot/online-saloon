@@ -8,7 +8,12 @@ const model = new mongoose.Schema({
     description: {
         type: String,
         default: ""
-    }
+    },
+    tendentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        index: true
+    },
 }, { versionKey: false, timestamps: true });
 
 module.exports = new mongoose.model("about", model);

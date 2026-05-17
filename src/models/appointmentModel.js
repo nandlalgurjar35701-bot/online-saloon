@@ -31,6 +31,11 @@ const appointmentSchema = new mongoose.Schema(
       default: "pending",
       enum: ["pending", "confirmed", "cancelled", "completed"],
     },
+    tendentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      index: true
+    },
   },
   { versionKey: false, timestamps: true }
 );

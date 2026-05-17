@@ -11,6 +11,9 @@ const normalizeCategoryType = (value) => {
 exports.AddCategory = async (req, res, _id) => {
     try {
         res.locals.message = req.flash();
+        if (req.headers['tendentId']) {
+            req.body.tendentId = req.headers['tendentId'];
+        }
         if (req.query?.EditId) {
             if (req.file != undefined && req.file) {
                 req.body.image = req.file.filename;

@@ -29,6 +29,10 @@ exports.getTestimonials = async (query = {}) => {
     condition.status = normalizeBoolean(query.status);
   }
 
+  if (query.tendentId) {
+    condition.tendentId = query.tendentId;
+  }
+
   return testimonialModel
     .find(condition)
     .sort({ sortOrder: 1, createdAt: -1 })
@@ -44,6 +48,7 @@ exports.saveTestimonial = async ({ body = {}, file = null }) => {
     rating: Number.isFinite(ratingNum) ? Math.min(Math.max(ratingNum, 1), 5) : 5,
     sortOrder: Number.parseInt(body.sortOrder, 10) || 0,
     status: normalizeBoolean(body.status),
+    tendentId: body.tendentId || null,
   };
 
   if (!payload.name) {

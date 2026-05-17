@@ -16,11 +16,5 @@ app.get("/view-blog", auth, renderBlogList);
 app.get("/delete-blog", auth, deleteBlog);
 app.get("/view-blog-description", auth, viewBlogDescription);
 
-// Backward-compatible routes
-app.get("/add_blog", auth, renderBlogForm);
-app.post("/add_blog_store", auth, Upload.single("image"), saveBlog);
-app.get("/view_blog", auth, renderBlogList);
-app.get("/delete_blog", auth, deleteBlog);
-app.get("/Viwes-Find-Blog", auth, viewBlogDescription);
 
 module.exports = app;

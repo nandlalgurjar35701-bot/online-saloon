@@ -7,6 +7,7 @@ const saloon = require("../../models/saloonStoreModel")
 
 exports.ViewAllPayment = async (req, res) => {
     try {
+        res.locals.message = req.flash();
         let serchobj = {}; //for user name
         let serchobj2 = {};// for payment search
         if (req.query.customername) {
@@ -20,7 +21,15 @@ exports.ViewAllPayment = async (req, res) => {
         if (req.query.amount) {
             serchobj2["orderData.amount"] = { $gte: Number(req.query.amount) * 100 };
         }
+        if (req.headers['tendentId']) {
+            serchobj2.tendentId = req.headers['tendentId'];
+        }
         let condition = [];
+        if (req.headers['tendentId']) {
+            condition.push({
+                $match: { tendentId: req.headers['tendentId'] }
+            });
+        }
         condition.push({
             '$lookup': {
                 'from': 'orders',

@@ -58,20 +58,24 @@ const fallbackSiteSetting = {
 
 exports.index = async (options = {}) => {
     try {
-        const { includeProducts = true, q = "", categoryId = "" } = options;
+        const { includeProducts = true, q = "", categoryId = "", tendentId = "" } = options;
         let data = {}
-        data.banners = await homeBannerModel.find().sort({ createdAt: -1 }).lean()
-        data.category = await categoryModel.find().sort({ createdAt: -1 }).lean()
-        data.teamMembers = await teamMemberModel.find({ status: true }).sort({ sortOrder: 1, createdAt: -1 }).lean()
-        data.testimonials = await testimonialModel.find({ status: true }).sort({ sortOrder: 1, createdAt: -1 }).lean()
-        data.gallery = await galleryModel.find({ status: true }).sort({ sortOrder: 1, createdAt: -1 }).lean()
-        data.pricingPlans = await pricePlanModel.find({ status: true }).sort({ sortOrder: 1, createdAt: -1 }).lean()
-        data.siteSetting = await siteSettingModel.findOne({ status: true }).sort({ createdAt: -1 }).lean()
+        let filter = {}
+        if (tendentId) {
+            filter.tendentId = tendentId
+        }
+        data.banners = await homeBannerModel.find(filter).sort({ createdAt: -1 }).lean()
+        data.category = await categoryModel.find(filter).sort({ createdAt: -1 }).lean()
+        data.teamMembers = await teamMemberModel.find({ status: true, ...filter }).sort({ sortOrder: 1, createdAt: -1 }).lean()
+        data.testimonials = await testimonialModel.find({ status: true, ...filter }).sort({ sortOrder: 1, createdAt: -1 }).lean()
+        data.gallery = await galleryModel.find({ status: true, ...filter }).sort({ sortOrder: 1, createdAt: -1 }).lean()
+        data.pricingPlans = await pricePlanModel.find({ status: true, ...filter }).sort({ sortOrder: 1, createdAt: -1 }).lean()
+        data.siteSetting = await siteSettingModel.findOne({ status: true, ...filter }).sort({ createdAt: -1 }).lean()
         data.products = []
         if (includeProducts) {
             const searchText = String(q || "").trim();
             const selectedCategoryId = String(categoryId || "").trim();
-            const productQuery = { saloonStore: { $ne: null } };
+            const productQuery = { saloonStore: { $ne: null }, ...filter };
 
             if (searchText) {
                 const escaped = searchText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -108,7 +112,11 @@ exports.index = async (options = {}) => {
 exports.getPaginatedProducts = async (options = {}) => {
     const page = Math.max(parseInt(options.page, 10) || 1, 1);
     const limit = Math.max(parseInt(options.limit, 10) || 9, 1);
+    const tendentId = options.tendentId || "";
     const query = { saloonStore: { $ne: null } };
+    if (tendentId) {
+        query.tendentId = tendentId;
+    }
     const searchText = String(options.q || "").trim();
     const categoryId = String(options.categoryId || "").trim();
 

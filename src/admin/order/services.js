@@ -15,6 +15,9 @@ exports.getAllOrder = async (req) => {
         if (req.query.status != undefined && req.query.status != "") {
             match.status = req.query.status
         }
+        if (req.headers['tendentId']) {
+            match.tendentId = req.headers['tendentId'];
+        }
 
         if (req.query.totalamount != undefined && req.query.totalamount != "") {
             match.totalamount = { $gt: Number(req.query.totalamount) }

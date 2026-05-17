@@ -3,7 +3,10 @@ const blogService = require("../service/blogService");
 exports.renderBlogForm = async (req, res) => {
   try {
     res.locals.message = req.flash();
-    const categoryData = await blogService.getBlogCategoryOptions();
+    if (req.headers['tendentId']) {
+      req.query.tendentId = req.headers['tendentId'];
+    }
+    const categoryData = await blogService.getBlogCategoryOptions(req.query);
     const blogData = req.query.id ? await blogService.getBlogById(req.query.id) : null;
 
     if (req.query.id && !blogData) {
@@ -26,6 +29,9 @@ exports.renderBlogForm = async (req, res) => {
 
 exports.saveBlog = async (req, res) => {
   try {
+    if (req.headers['tendentId']) {
+      req.body.tendentId = req.headers['tendentId'];
+    }
     await blogService.saveBlog(req);
     req.flash("success", "Blog saved successfully.");
     return res.redirect("/admin/view-blog");
@@ -39,9 +45,12 @@ exports.saveBlog = async (req, res) => {
 exports.renderBlogList = async (req, res) => {
   try {
     res.locals.message = req.flash();
+    if (req.headers['tendentId']) {
+      req.query.tendentId = req.headers['tendentId'];
+    }
     const data = await blogService.getBlogList(req.query);
-    const category = await blogService.getBlogCategoryOptions();
-    const writerName = await blogService.getBlogWriterOptions();
+    const category = await blogService.getBlogCategoryOptions(req.query);
+    const writerName = await blogService.getBlogWriterOptions(req.query);
 
     return res.render("blog/view_blog", {
       data,

@@ -20,7 +20,12 @@ const add_Category = new mongoose.Schema({
     type: {
         type: String,
         default: "product"
-    }
+    },
+    tendentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        index: true
+    },
 }, { versionKey: false, timestamps: true });
 
 

@@ -15,7 +15,7 @@ const getTypeMeta = (type) => {
     return { field: "productId", model: product, lookupCollection: "products" };
 };
 
-exports.userWishlist = async ({ user, query }) => {
+exports.userWishlist = async ({ user, query, headers }) => {
     try {
         const id = String(query.id || "").trim();
         const targetId = toObjectId(id);
@@ -28,8 +28,9 @@ exports.userWishlist = async ({ user, query }) => {
             };
         }
 
+        const tendentId = headers.tendentId;
         const typeMeta = getTypeMeta(query.type);
-        const exists = await typeMeta.model.findOne({ _id: targetId }).lean();
+        const exists = await typeMeta.model.findOne({ _id: targetId, tendentId }).lean();
         if (!exists) {
             return {
                 statusCode: 400,
@@ -39,9 +40,9 @@ exports.userWishlist = async ({ user, query }) => {
             };
         }
 
-        let doc = await wishlist.findOne({ userId: user._id });
+        let doc = await wishlist.findOne({ userId: user._id, tendentId });
         if (!doc) {
-            doc = await wishlist.create({ userId: user._id, saloonId: [], productId: [] });
+            doc = await wishlist.create({ userId: user._id, tendentId, saloonId: [], productId: [] });
         }
 
         const existing = Array.isArray(doc[typeMeta.field]) ? doc[typeMeta.field].map((v) => String(v)) : [];
@@ -77,10 +78,11 @@ exports.userWishlist = async ({ user, query }) => {
     }
 };
 
-exports.getWishlist = async ({ user, query }) => {
+exports.getWishlist = async ({ user, query, headers }) => {
     try {
+        const tendentId = headers.tendentId;
         const typeMeta = getTypeMeta(query.type);
-        const condition = [{ $match: { userId: user._id } }];
+        const condition = [{ $match: { userId: user._id, tendentId: mongoose.Types.ObjectId(tendentId) } }];
 
         const field = typeMeta.field;
         const queryId = toObjectId(String(query.id || "").trim());
@@ -137,8 +139,9 @@ exports.getWishlist = async ({ user, query }) => {
     }
 };
 
-exports.removeStoreFromWishlist = async ({ user, query }) => {
+exports.removeStoreFromWishlist = async ({ user, query, headers }) => {
     try {
+        const tendentId = headers.tendentId;
         const id = String(query.id || "").trim();
         const targetId = toObjectId(id);
         if (!targetId) {
@@ -151,7 +154,7 @@ exports.removeStoreFromWishlist = async ({ user, query }) => {
         }
 
         const typeMeta = getTypeMeta(query.type);
-        const doc = await wishlist.findOne({ userId: user._id });
+        const doc = await wishlist.findOne({ userId: user._id, tendentId });
         if (!doc) {
             return {
                 statusCode: 400,

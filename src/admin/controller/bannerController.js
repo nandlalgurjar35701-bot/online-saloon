@@ -4,8 +4,8 @@ const mongoose = require("mongoose");
 exports.homeBanners = async (req, res) => {
     try {
         let filter = {};
-        if (req.user?.tendentId) {
-            filter.tendentId = req.user.tendentId
+        if (req.headers['tendentId']) {
+            filter.tendentId = req.headers['tendentId']
         }
         const data = await homeBannerModel.find(filter).sort({ createdAt: -1 });
         res.locals.message = req.flash();
@@ -65,7 +65,7 @@ exports.uplodeBanner = async (req, res) => {
                 req.flash("error", "Banner image is required.");
                 return res.redirect('/admin/add-banner');
             }
-            req.body.tendentId = req.user.tendentId;
+            req.body.tendentId = req.headers['tendentId'];
             await homeBannerModel.create(req.body);
             req.flash("success", "Banner added successfully.");
         }

@@ -2,16 +2,18 @@ const mongoose = require("mongoose");
 const cart = require("../../models/cartModel");
 const userAddress = require("../../models/addressModel");
 
-exports.addUserAddress = async ({ user, query, body }) => {
+exports.addUserAddress = async ({ user, query, body, headers }) => {
     try {
+        const tendentId = headers.tendentId;
         if (user._id) { body.userId = user._id };
+        body.tendentId = tendentId;
 
         if (body.makeDefault != undefined && body.makeDefault == true) {
-            const updatemakeDefoult = await userAddress.updateMany({ userId: user._id }, { makeDefault: false }, { new: true })
+            const updatemakeDefoult = await userAddress.updateMany({ userId: user._id, tendentId }, { makeDefault: false }, { new: true })
             body.makeDefault = true;
         };
         if (query.id != undefined && query.id != "") {
-            const result = await userAddress.findByIdAndUpdate({ _id: mongoose.Types.ObjectId(query.id) }, body, { new: true })
+            const result = await userAddress.findOneAndUpdate({ _id: mongoose.Types.ObjectId(query.id), tendentId }, body, { new: true })
             if (result) {
                 return {
                     statusCode: 200,
@@ -21,7 +23,7 @@ exports.addUserAddress = async ({ user, query, body }) => {
                 };
             }
         } else {
-            const findData = await userAddress.find({ userId: user._id });
+            const findData = await userAddress.find({ userId: user._id, tendentId });
             for (const item of findData) {
                 if (body.state == item.location.state) {
                     if (body.city == item.location.city) {
@@ -55,20 +57,23 @@ exports.addUserAddress = async ({ user, query, body }) => {
     };
 };
 
-exports.getUserAddress = async ({ user, query }) => {
+exports.getUserAddress = async ({ user, query, headers }) => {
     try {
+        const tendentId = headers.tendentId;
         let condition = []
-
+ 
         if (query.id != undefined && query.id != "") {
             condition.push({
                 '$match': {
-                    '_id': mongoose.Types.ObjectId(query.id)
+                    '_id': mongoose.Types.ObjectId(query.id),
+                    'tendentId': mongoose.Types.ObjectId(tendentId)
                 }
             })
         } else {
             condition.push({
                 '$match': {
-                    'userId': mongoose.Types.ObjectId(user._id)
+                    'userId': mongoose.Types.ObjectId(user._id),
+                    'tendentId': mongoose.Types.ObjectId(tendentId)
                 }
             })
         }
@@ -114,16 +119,17 @@ exports.getUserAddress = async ({ user, query }) => {
     };
 };
 
-exports.addAddresssInUserCart = async ({ user, query }) => {
+exports.addAddresssInUserCart = async ({ user, query, headers }) => {
     try {
+        const tendentId = headers.tendentId;
         if (query.id) {
             const _id = mongoose.Types.ObjectId(query.id);
-            const findAddress = await userAddress.findOne({ _id });
+            const findAddress = await userAddress.findOne({ _id, tendentId });
             if (findAddress) {
-                const findCart = await cart.findOne({ _id: mongoose.Types.ObjectId(query.cartId), userId: user._id, });
+                const findCart = await cart.findOne({ _id: mongoose.Types.ObjectId(query.cartId), userId: user._id, tendentId });
                 if (findCart) {
                     if (findCart.cartdata.length > 0) {
-                        const result = await cart.findByIdAndUpdate({ _id: findCart._id }, { $set: { addressId: findAddress._id } }, { new: true });
+                        const result = await cart.findOneAndUpdate({ _id: findCart._id, tendentId }, { $set: { addressId: findAddress._id } }, { new: true });
                         if (result) {
                             return {
                                 statusCode: 200,
@@ -178,10 +184,11 @@ exports.addAddresssInUserCart = async ({ user, query }) => {
 
 
 
-exports.deleteAddress = async ({ user, query }) => {
+exports.deleteAddress = async ({ user, query, headers }) => {
     try {
+        const tendentId = headers.tendentId;
         if (query.id) {
-            const findAndDelete = await userAddress.findByIdAndDelete({ _id: mongoose.Types.ObjectId(query.id) });
+            const findAndDelete = await userAddress.findOneAndDelete({ _id: mongoose.Types.ObjectId(query.id), tendentId });
             if (findAndDelete) {
                 return {
                     statusCode: 200,

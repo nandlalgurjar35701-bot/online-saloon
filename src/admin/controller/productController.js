@@ -12,11 +12,15 @@ const getStoreScopeForUser = (user) =>
 exports.addProductPage = async (req, res) => {
   try {
     res.locals.message = req.flash();
-    const category = await Category.find({
-      type: { $in: ["product", 0, "0", null] },
-    });
+    const categoryCondition = { type: { $in: ["product", 0, "0", null] } };
+    const saloonCondition = getStoreScopeForUser(req.user);
+    if (req.headers['tendentId']) {
+      categoryCondition.tendentId = req.headers['tendentId'];
+      saloonCondition.tendentId = req.headers['tendentId'];
+    }
+    const category = await Category.find(categoryCondition);
     const saloonList = await saloon
-      .find(getStoreScopeForUser(req.user), { _id: 1, storeName: 1 })
+      .find(saloonCondition, { _id: 1, storeName: 1 })
       .sort({ storeName: 1 });
     let serviceData = null;
 
@@ -42,6 +46,9 @@ exports.addProductStore = async (req, res) => {
   try {
     res.locals.message = req.flash();
     const { body, files, query } = req;
+    if (req.headers['tendentId']) {
+      body.tendentId = req.headers['tendentId'];
+    }
     const storeScope = getStoreScopeForUser(req.user);
 
     if (!body.saloonStore || !isValidObjectId(body.saloonStore)) {
@@ -122,9 +129,13 @@ exports.getProductCategoryOptions = async (req, res) => {
       return res.send([]);
     }
 
-    const subCategory = await Category.find({
+    const condition = {
       parent_Name: mongoose.Types.ObjectId(parentId),
-    });
+    };
+    if (req.headers['tendentId']) {
+      condition.tendentId = req.headers['tendentId'];
+    }
+    const subCategory = await Category.find(condition);
 
     const data = subCategory.map((item) => ({
       _id: item._id,
@@ -158,9 +169,13 @@ exports.findSaloon = async (req, res) => {
   }
 };
 
-exports.findAllProductName = async () => {
+exports.findAllProductName = async (tendentId) => {
   try {
-    const names = await productModel.distinct("ServiceName", { ServiceName: { $ne: "" } });
+    const condition = { ServiceName: { $ne: "" } };
+    if (tendentId) {
+      condition.tendentId = mongoose.Types.ObjectId(tendentId);
+    }
+    const names = await productModel.distinct("ServiceName", condition);
     return names.filter(Boolean);
   } catch (error) {
     console.log(error);

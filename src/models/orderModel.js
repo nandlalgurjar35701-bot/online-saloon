@@ -58,6 +58,11 @@ const orderSchema = new mongoose.Schema({
         type: String,
         default: "pending"
     },
+    tendentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        index: true
+    },
     orderId: {
 
     }

@@ -26,8 +26,10 @@ exports.createOrderId = async (req) => {
             } else {
                 userId = null
             }
+            const tendentId = req.headers.tendentId;
             const paymentDitail = new payments({
                 userId: userId,
+                tendentId,
                 orderData: {
                     id: order.id,
                     entity: order.entity,
@@ -62,7 +64,12 @@ exports.createOrderId = async (req) => {
         };
     } catch (error) {
         console.log(error);
-
+        return {
+            statusCode: 400,
+            status: false,
+            message: error.message,
+            data: []
+        }
     };
 };
 
@@ -86,7 +93,8 @@ exports.apiPaymentVerify = async (req, res) => {
             .digest('hex');
         var response = { "signatureIsValid": "false" };
         if (expectedSignature === req.body.response.razorpay_signature) {
-            const result = await payments.findOneAndUpdate({ "orderData.id": req.body.response.razorpay_order_id }, {
+            const tendentId = req.headers.tendentId;
+            const result = await payments.findOneAndUpdate({ "orderData.id": req.body.response.razorpay_order_id, tendentId }, {
                 payment: "Payment Successfully",
                 orderId: orderID,
                 "payment_detail.razorpay_payment_id": req.body.response.razorpay_payment_id,
@@ -113,14 +121,15 @@ exports.apiPaymentVerify = async (req, res) => {
     };
 };
 
-exports.paymentsRefund = async ({ query }) => {
+exports.paymentsRefund = async ({ query, headers }) => {
     try {
+        const tendentId = headers.tendentId;
         if (query.id != undefined && query.id != "" || query._id != undefined && query._id != "") {
             let result;
             if (query._id != undefined && query._id != "") {
-                result = await payments.findOne({ _id: query._id })
+                result = await payments.findOne({ _id: query._id, tendentId })
             } else {
-                result = await payments.findOne({ "payment_detail.razorpay_payment_id": query.id })
+                result = await payments.findOne({ "payment_detail.razorpay_payment_id": query.id, tendentId })
             }
 
             if (result) {
@@ -137,7 +146,7 @@ exports.paymentsRefund = async ({ query }) => {
                     "speed": "optimum"
                 });
                 if (Refund) {
-                    const data = await payments.findOneAndUpdate({ _id: result._id }, {
+                    const data = await payments.findOneAndUpdate({ _id: result._id, tendentId }, {
                         payment: "Payment Refund",
                     }, { new: true });
                     if (data) {

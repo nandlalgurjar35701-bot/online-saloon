@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
-const userModel = require("../../models/adminModel.js");
+const adminModel = require("../../models/adminModel.js");
 // const { findByIdAndUpdate } = require('./model');
 const path = require("path")
 const saloon = require("../../models/saloonStoreModel")
@@ -12,7 +12,7 @@ exports.admin = async (req, res) => {
     try {
         if (req.cookies.accessToken) {
             const { _id } = jwt.verify(req.cookies.accessToken, process.env.accessToken)
-            const user = await userModel.findOne({ _id })
+            const user = await adminModel.findOne({ _id })
             res.locals.message = req.flash();
             if (user) {
                 req.user = user
@@ -46,7 +46,7 @@ exports.adminRegisterData = async (req, res) => {
         const { name, phone, email, password } = req.body;
         let user;
         if (email) {
-            const data = await userModel.findOne({ email });
+            const data = await adminModel.findOne({ email });
             if (data) user = data;
         }
         if (user) {
@@ -55,7 +55,7 @@ exports.adminRegisterData = async (req, res) => {
         } else {
             req.body.password = bcrypt.hashSync(password, 10);
             req.body.type = "admin";
-            const user = await userModel(req.body);
+            const user = await adminModel(req.body);
             const result = await user.save();
             if (result) {
                 req.flash("success", "registration successful");
@@ -79,10 +79,11 @@ exports.login = async (req, res) => {
 
 exports.loginData = async (req, res) => {
     try {
+        let filter = { tendentId: req.headers.tendentId, email: req.body.email }
         res.locals.message = req.flash();
         const { email, password } = req.body;
         if (email) {
-            const user = await userModel.findOne({ email: req.body.email });
+            const user = await adminModel.findOne(filter);
             if (user) {
                 if (typeof user.password === 'undefined') {
                     req.flash("error", "Detail is Not Found ");
@@ -134,7 +135,7 @@ exports.ForgetPassword = async (req, res) => {
             const match = await bcrypt.compare(req.body.OldPassword, req.user.password);
             if (match) {
                 const pp = await bcrypt.hash(req.body.password, 10);
-                const result = await userModel.findByIdAndUpdate({ _id: req.user._id }, { password: pp });
+                const result = await adminModel.findByIdAndUpdate({ _id: req.user._id }, { password: pp });
                 if (result) {
                     req.flash("success", "Password Change Successfully !");
                     res.redirect("/admin/");
@@ -186,7 +187,7 @@ exports.add_profile_data = async (req, res) => {
             }
             obj.image = `${process.env.url}/uploads/${req.file.filename}`
         }
-        const updatedata = await userModel.findByIdAndUpdate({ _id: id }, obj, { new: true });
+        const updatedata = await adminModel.findByIdAndUpdate({ _id: id }, obj, { new: true });
         req.flash("success", "profile updated successfully")
 
         res.redirect("/admin/")

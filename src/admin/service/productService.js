@@ -20,6 +20,10 @@ exports.fetchProductList = async (req) => {
     }
   }
 
+  if (req.headers['tendentId']) {
+    match.tendentId = req.headers['tendentId'];
+  }
+
   pipeline.push({ $match: match });
   pipeline.push({
     $lookup: {

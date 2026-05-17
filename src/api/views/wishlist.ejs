@@ -31,7 +31,9 @@
             }
 
             const container = document.getElementById("wishlistContainer");
-            const getHeaders = () => ({ Authorization: `Bearer ${token}` });
+            const getHeaders = () => ({ 
+                Authorization: `Bearer ${token}`
+            });
             const imageUrl = (item) => {
                 const image = item?.result?.image;
                 if (Array.isArray(image) && image.length) {

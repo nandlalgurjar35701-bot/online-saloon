@@ -34,7 +34,7 @@
                 <div class="col-lg-8">
                     <div class="bg-light rounded p-4">
                         <h4 class="mb-4">Send Message</h4>
-                        <form action="/contact" method="post">
+                        <form id="contactForm">
                             <div class="row g-3">
                                 <div class="col-md-6"><input type="text" name="name" class="form-control" placeholder="Your Name" required></div>
                                 <div class="col-md-6"><input type="email" name="email" class="form-control" placeholder="Your Email" required></div>
@@ -58,5 +58,31 @@
     </div>
 
     <%- include("./partials/footerlink.ejs") %>
+    <script>
+    (function () {
+        const form = document.getElementById("contactForm");
+        if (form) {
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const payload = Object.fromEntries(formData.entries());
+                try {
+                    const res = await fetch("/contact", {
+                        method: "POST",
+                        headers: { 
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await res.json();
+                    alert(result.message || (res.ok ? "Message sent!" : "Failed."));
+                    if (res.ok) form.reset();
+                } catch (err) {
+                    alert("Unable to send message.");
+                }
+            });
+        }
+    })();
+    </script>
 </body>
 </html>

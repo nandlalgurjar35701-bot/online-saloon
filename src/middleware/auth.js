@@ -6,7 +6,7 @@ module.exports = async (req, res, next) => {
         if (req.headers.authorization) {
             const token = req.headers.authorization.split(" ").pop()
             const { _id } = jwt.verify(token, process.env.SECRET)
-            req.user = await userModel.findOneAndUpdate({ _id, auth: token, isDeleted: false }, { new: true })
+            req.user = await userModel.findOneAndUpdate({ _id, isDeleted: false }, { new: true })
             if (req.user) {
                 next()
             } else {

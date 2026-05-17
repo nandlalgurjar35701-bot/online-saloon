@@ -4,9 +4,13 @@ const categoryModel = require("../../models/categoryModel");
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
-exports.getBlogCategoryOptions = async () => {
+exports.getBlogCategoryOptions = async (query = {}) => {
+  const condition = { parent_Name: null, type: { $in: ["product", 0, "0", null] } };
+  if (query.tendentId) {
+    condition.tendentId = query.tendentId;
+  }
   return categoryModel
-    .find({ parent_Name: null, type: { $in: ["product", 0, "0", null] } })
+    .find(condition)
     .sort({ Name: 1 })
     .lean();
 };
@@ -40,6 +44,9 @@ exports.saveBlog = async ({ body, file, query }) => {
   payload.WriteDate = String(body.WriteDate).trim();
   payload.Description = String(body.description).trim();
   payload.category = mongoose.Types.ObjectId(body.category);
+  if (body.tendentId) {
+    payload.tendentId = body.tendentId;
+  }
 
   if (file?.filename) {
     payload.image = [file.filename];
@@ -65,6 +72,9 @@ exports.getBlogList = async (query = {}) => {
   }
   if (query.Title) {
     match.Title = { $regex: query.Title, $options: "i" };
+  }
+  if (query.tendentId) {
+    match.tendentId = mongoose.Types.ObjectId(query.tendentId);
   }
 
   const pipeline = [{ $match: match }];
@@ -102,8 +112,12 @@ exports.getBlogList = async (query = {}) => {
   return blogModel.aggregate(pipeline);
 };
 
-exports.getBlogWriterOptions = async () => {
-  const names = await blogModel.distinct("WriterName", { WriterName: { $ne: "" } });
+exports.getBlogWriterOptions = async (query = {}) => {
+  const condition = { WriterName: { $ne: "" } };
+  if (query.tendentId) {
+    condition.tendentId = query.tendentId;
+  }
+  const names = await blogModel.distinct("WriterName", condition);
   return names.filter(Boolean);
 };
 

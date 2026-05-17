@@ -33,11 +33,12 @@
                 <div class="card border-0 shadow-sm position-sticky" style="top: 110px;">
                     <div class="card-body">
                         <h5 class="mb-3">Cart Summary</h5>
-                        <div class="mb-3">
+                        <!-- Store selection removed as cart is no longer saloon-based -->
+                        <div class="mb-3 d-none">
                             <label class="form-label">Select Store</label>
                             <select class="form-select" id="summaryStoreSelect"></select>
                         </div>
-                        <div class="d-flex justify-content-between mb-2">
+                        <div class="d-flex justify-content-between mb-2 d-none">
                             <span class="text-muted">Stores</span>
                             <strong id="summaryStores">0</strong>
                         </div>
@@ -107,7 +108,9 @@
                 return;
             }
 
-            const authHeaders = () => ({ Authorization: `Bearer ${token}` });
+            const authHeaders = () => ({ 
+                Authorization: `Bearer ${token}`
+            });
             const timeslots = [
                 "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
                 "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM",
@@ -115,10 +118,9 @@
             ];
 
             const emitCartCount = (data) => {
-                const allQty = (Array.isArray(data) ? data : []).reduce((sum, saloonEntry) => {
-                    const cartItems = Array.isArray(saloonEntry.cart) ? saloonEntry.cart : [];
-                    return sum + cartItems.reduce((s, item) => s + Number(item?.cartdata?.quantity || 0), 0);
-                }, 0);
+                const cartDoc = data?.[0] || {};
+                const items = Array.isArray(cartDoc.items) ? cartDoc.items : [];
+                const allQty = items.reduce((s, item) => s + Number(item?.quantity || 0), 0);
                 window.dispatchEvent(new CustomEvent("cart:updated", { detail: { count: allQty } }));
             };
 
@@ -147,7 +149,8 @@
                 populateSlots();
                 setSummaryEnabled(false);
                 emitCartCount([]);
-            };\r\n
+            };
+
             const normalizeServiceImage = (image) => {
                 if (Array.isArray(image) && image.length) {
                     const first = image[0];
@@ -253,106 +256,78 @@
                     cartData = data;
                     emitCartCount(data);
 
-                    const totalStores = data.length;
-                    const totalItems = data.reduce((sum, saloonEntry) => {
-                        const cartItems = Array.isArray(saloonEntry.cart) ? saloonEntry.cart : [];
-                        return sum + cartItems.reduce((s, entry) => s + Number(entry?.cartdata?.quantity || 0), 0);
-                    }, 0);
-                    const totalAmountAll = data.reduce((sum, saloonEntry) => {
-                        const cartItems = Array.isArray(saloonEntry.cart) ? saloonEntry.cart : [];
-                        return sum + Number(cartItems?.[0]?.totalamount || 0);
-                    }, 0);
+                    const cartDoc = data[0];
+                    const items = Array.isArray(cartDoc.items) ? cartDoc.items : [];
+                    const totalItems = items.reduce((s, entry) => s + Number(entry?.quantity || 0), 0);
+                    const totalAmountAll = Number(cartDoc.totalamount || 0);
 
-                    if (summaryStores) summaryStores.textContent = String(totalStores);
                     if (summaryItems) summaryItems.textContent = String(totalItems);
-                    if (summaryAmount) summaryAmount.textContent = `Rs. ${Number(totalAmountAll)}`;
+                    if (summaryAmount) summaryAmount.textContent = `Rs. ${totalAmountAll}`;
 
-                    listContainer.innerHTML = data.map((saloonEntry, idx) => {
-                        const cartItems = Array.isArray(saloonEntry.cart) ? saloonEntry.cart : [];
-                        const rows = cartItems.map((entry) => {
-                            const c = entry.cartdata || {};
-                            const serviceImage = normalizeServiceImage(c.image);
-                            return `
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <img src="${serviceImage}" alt="service" style="width:44px;height:44px;object-fit:cover;border-radius:8px;">
-                                            <span class="ms-2">${c.ServiceName || "-"}</span>
-                                        </div>
-                                    </td>
-                                    <td>${Number(c.quantity || 0)}</td>
-                                    <td>Rs. ${Number(c.ServicePrice || 0)}</td>
-                                    <td>Rs. ${Number(c.Amount || 0)}</td>
-                                </tr>
-                            `;
-                        }).join("");
-
+                    const rows = items.map((c) => {
+                        const serviceImage = normalizeServiceImage(c.image);
                         return `
-                            <div class="card border-0 shadow-sm mb-4">
-                                <div class="card-body">
-                                    <h5 class="mb-3">Store ${idx + 1}</h5>
-
-                                    <div class="table-responsive">
-                                        <table class="table table-sm align-middle">
-                                            <thead>
-                                                <tr>
-                                                    <th>Service</th>
-                                                    <th>Qty</th>
-                                                    <th>Unit Price</th>
-                                                    <th>Amount</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>${rows}</tbody>
-                                        </table>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="${serviceImage}" alt="service" style="width:44px;height:44px;object-fit:cover;border-radius:8px;">
+                                        <span class="ms-2">${c.ServiceName || "-"}</span>
                                     </div>
-                                </div>
-                            </div>
+                                </td>
+                                <td>${Number(c.quantity || 0)}</td>
+                                <td>Rs. ${Number(c.ServicePrice || 0)}</td>
+                                <td>Rs. ${Number(c.Amount || 0)}</td>
+                            </tr>
                         `;
                     }).join("");
+
+                    listContainer.innerHTML = `
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-body">
+                                <h5 class="mb-3">Cart Items</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-sm align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Service</th>
+                                                <th>Qty</th>
+                                                <th>Unit Price</th>
+                                                <th>Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>${rows}</tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                     bindSummaryControls();
                 } catch (error) {
                     renderEmpty("Unable to load cart.");
                 }
             };
 
-            const getSelectedStore = () => {
-                const selectedId = summaryStoreSelect?.value || "";
-                if (!selectedId) return null;
-                return cartData.find((entry) => String(entry?._id || "") === String(selectedId)) || null;
-            };
-
             const updateSummaryForSelectedStore = () => {
-                const selectedStore = getSelectedStore();
-                if (!selectedStore) {
-                    if (summaryItems) summaryItems.textContent = "0";
-                    if (summaryAmount) summaryAmount.textContent = "Rs. 0";
-                    return;
-                }
-                const cartItems = Array.isArray(selectedStore.cart) ? selectedStore.cart : [];
-                const selectedItems = cartItems.reduce((sum, entry) => sum + Number(entry?.cartdata?.quantity || 0), 0);
-                const selectedAmount = Number(cartItems?.[0]?.totalamount || 0);
+                const cartDoc = cartData?.[0] || {};
+                const items = Array.isArray(cartDoc.items) ? cartDoc.items : [];
+                const selectedItems = items.reduce((sum, entry) => sum + Number(entry?.quantity || 0), 0);
+                const selectedAmount = Number(cartDoc.totalamount || 0);
                 if (summaryItems) summaryItems.textContent = String(selectedItems);
                 if (summaryAmount) summaryAmount.textContent = `Rs. ${selectedAmount}`;
             };
 
             const bindSummaryControls = () => {
                 populateSlots();
-                if (summaryStoreSelect) {
-                    summaryStoreSelect.innerHTML = cartData.map((entry, index) =>
-                        `<option value="${entry?._id || ""}">Store ${index + 1}</option>`
-                    ).join("");
-                    if (cartData.length > 0) {
-                        setSummaryEnabled(true);
-                        summaryStoreSelect.value = String(cartData[0]?._id || "");
-                    } else {
-                        setSummaryEnabled(false);
-                    }
+                if (cartData.length > 0) {
+                    setSummaryEnabled(true);
+                } else {
+                    setSummaryEnabled(false);
                 }
 
                 const applyDraftToUi = () => {
-                    const selectedStore = getSelectedStore();
-                    const selectedId = String(selectedStore?._id || "");
-                    const draft = scheduleDraftByStore[selectedId] || {};
+                    const cartDoc = cartData?.[0] || {};
+                    const cartId = String(cartDoc?._id || "");
+                    const draft = scheduleDraftByStore[cartId] || {};
                     if (summaryDate) summaryDate.value = draft.date || "";
                     if (summarySlot) summarySlot.value = draft.slot || "";
                     const mode = draft.paymentMode || "online";
@@ -361,28 +336,26 @@
                     updateSummaryForSelectedStore();
                 };
 
-                summaryStoreSelect?.addEventListener("change", () => {
-                    applyDraftToUi();
-                });
-
                 summarySaveDraftBtn?.addEventListener("click", async () => {
-                    const selectedStore = getSelectedStore();
-                    const saloonId = String(selectedStore?._id || "");
+                    const cartDoc = cartData?.[0] || {};
+                    const cartId = String(cartDoc?._id || "");
                     const dateValue = summaryDate?.value || "";
                     const slotValue = summarySlot?.value || "";
                     const paymentMode = document.querySelector('input[name="summaryPaymentMode"]:checked')?.value || "online";
-                    if (!saloonId || !dateValue || !slotValue) {
-                        alert("Please select store, date and time slot.");
+                    
+                    if (!cartId || !dateValue || !slotValue) {
+                        alert("Please select date and time slot.");
                         return;
                     }
                     summarySaveDraftBtn.disabled = true;
                     try {
-                        const result = await saveSchedule(saloonId, dateValue, slotValue);
+                        // Pass cartId instead of saloonId if needed, or modify saveSchedule
+                        const result = await saveSchedule(cartId, dateValue, slotValue);
                         if (!result?.status) {
                             alert(result?.message || "Unable to save schedule.");
                             return;
                         }
-                        scheduleDraftByStore[saloonId] = { date: dateValue, slot: slotValue, paymentMode };
+                        scheduleDraftByStore[cartId] = { date: dateValue, slot: slotValue, paymentMode };
                         alert(result?.message || "Draft saved.");
                     } catch (error) {
                         alert("Unable to save draft.");
@@ -392,16 +365,15 @@
                 });
 
                 summaryCheckoutBtn?.addEventListener("click", async () => {
-                    const selectedStore = getSelectedStore();
-                    const saloonId = String(selectedStore?._id || "");
-                    const cartId = selectedStore?.cart?.[0]?._id || "";
-                    const total = Number(selectedStore?.cart?.[0]?.totalamount || 0);
+                    const cartDoc = cartData?.[0] || {};
+                    const cartId = String(cartDoc?._id || "");
+                    const total = Number(cartDoc?.totalamount || 0);
                     const dateValue = summaryDate?.value || "";
                     const slotValue = summarySlot?.value || "";
                     const selectedPayment = document.querySelector('input[name="summaryPaymentMode"]:checked')?.value || "online";
 
-                    if (!saloonId || !cartId) {
-                        alert("Please select a valid store.");
+                    if (!cartId) {
+                        alert("Your cart is empty.");
                         return;
                     }
                     if (!dateValue || !slotValue) {
@@ -411,7 +383,7 @@
 
                     summaryCheckoutBtn.disabled = true;
                     try {
-                        const scheduleResult = await saveSchedule(saloonId, dateValue, slotValue);
+                        const scheduleResult = await saveSchedule(cartId, dateValue, slotValue);
                         if (!scheduleResult?.status) {
                             alert(scheduleResult?.message || "Unable to save schedule.");
                             return;

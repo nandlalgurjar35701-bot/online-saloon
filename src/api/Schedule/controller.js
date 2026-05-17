@@ -6,18 +6,11 @@ const order = require("../../models/orderModel");
 const saloon = require("../../models/saloonStoreModel");
 const moment = require("moment");
 
-exports.scheduleYourVisit = async ({ query, body, user }) => {
+exports.scheduleYourVisit = async ({ query, body, user, headers }) => {
     try {
-        if (!query.saloonId) {
-            return {
-                statusCode: 400,
-                status: false,
-                message: "saloonId is must !",
-                data: []
-            };
-        };
-
-        let findcart = await cart.findOne({ saloonId: mongoose.Types.ObjectId(query.saloonId), userId: user._id });
+        const tendentId = headers.tendentId;
+        
+        let findcart = await cart.findOne({ userId: user._id, tendentId });
         if (!findcart || !Array.isArray(findcart.cartdata) || findcart.cartdata.length === 0) {
             return {
                 statusCode: 400,
@@ -26,20 +19,24 @@ exports.scheduleYourVisit = async ({ query, body, user }) => {
                 data: []
             };
         }
-        let findSchedul = await schedule.findOne({ cartId: findcart._id, saloonId: findcart.saloonId });
-        let OrderDay = moment(body.date).format('dddd');
-        const findSaloon = await saloon.findOne({ _id: mongoose.Types.ObjectId(query.saloonId) });
-        const workingDays = findSaloon?.ProfileInfo?.workingday || [];
-        if (workingDays.length > 0 && workingDays.includes(OrderDay) === false) {
-            return {
-                statusCode: 400,
-                status: false,
-                message: `saloon-is-close-this-Date ${body.date}!`,
-                data: workingDays
-            };
-        };
 
-        const findUserOrder = await order.find({ userId: user._id, status: "pending" });
+        let findSchedul = await schedule.findOne({ cartId: findcart._id, tendentId });
+
+        if (query.saloonId) {
+            let OrderDay = moment(body.date).format('dddd');
+            const findSaloon = await saloon.findOne({ _id: mongoose.Types.ObjectId(query.saloonId), tendentId });
+            const workingDays = findSaloon?.ProfileInfo?.workingday || [];
+            if (workingDays.length > 0 && !workingDays.includes(OrderDay)) {
+                return {
+                    statusCode: 400,
+                    status: false,
+                    message: `saloon-is-close-this-Date ${body.date}!`,
+                    data: workingDays
+                };
+            };
+        }
+
+        const findUserOrder = await order.find({ userId: user._id, tendentId, status: "pending" });
         for (const element of findUserOrder) {
             if (element.Schedule.date == body.date) {
                 if (element.Schedule.timeslot == body.timeslot) {
@@ -54,16 +51,12 @@ exports.scheduleYourVisit = async ({ query, body, user }) => {
         };
 
         if (!findSchedul) {
-            if (findcart._id) {
-                body.cartId = findcart._id
-            };
-            if (findcart.userId) {
-                body.userId = findcart.userId;
-            };
-
-            if (findcart.saloonId) {
-                body.saloonId = findcart.saloonId;
-            };
+            body.cartId = findcart._id
+            body.userId = findcart.userId;
+            if (query.saloonId) {
+                body.saloonId = query.saloonId;
+            }
+            body.tendentId = tendentId;
 
             let scheduleCart = new schedule(body);
             const result = await scheduleCart.save();
@@ -83,7 +76,7 @@ exports.scheduleYourVisit = async ({ query, body, user }) => {
             if (body.timeslot) {
                 obj.timeslot = body.timeslot;
             };
-            const result = await schedule.findByIdAndUpdate({ _id: findSchedul._id }, { $set: obj }, { new: true })
+            const result = await schedule.findOneAndUpdate({ _id: findSchedul._id, tendentId }, { $set: obj }, { new: true })
             if (result) {
                 return {
                     statusCode: 200,

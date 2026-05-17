@@ -7,14 +7,15 @@ const { addcart } = require("../cart/controller");
 const { query } = require("express");
 const coupon = require("../../models/couponModel")
 
-exports.userOrder = async ({ query, user }) => {
+exports.userOrder = async ({ query, user, headers }) => {
     try {
         let userId;
         let obj = {};
+        const tendentId = headers.tendentId;
         const paymentMode = String(query.paymentMode || "online").toLowerCase();
         if (user._id) {
             userId = user._id;
-            const findcart = await cart.findOne({ _id: mongoose.Types.ObjectId(query.cartId), userId });
+            const findcart = await cart.findOne({ _id: mongoose.Types.ObjectId(query.cartId), userId, tendentId });
             if (findcart) {
                 if (findcart.addressId != undefined) {
                     obj.addressId = findcart.addressId;
@@ -43,7 +44,7 @@ exports.userOrder = async ({ query, user }) => {
                     data: []
                 };
             }
-            const findSchedule = await Schedule.findOne({ userId });
+            const findSchedule = await Schedule.findOne({ userId, tendentId });
             if (findSchedule) {
                 let Schedule = {}
                 Schedule.date = findSchedule.date
@@ -62,9 +63,10 @@ exports.userOrder = async ({ query, user }) => {
         let orderId = Math.floor(Math.random() * 10 ** 15);
         obj.userId = userId;
         obj.orderId = orderId;
+        obj.tendentId = tendentId;
         // obj.paymentStatus = "Payment successful"
         if (query.couponId != undefined && query.couponId != "") {
-            const findCoupon = await coupon.findOne({ _id: mongoose.Types.ObjectId(query.couponId) })
+            const findCoupon = await coupon.findOne({ _id: mongoose.Types.ObjectId(query.couponId), tendentId })
             obj.couponId = findCoupon._id;
             obj.Discount = findCoupon.Discount
             obj.finalTotalAmount = obj.totalamount - findCoupon.Discount
@@ -72,8 +74,8 @@ exports.userOrder = async ({ query, user }) => {
         const orderdetails = new order(obj);
         const result = await orderdetails.save();
         if (result) {
-            const deletcart = await cart.findOneAndRemove({ _id: mongoose.Types.ObjectId(query.cartId), userId });
-            const findSchedule = await Schedule.findOneAndRemove({ userId });
+            const deletcart = await cart.findOneAndRemove({ _id: mongoose.Types.ObjectId(query.cartId), userId, tendentId });
+            const findSchedule = await Schedule.findOneAndRemove({ userId, tendentId });
             if (deletcart && findSchedule) {
                 return {
                     statusCode: 200,
@@ -85,6 +87,7 @@ exports.userOrder = async ({ query, user }) => {
         };
     } catch (error) {
         console.log(error)
+        throw error
     };
 };
 
@@ -216,20 +219,22 @@ exports.getUserOrder = async ({ user, query }) => {
 
 
 // new code 
-exports.getUserOrder = async ({ user, query }) => {
+exports.getUserOrder = async ({ user, query, headers }) => {
     try {
         let condition = [];
-        let finalData = [];
+        let tendentId = mongoose.Types.ObjectId(headers.tendentId);
         if (query.id) {
             condition.push({
                 '$match': {
-                    '_id': mongoose.Types.ObjectId(query.id)
+                    '_id': mongoose.Types.ObjectId(query.id),
+                    'tendentId': tendentId
                 }
             })
         } else {
             condition.push({
                 '$match': {
-                    'userId': user._id
+                    'userId': user._id,
+                    'tendentId': tendentId
                 }
             })
         };
@@ -243,49 +248,22 @@ exports.getUserOrder = async ({ user, query }) => {
                 'from': 'products',
                 'localField': 'cartdata.serviceId',
                 'foreignField': '_id',
-                'as': 'cartdata'
+                'as': 'productDetail'
             }
         }, {
             '$unwind': {
-                'path': '$cartdata'
-            }
-        }, {
-            '$lookup': {
-                'from': 'saloons',
-                'localField': 'saloonId',
-                'foreignField': '_id',
-                'pipeline': [
-                    {
-                        '$project': {
-                            'storeName': 1,
-                            'image': 1,
-                            'location': 1
-                        }
-                    }
-                ],
-                'as': 'saloon'
-            }
-        }, {
-            '$unwind': {
-                'path': '$saloon'
+                'path': '$productDetail'
             }
         }, {
             '$group': {
                 '_id': '$_id',
-                'saloon': {
-                    '$first': {
-                        '_id': '$saloon._id',
-                        'storeName': '$saloon.storeName',
-                        'image': '$saloon.image',
-                        'location': '$saloon.location'
-                    }
-                },
                 'services': {
                     '$push': {
-                        '_id': '$cartdata._id',
-                        'ServiceName': '$cartdata.ServiceName',
-                        'ServicePrice': '$cartdata.ServicePrice',
-                        'quantity': '$cartdata.quantity'
+                        '_id': '$productDetail._id',
+                        'ServiceName': '$productDetail.ServiceName',
+                        'ServicePrice': '$productDetail.ServicePrice',
+                        'quantity': '$cartdata.quantity',
+                        'image': '$productDetail.image'
                     }
                 },
                 'orderDetail': {
@@ -332,11 +310,12 @@ exports.getUserOrder = async ({ user, query }) => {
 const { paymentsRefund } = require("../payment/controller")
 exports.orderCancel = async (req) => {
     try {
+        const tendentId = req.headers.tendentId;
         if (req.query.id) {
             const _id = mongoose.Types.ObjectId(req.query.id);
-            const findOrder = await order.findOne({ _id, status: { $ne: "succes" } });
+            const findOrder = await order.findOne({ _id, tendentId, status: { $ne: "succes" } });
             if (findOrder) {
-                const updateData = await order.findByIdAndUpdate({ _id }, { status: "cancel" }, { new: true })
+                const updateData = await order.findOneAndUpdate({ _id, tendentId }, { status: "cancel" }, { new: true })
                 if (updateData) {
                     // refund paise 
                     req.query._id = updateData.PaymentId

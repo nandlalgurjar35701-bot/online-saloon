@@ -17,7 +17,11 @@ const schedul = new mongoose.Schema({
     timeslot: {
         type: String,
     },
-
+    tendentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        index: true
+    },
 }, { timestamps: true, versionKey: false });
 
 const schedule = new mongoose.model("schedule", schedul);

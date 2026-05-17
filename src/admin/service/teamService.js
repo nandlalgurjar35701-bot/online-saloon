@@ -29,6 +29,10 @@ exports.getTeamMembers = async (query = {}) => {
     condition.status = normalizeBoolean(query.status);
   }
 
+  if (query.tendentId) {
+    condition.tendentId = query.tendentId;
+  }
+
   return teamMemberModel
     .find(condition)
     .sort({ sortOrder: 1, createdAt: -1 })
@@ -42,6 +46,7 @@ exports.saveTeamMember = async ({ body = {}, file = null }) => {
     bio: String(body.bio || "").trim(),
     sortOrder: Number.parseInt(body.sortOrder, 10) || 0,
     status: normalizeBoolean(body.status),
+    tendentId: body.tendentId || null,
   };
 
   if (!payload.name) {

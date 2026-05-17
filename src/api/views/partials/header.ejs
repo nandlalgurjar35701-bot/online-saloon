@@ -189,7 +189,9 @@
             }
             try {
                 const response = await fetch("/get-cart", {
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: { 
+                        Authorization: `Bearer ${token}`
+                    },
                 });
                 const result = await response.json();
                 if (!(response.ok && result?.status) || !Array.isArray(result.data)) {
@@ -240,7 +242,9 @@
                 try {
                     const response = await fetch("/login", {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: { 
+                            "Content-Type": "application/json"
+                        },
                         body: JSON.stringify(payload),
                     });
                     const result = await response.json();
@@ -278,7 +282,9 @@
                 try {
                     const otpSent = await fetch("/otp-sent", {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: { 
+                            "Content-Type": "application/json"
+                        },
                         body: JSON.stringify({ phone: payload.phone }),
                     });
                     const otpSentResult = await otpSent.json();
@@ -289,7 +295,9 @@
 
                     const otpVerify = await fetch("/otp-verify", {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: { 
+                            "Content-Type": "application/json"
+                        },
                         body: JSON.stringify({ phone: payload.phone, otp: "1234" }),
                     });
                     const otpVerifyResult = await otpVerify.json();
@@ -300,7 +308,9 @@
 
                     const registerRes = await fetch("/register", {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: { 
+                            "Content-Type": "application/json"
+                        },
                         body: JSON.stringify(payload),
                     });
                     const registerResult = await registerRes.json();

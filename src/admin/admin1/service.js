@@ -8,20 +8,17 @@ const Artice = require("../../models/artistModel");
 const veconcy = require("../../models/vacancyModel");
 
 exports.AllDetail = async (req, res) => {
- try {
-  let obj = {}
-  obj.order = await order.countDocuments()//{status:"cancel"}
-  obj.user = await user.countDocuments({ type: "user" })//super Admin
-  obj.saloon = await saloon.countDocuments({})
-  obj.Findservice = await service.countDocuments()
-  obj.Findpackeges = await productPackage.countDocuments()
-
-
-
-
-  return obj;
- } catch (errore) {
-  console.log(errore);
- };
+    try {
+        let filter = { tendentId: req.headers['tendentId'] };
+        let resObj = {}
+        resObj.order = await order.countDocuments(filter)//{status:"cancel"}
+        resObj.user = await user.countDocuments(filter) //super Admin
+        resObj.saloon = await saloon.countDocuments(filter)
+        resObj.Findservice = await service.countDocuments(filter)
+        resObj.Findpackeges = await productPackage.countDocuments(filter)
+        return resObj;
+    } catch (errore) {
+        console.log(errore);
+    };
 };
 

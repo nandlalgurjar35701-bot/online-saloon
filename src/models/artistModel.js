@@ -8,6 +8,11 @@ const Artist = new mongoose.Schema({
     skiils: {
         type: [String],
     },
+    tendentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        index: true
+    },
 
 }, { timestamps: true, versionKey: false });
 

@@ -1,4 +1,5 @@
 const saloon = require("../../models/saloonStoreModel");
+const mongoose = require("mongoose");
 const getNormalizedRole = (value) => String(value || "").toLowerCase();
 
 exports.viewSaloon = async (req) => {
@@ -22,6 +23,9 @@ exports.viewSaloon = async (req) => {
     }
     if (getNormalizedRole(req.user?.type) === "admin") {
       match.userId = req.user._id;
+    }
+    if (req.headers['tendentId']) {
+      match.tendentId = req.headers['tendentId'];
     }
 
     let pipeline = [];

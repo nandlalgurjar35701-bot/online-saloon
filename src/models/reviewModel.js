@@ -23,7 +23,12 @@ const reviews = new mongoose.Schema({
     dislike: {
         type: [mongoose.Types.ObjectId],
 
-    }
+    },
+    tendentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        index: true
+    },
 }, { timestamps: true, versionKey: false });
 
 

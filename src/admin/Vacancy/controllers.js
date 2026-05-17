@@ -13,8 +13,13 @@ exports.Vacancy = async (req, res) => {
         res.locals.message = req.flash();
         let data;
         const { query, ...rest } = req
-        const FindCategory_data = await category.find({ parent_Name: null })
-        const services = await findAllProductName()
+        const condition = { parent_Name: null };
+        if (req.headers['tendentId']) {
+            req.query.tendentId = req.headers['tendentId'];
+            condition.tendentId = req.headers['tendentId'];
+        }
+        const FindCategory_data = await category.find(condition)
+        const services = await findAllProductName(req.headers['tendentId'])
         if (req.query.id != undefined && req.query.id != "") {
             data = await vacancy.findOne({ _id: req.query.id })
         }
@@ -42,6 +47,9 @@ exports.FindserviceforAdmin = async (req, res) => {
 
 exports.addVacency = async (req, res) => {
     try {
+        if (req.headers['tendentId']) {
+            req.body.tendentId = req.headers['tendentId'];
+        }
         let city = [];
         if (req.body.requiredStatus == "All") {
             const FindSaloon = await store.find()
@@ -81,6 +89,7 @@ exports.addVacency = async (req, res) => {
 
 exports.ViewVacancy = async (req, res) => {
     try {
+        res.locals.message = req.flash();
         const data = await service.ViewVacancy(req)
 
 

@@ -3,9 +3,12 @@ const faqService = require("../service/faqService");
 exports.renderFaqForm = async (req, res) => {
   try {
     res.locals.message = req.flash();
+    if (req.headers['tendentId']) {
+      req.query.tendentId = req.headers['tendentId'];
+    }
     const faqData = req.query.id ? await faqService.getFaqById(req.query.id) : null;
-    const findBlog = await faqService.getBlogOptions(req.query.id);
-    const blogOptions = findBlog.length > 0 ? findBlog : await faqService.getBlogOptions();
+    const findBlog = await faqService.getBlogOptions(req.query.id, req.query);
+    const blogOptions = findBlog.length > 0 ? findBlog : await faqService.getBlogOptions(null, req.query);
 
     return res.render("add_frequent/add_frequent", {
       user: req.user,
@@ -22,6 +25,9 @@ exports.renderFaqForm = async (req, res) => {
 exports.saveFaq = async (req, res) => {
   try {
     res.locals.message = req.flash();
+    if (req.headers['tendentId']) {
+      req.body.tendentId = req.headers['tendentId'];
+    }
     await faqService.saveFaq(req.body);
     req.flash("success", "FAQ saved successfully.");
     return res.send({ status: true });
@@ -35,6 +41,9 @@ exports.saveFaq = async (req, res) => {
 exports.renderFaqList = async (req, res) => {
   try {
     res.locals.message = req.flash();
+    if (req.headers['tendentId']) {
+      req.query.tendentId = req.headers['tendentId'];
+    }
     const data = await faqService.getFaqList(req.query);
     return res.render("add_frequent/view_frequent", { user: req.user, data });
   } catch (error) {
