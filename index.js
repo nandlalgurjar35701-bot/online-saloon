@@ -42,7 +42,7 @@ app.use((req, res, next) => {
   if (res.locals.errorMessages.length > 0) message.error = res.locals.errorMessages;
 
   const originalFlash = req.flash.bind(req);
-  req.flash = function(type, msg) {
+  req.flash = function (type, msg) {
     if (arguments.length === 0) {
       const allFlash = originalFlash();
       return { ...message, ...allFlash };
@@ -65,7 +65,8 @@ app.use(async (req, res, next) => {
   if (data) {
     req.headers['tendentId'] = data._id;
   } else {
-    throw new Error('Subdomain not found');
+    let data = await tendentModel.findOne({ status: 'active' })
+    req.headers['tendentId'] = data._id;
   }
   next();
 });
