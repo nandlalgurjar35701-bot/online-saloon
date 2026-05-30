@@ -55,6 +55,9 @@ app.use((req, res, next) => {
 
 // Middleware to log each API hit
 app.use(async (req, res, next) => {
+  if (req.path === '/ping') {
+    return next();
+  }
   console.log(req.protocol + '://' + req.get('host') + req.originalUrl);
   console.table({ [req.method]: req.originalUrl });
   console.log(req.query, req.body);
@@ -66,7 +69,9 @@ app.use(async (req, res, next) => {
     req.headers['tendentId'] = data._id;
   } else {
     let data = await tendentModel.findOne({ status: 'active' })
-    req.headers['tendentId'] = data._id;
+    if (data) {
+      req.headers['tendentId'] = data._id;
+    }
   }
   next();
 });
@@ -74,7 +79,45 @@ app.use(async (req, res, next) => {
 require('./src/api/routes')(app);
 require('./src/admin/routes')(app);
 
+app.get('/ping', (req, res) => {
+  res.status(200).send('pong');
+});
+
 app.all("*", serviceController.notFoundPage);
+
+// Uptime self-ping mechanism to keep Render server awake (free tier)
+const https = require('https');
+const http = require('http');
+
+function keepAlive() {
+  const url = process.env.RENDER_EXTERNAL_URL || process.env.url;
+  if (!url) {
+    console.log('[Uptime] No external URL configured.');
+    return;
+  }
+
+  const pingUrl = `${url.replace(/\/$/, '')}/ping`;
+  console.log(`[Uptime] Setting up self-ping for: ${pingUrl}`);
+
+  // Ping immediately on start
+  const client = pingUrl.startsWith('https') ? https : http;
+  client.get(pingUrl, (res) => {
+    console.log(`[Uptime] Initial self-ping status: ${res.statusCode}`);
+  }).on('error', (err) => {
+    console.error('[Uptime] Initial self-ping failed:', err.message);
+  });
+
+  // Set interval to ping every 10 minutes
+  setInterval(() => {
+    client.get(pingUrl, (res) => {
+      console.log(`[Uptime] Periodic self-ping status: ${res.statusCode}`);
+    }).on('error', (err) => {
+      console.error('[Uptime] Periodic self-ping failed:', err.message);
+    });
+  }, 10 * 60 * 1000); // 10 minutes
+}
+
+keepAlive();
 
 app.listen(port, () => {
   console.log(`server is running http://localhost:${port}`);
